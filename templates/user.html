@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{ user["name"] }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  {% for mode, plays in modes.items() %}
+    {% if plays %}
+      <h3>{{ mode }}</h3>
+      <ol>
+        {% for map, play in plays %}
+        <li>{{ map["title"] }} - {{ play["pp"] }}<small>pp</small> </li>
+        {% endfor %}
+      </ol>
+    {% endif %}
+  {% endfor %}
+{% endblock %}
