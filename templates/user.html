@@ -1,18 +1,86 @@
 {% extends 'base.html' %}
 
+{% block title %}{{ user['name'] }}{% endblock %}
+
 {% block header %}
-  <h1>{% block title %}{{ user["name"] }}{% endblock %}</h1>
+  <section class="hero is-primary">
+    <div class="hero-body">
+      <h1 class="title has-text-centered">osu!skrungly</h1>
+      <h2 class="subtitle has-text-centered">well this was a mistake but here we are</h2>
+      <br>
+      <div class="columns is-centered">
+        <div class="column is-narrow">
+          <div class="box">
+            <figure class="image is-128x128">
+              <img src="https://a.skrungly.com/{{ user['id'] }}">
+            </figure>
+          </div>
+        </div>
+      </div>
+      <p class="title has-text-centered">{{ user['name'] }}</p>
+    </div>
+  </section>
 {% endblock %}
 
 {% block content %}
-  {% for mode, plays in modes.items() %}
-    {% if plays %}
-      <h3>{{ mode }}</h3>
-      <ol>
-        {% for map, play in plays %}
-        <li>{{ map["title"] }} - {{ play["pp"] }}<small>pp</small> </li>
-        {% endfor %}
-      </ol>
-    {% endif %}
+  {% for mode_name, _ in mode_order %}
+  {% set mode_data = score_data[mode_name] %}
+  {% if mode_data['plays'] != 0 %}
+  <div class="box">
+    <h1 class="title">{{ mode_name }}</h1>
+
+    <nav class="level">
+      {% for stat_name in mode_data %}
+      {% set stat_value = mode_data[stat_name] %}
+      {% if stat_value is number %}
+      <div class="level-item has-text-centered">
+        <div>
+          <p class="heading">{{ stat_name }}</p>
+          <p class="title">{{ '{:,}'.format(stat_value|int) }}</p>
+        </div>
+      </div>
+      {% endif %}
+      {% endfor %}
+    </nav>
+
+    {% for beatmap, score in mode_data['scores'] %}
+    <div class="card is-shadowless">
+      <div class="card-content">
+        <div class="media">
+          <div class="media-left">
+            <figure class="image">
+              <img src="https://b.ppy.sh/thumb/{{ beatmap['set_id'] }}.jpg">
+            </figure>
+          </div>
+
+          {% if score['grade'] in ('XH', 'X', 'SH', 'S') %}
+            {% set tag_class = 'primary' %}
+          {% elif score['grade'] in ('A', 'B') %}
+            {% set tag_class = 'warning' %}
+          {% else %}
+            {% set tag_class = 'danger' %}
+          {% endif %}
+
+          <div class="media-content">
+            <p class="title is-4">{{ beatmap['artist'] }} - {{ beatmap['title'] }}</p>
+            <p class="subtitle is-6">
+              <span class="tag is-{{tag_class}}">{{ score['grade'] }}</span>
+              <span class="tag is-{{tag_class}} is-light">{{ '{:.02f}'.format(score['acc']) }}%</span>
+              [{{ beatmap['version'] }}]</p>
+          </div>
+
+          {% set pp_weight = 0.95 ** (loop.index - 1) %}
+          <div class="media-right has-text-right">
+            <p class="title is-4">
+              {{ score['pp']|int }}pp
+            </p>
+            <p class="subtitle is-6">weighted {{ '{:.0%}'.format(pp_weight) }}: {{ (score['pp'] * pp_weight)|int }}pp</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
   {% endfor %}
 {% endblock %}
