@@ -2,13 +2,15 @@
 
 {% block title %}{{ user['name'] }}{% endblock %}
 
+{% block script %}
+  <script type="text/javascript" src="{{ url_for('static', filename='u.js') }}"></script>
+{% endblock %}
+
 {% block header %}
   <section class="hero is-primary">
     <div class="hero-body">
-      <h1 class="title has-text-centered">osu!skrungly</h1>
-      <h2 class="subtitle has-text-centered">well this was a mistake but here we are</h2>
       <br>
-      <div class="columns is-centered">
+      <div class="columns is-mobile is-centered">
         <div class="column is-narrow">
           <div class="box">
             <figure class="image is-128x128">
@@ -17,40 +19,95 @@
           </div>
         </div>
       </div>
-      <p class="title has-text-centered">{{ user['name'] }}</p>
+      <p class="title has-text-centered">
+        <span class="icon-text">
+          <span>{{ user['name'] }}</span>
+          &nbsp;
+          <a onclick="showEdit()" class="icon">
+            <i class="fas fa-edit fa-sm"></i>
+          </a>
+        </span>
+      </p>
+      <p class="subtitle has-text-centered">{{ user['userpage_content'] or '' }}</p>
     </div>
+
+    <div class="hero-foot">
+      <nav class="tabs is-boxed is-fullwidth is-medium">
+        <div class="container">
+          <ul id="nav-modes">
+            {% for mode_name in score_data %}
+
+            {% if mode_name == default_mode %}
+            <li class="is-active" id="tab-{{ mode_name }}">
+            {% else %}
+            <li id="tab-{{ mode_name }}">
+            {% endif %}
+              <a onclick="showMode('{{ mode_name }}')">
+                {{ mode_name }}
+              </a>
+            </li>
+
+            {% endfor %}
+          </ul>
+        </div>
+      </nav>
+    </div>
+
   </section>
 {% endblock %}
 
 {% block content %}
-  {% for mode_name, _ in mode_order %}
+
+  {% if response %}
+  <div id="response-box" class="columns is-centered">
+    <div class="column is-two-thirds">
+      <article class="message is-{{ response['type'] }}">
+        <div class="message-header">
+          <p>{{ response['title'] }}</p>
+          <button onclick="closeResponse()" class="delete" aria-label="delete"></button>
+        </div>
+        <div class="message-body">
+        {% for line in response['message'].splitlines() %}
+          <p>{{ line }}</p>
+        {% endfor %}
+        </div>
+      </article>
+    </div>
+  </div>
+  {% endif %}
+
+  {% for mode_name in score_data %}
   {% set mode_data = score_data[mode_name] %}
-  {% if mode_data['plays'] != 0 %}
-  <div class="box">
+
+  {% if mode_name == default_mode %}
+  <div id="plays-{{ mode_name }}" class="box">
+  {% else %}
+  <div id="plays-{{ mode_name }}" class="box is-hidden">
+  {% endif %}
+
     <h1 class="title">{{ mode_name }}</h1>
 
-    <nav class="level">
+    <div class="columns is-centered">
       {% for stat_name in mode_data %}
-      {% set stat_value = mode_data[stat_name] %}
-      {% if stat_value is number %}
-      <div class="level-item has-text-centered">
-        <div>
-          <p class="heading">{{ stat_name }}</p>
-          <p class="title">{{ '{:,}'.format(stat_value|int) }}</p>
-        </div>
+      {% if mode_data[stat_name] is number %}
+      <div class="column has-text-centered is-one-fifth">
+        <p class="heading">{{ stat_name }}</p>
+        <p class="title">{{ '{:,}'.format(mode_data[stat_name]) }}</p>
       </div>
       {% endif %}
       {% endfor %}
-    </nav>
+    </div>
 
     {% for beatmap, score in mode_data['scores'] %}
     <div class="card is-shadowless">
       <div class="card-content">
         <div class="media">
           <div class="media-left">
-            <figure class="image">
-              <img src="https://b.ppy.sh/thumb/{{ beatmap['set_id'] }}.jpg">
-            </figure>
+            <a href="https://osu.ppy.sh/beatmapsets/{{ beatmap['set_id'] }}">
+              <figure class="image">
+                <img src="https://b.ppy.sh/thumb/{{ beatmap['set_id'] }}.jpg">
+              </figure>
+            </a>
           </div>
 
           {% if score['grade'] in ('XH', 'X', 'SH', 'S') %}
@@ -62,11 +119,16 @@
           {% endif %}
 
           <div class="media-content">
-            <p class="title is-4">{{ beatmap['artist'] }} - {{ beatmap['title'] }}</p>
-            <p class="subtitle is-6">
+            <p class="title is-4 is-hidden-mobile">
+              <a class="has-text-dark" href="https://osu.ppy.sh/beatmapsets/{{ beatmap['set_id'] }}">
+                {{ beatmap['artist'] }} - {{ beatmap['title'] }}
+              </a>
+            </p>
+            <p class="subtitle is-6 is-hidden-mobile">
               <span class="tag is-{{tag_class}}">{{ score['grade'] }}</span>
               <span class="tag is-{{tag_class}} is-light">{{ '{:.02f}'.format(score['acc']) }}%</span>
-              [{{ beatmap['version'] }}]</p>
+              [{{ beatmap['version'] }}]
+            </p>
           </div>
 
           {% set pp_weight = 0.95 ** (loop.index - 1) %}
@@ -74,13 +136,83 @@
             <p class="title is-4">
               {{ score['pp']|int }}pp
             </p>
-            <p class="subtitle is-6">weighted {{ '{:.0%}'.format(pp_weight) }}: {{ (score['pp'] * pp_weight)|int }}pp</p>
+            <p class="subtitle is-6">
+              weighted
+              <span class="is-hidden-touch">{{ '{:.0%}'.format(pp_weight) }}: </span>
+              {{ (score['pp'] * pp_weight)|int }}pp
+            </p>
           </div>
         </div>
       </div>
     </div>
     {% endfor %}
   </div>
-  {% endif %}
   {% endfor %}
+
+  <div id="modal-edit" class="modal">
+    <div class="modal-background"></div>
+
+    <div class="modal-content">
+      <div class="box">
+
+        <nav class="level">
+          <div class="level-left">
+            <div class="level-item">
+              <p class="title">Edit Profile</p>
+            </div>
+          </div>
+          <div class="level-right">
+            <div class="level-item">
+              <button onclick="closeEdit()" class="delete is-large" aria-label="delete"></button>
+            </div>
+          </div>
+        </nav>
+
+        <form id="edit-form" action="" method="post">
+          <div class="field">
+            <label class="label">username</label>
+            <div class="control">
+              <input name="username" class="input" type="text" placeholder="{{ user['name'] }}">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">message</label>
+            <div class="control">
+              <textarea name="message" class="textarea" type="textarea" placeholder="write your sorry excuses for being here.">{{ user['userpage_content'] }}</textarea>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">new password</label>
+            <div class="control">
+              <input name="new_password" class="input" type="password" placeholder="new password">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="label">current password <span class="has-text-danger is-size-7">(required)</span></label>
+            <div class="control">
+              <input name="password" class="input" type="password" placeholder="current password">
+            </div>
+          </div>
+
+          <div class="block">
+            <p class="is-size-7">
+              <span class="has-text-weight-semibold has-text-danger">note:</span>
+              passwords are sent to the server in plain text bc i'm a lazy fuck.
+            </p>
+          </div>
+
+          <div class="field">
+            <div class="control">
+              <button class="button is-success">Submit</button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <button class="is-large" aria-label="close"></button>
+  </div>
 {% endblock %}
