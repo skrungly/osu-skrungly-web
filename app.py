@@ -15,7 +15,7 @@ db = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor,
 )
 
-modes = ["osu!", "osu!taiko", "osu!catch", "osu!mania"]
+web_modes = {0: "osu!", 1: "osu!taiko", 2: "osu!catch", 3: "osu!mania", 4: "osu!relax"}
 
 # now for the web stuff
 app = Flask(__name__)
@@ -34,9 +34,9 @@ def index():
 def user_view(user_id, response=None):
     score_data = {mode_name: {
         "scores": [],
-    } for mode_name in modes}
+    } for mode_name in web_modes.values()}
 
-    default_mode = modes[0]
+    default_mode = web_modes[0]
 
     with db.cursor() as cursor:
         cursor.execute(
@@ -45,7 +45,7 @@ def user_view(user_id, response=None):
         )
         user = cursor.fetchone()
 
-        for mode_id, mode_name in enumerate(modes):
+        for mode_id, mode_name in web_modes.items():
             cursor.execute(
                 "SELECT pp, plays, rscore, tscore FROM stats "
                 "WHERE id=(%s) && mode=(%s)",
@@ -63,16 +63,16 @@ def user_view(user_id, response=None):
         )
         scores = cursor.fetchall()
 
-        seen_md5s = set()
+        seen_md5s = {mode_id: set() for mode_id in web_modes}
         for score in scores:
-            if score["mods"] & 128:
+            if score["mode"] not in web_modes:
                 continue
 
             map_md5 = score["map_md5"]
-            if map_md5 in seen_md5s:
+            if map_md5 in seen_md5s[score["mode"]]:
                 continue
 
-            seen_md5s.add(map_md5)
+            seen_md5s[score["mode"]].add(map_md5)
 
             cursor.execute(
                 "SELECT * FROM maps WHERE md5=(%s)",
@@ -83,7 +83,7 @@ def user_view(user_id, response=None):
             if beatmap["status"] != 2:
                 continue
 
-            mode_name = modes[beatmap["mode"]]
+            mode_name = web_modes[score["mode"]]
             score_data[mode_name]["scores"].append(
                 (beatmap, score)
             )
