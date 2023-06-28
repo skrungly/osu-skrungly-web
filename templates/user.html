@@ -123,6 +123,7 @@
               <a class="has-text-dark" href="https://osu.ppy.sh/beatmapsets/{{ beatmap['set_id'] }}">
                 {{ beatmap['artist'] }} - {{ beatmap['title'] }}
               </a>
+              <span class="number is-size-6 mx-1">{{ score['play_time'].strftime('%b %d %Y') }}</span>
             </p>
             <p class="subtitle is-6 is-hidden-mobile">
               <span class="tag is-{{tag_class}}">{{ score['grade'] }}</span>
