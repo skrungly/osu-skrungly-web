@@ -105,20 +105,23 @@ def user_view(user_id, response=None):
         # filter for top 100 pp-yielding scores in each mode
         seen_md5s = {mode_id: set() for mode_id in web_modes}
         for score in scores:
-            if score["mode"] not in web_modes:
+            mode = score["mode"]
+            if mode not in web_modes:
                 continue
 
-            mode_name = web_modes[score["mode"]]
+            mode_name = web_modes[mode]
             if len(score_data[mode_name]["scores"]) >= 100:
                 continue
 
             map_md5 = score["map_md5"]
-            if map_md5 in seen_md5s[score["mode"]]:
+            if map_md5 in seen_md5s[mode]:
                 continue
 
-            seen_md5s[score["mode"]].add(map_md5)
+            seen_md5s[mode].add(map_md5)
 
-            score["mods_str"] = str(Mods(score["mods"]))
+            # no need to show +RX on relax page
+            shown_mods = Mods(score["mods"]) & ~Mods.RX 
+            score["mods_str"] = str(shown_mods)
 
             cursor.execute(
                 "SELECT * FROM maps WHERE md5=(%s)",
