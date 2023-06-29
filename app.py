@@ -66,6 +66,7 @@ def user_view(user_id, response=None):
     } for mode_name in web_modes.values()}
 
     default_mode = web_modes[0]
+    most_plays = 0
 
     with db.cursor() as cursor:
         cursor.execute(
@@ -83,6 +84,10 @@ def user_view(user_id, response=None):
 
             stats = cursor.fetchone()
             score_data[mode_name].update(stats)
+
+            if stats["plays"] > most_plays:
+                default_mode = web_modes[mode_id]
+                most_plays = stats["plays"]
 
         cursor.execute(
             "SELECT * FROM scores "
