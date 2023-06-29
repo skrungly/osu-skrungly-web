@@ -99,7 +99,7 @@ def user_view(user_id, response=None):
             (user_id,)
         )
         scores = cursor.fetchall()
-        last_score = scores[0] if scores else None
+        last_scores = {mode: None for mode in web_modes.values()}
         recent_scores = []
 
         # filter for top 100 pp-yielding scores in each mode
@@ -136,8 +136,9 @@ def user_view(user_id, response=None):
                 (beatmap, score)
             )
 
-            if score["play_time"] > last_score["play_time"]:
-                last_score = score
+            last_score = last_scores[mode_name]
+            if not last_score or score["play_time"] > last_score["play_time"]:
+                last_scores[mode_name] = score
 
             if datetime.now() - score["play_time"] < RECENT_SCORE_AGE:
                 recent_scores.append(score["id"])
@@ -148,7 +149,7 @@ def user_view(user_id, response=None):
         "user.html",
         user=user,
         score_data=score_data,
-        last_score=last_score["id"] if last_score else None,
+        last_scores=last_scores,
         recent_scores=recent_scores,
         default_mode=default_mode,
         response=response

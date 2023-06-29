@@ -99,9 +99,9 @@
     </div>
 
     {% for beatmap, score in mode_data['scores'] %}
-    {% if score["id"] == last_score %}
+    {% if score['id'] == last_scores[mode_name]['id'] %}
     <div class="card is-shadowless has-background-success-light">
-    {% elif score["id"] in recent_scores %}
+    {% elif score['id'] in recent_scores %}
     <div class="card is-shadowless has-background-info-light">
     {% else %}
     <div class="card is-shadowless">
