@@ -107,8 +107,6 @@ def user_view(user_id, response=None):
 
             seen_md5s[score["mode"]].add(map_md5)
 
-            import sys
-            print(score["mods"], sys.version, flush=True)
             score["mods_str"] = str(Mods(score["mods"]))
 
             cursor.execute(
