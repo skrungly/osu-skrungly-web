@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from enum import IntFlag
 import hashlib
 import os
@@ -5,6 +6,8 @@ import os
 from flask import Flask, render_template, request
 import bcrypt
 import pymysql
+
+RECENT_SCORE_AGE = timedelta(days=1)
 
 # start with some boring database stuff
 db = pymysql.connect(
@@ -96,7 +99,10 @@ def user_view(user_id, response=None):
             (user_id,)
         )
         scores = cursor.fetchall()
+        last_score = scores[0] if scores else None
+        recent_scores = []
 
+        # filter for top 100 pp-yielding scores in each mode
         seen_md5s = {mode_id: set() for mode_id in web_modes}
         for score in scores:
             if score["mode"] not in web_modes:
@@ -120,12 +126,18 @@ def user_view(user_id, response=None):
             )
             beatmap = cursor.fetchone()
 
-            if beatmap["status"] != 2:
+            if not beatmap or beatmap["status"] != 2:
                 continue
 
             score_data[mode_name]["scores"].append(
                 (beatmap, score)
             )
+
+            if score["play_time"] > last_score["play_time"]:
+                last_score = score
+
+            if datetime.now() - score["play_time"] < RECENT_SCORE_AGE:
+                recent_scores.append(score["id"])
 
         db.commit()
 
@@ -133,6 +145,8 @@ def user_view(user_id, response=None):
         "user.html",
         user=user,
         score_data=score_data,
+        last_score=last_score["id"] if last_score else None,
+        recent_scores=recent_scores,
         default_mode=default_mode,
         response=response
     )
