@@ -68,6 +68,10 @@ def user_view(user_id, response=None):
             if score["mode"] not in web_modes:
                 continue
 
+            mode_name = web_modes[score["mode"]]
+            if len(score_data[mode_name]["scores"]) >= 100:
+                continue
+
             map_md5 = score["map_md5"]
             if map_md5 in seen_md5s[score["mode"]]:
                 continue
@@ -83,13 +87,9 @@ def user_view(user_id, response=None):
             if beatmap["status"] != 2:
                 continue
 
-            mode_name = web_modes[score["mode"]]
             score_data[mode_name]["scores"].append(
                 (beatmap, score)
             )
-
-            if len(score_data[mode_name]["scores"]) >= 100:
-                break
 
         db.commit()
 
