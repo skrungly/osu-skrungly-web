@@ -1,5 +1,5 @@
+from enum import IntFlag
 import hashlib
-import json
 import os
 
 from flask import Flask, render_template, request
@@ -15,7 +15,36 @@ db = pymysql.connect(
     cursorclass=pymysql.cursors.DictCursor,
 )
 
+# TODO: maybe turn these into enums?
 web_modes = {0: "osu!", 1: "osu!taiko", 2: "osu!catch", 3: "osu!mania", 4: "osu!relax"}
+
+
+class Mods(IntFlag):
+    NF = 1 << 0
+    EZ = 1 << 1
+    TS = 1 << 2
+    HD = 1 << 3
+    HR = 1 << 4
+    SD = 1 << 5
+    DT = 1 << 6
+    RX = 1 << 7
+    HT = 1 << 8
+    NC = 1 << 9
+    FL = 1 << 10
+#   AUTO = 1 << 11
+    SO = 1 << 12
+    AP = 1 << 13
+    PF = 1 << 14
+    FI = 1 << 20
+#   RD = 1 << 21
+    MR = 1 << 30
+
+    def __str__(self):
+        if not self.value:
+            return ""
+
+        return "+" + self.name.replace("|", "")
+
 
 # now for the web stuff
 app = Flask(__name__)
@@ -77,6 +106,10 @@ def user_view(user_id, response=None):
                 continue
 
             seen_md5s[score["mode"]].add(map_md5)
+
+            import sys
+            print(score["mods"], sys.version, flush=True)
+            score["mods_str"] = str(Mods(score["mods"]))
 
             cursor.execute(
                 "SELECT * FROM maps WHERE md5=(%s)",

@@ -128,7 +128,7 @@
             <p class="subtitle is-6 is-hidden-mobile">
               <span class="tag is-{{tag_class}}">{{ score['grade'] }}</span>
               <span class="tag is-{{tag_class}} is-light">{{ '{:.02f}'.format(score['acc']) }}%</span>
-              [{{ beatmap['version'] }}]
+              [{{ beatmap['version'] }}] {{ score['mods_str'] }}
             </p>
           </div>
 
