@@ -2,33 +2,51 @@
 
 {% block title %}Home{% endblock %}
 
-{% block content %}
-  <div class="box">
-    {% for user in users %}
-    <div class="block card">
-      <div class="card-content">
-        <div class="media">
-          <div class="media-left">
-            <a href="/u/{{ user['id'] }}">
-              <figure class="image is-128x128">
-                <img src="https://a.skrungly.com/{{ user['id'] }}">
-              </figure>
-            </a>
-          </div>
+{% block header %}
 
-          <div class="media-content">
-            <p class="title is-4">
-              <a class="has-text-dark" href="/u/{{ user['id'] }}">
-                {{ user['name'] }}
-              </a>
-            </p>
-            {% if user['userpage_content'] %}
-            <p class="subtitle">{{ user['userpage_content'] }}</p>
-            {% endif %}
-          </div>
+<section class="hero is-primary">
+  <div class="hero-foot">
+    <div class="container has-text-centered is-max-desktop">
+      <div id="extra-stats">
+        <div class="columns is-centered">
+          {% for global_stat, global_value in stats.items() %}
+            <div class="column has-text-centered">
+              <p class="heading">global {{ global_stat }}</p>
+              <p class="title">{{ '{:,}'.format(global_value) }}</p>
+            </div>
+          {% endfor %}
+        </div>
+        <br>
+      </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block content %}
+  {% for user in users %}
+  <div class="block card">
+    <div class="card-content">
+      <div class="media">
+        <div class="media-left">
+          <a href="/u/{{ user['id'] }}">
+            <figure class="image is-128x128">
+              <img src="https://a.skrungly.com/{{ user['id'] }}">
+            </figure>
+          </a>
+        </div>
+
+        <div class="media-content">
+          <p class="title is-4">
+            <a class="has-text-dark" href="/u/{{ user['id'] }}">
+              {{ user['name'] }}
+            </a>
+          </p>
+          {% if user['userpage_content'] %}
+          <p class="subtitle">{{ user['userpage_content'] }}</p>
+          {% endif %}
         </div>
       </div>
     </div>
-    {% endfor %}
   </div>
+  {% endfor %}
 {% endblock %}

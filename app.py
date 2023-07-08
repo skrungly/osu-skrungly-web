@@ -19,8 +19,14 @@ db = pymysql.connect(
 )
 
 # TODO: maybe turn these into enums?
-web_modes = {0: "osu!", 1: "osu!taiko", 2: "osu!catch", 3: "osu!mania", 4: "osu!relax"}
+WEB_MODES = {0: "osu!", 1: "osu!taiko", 2: "osu!catch", 3: "osu!mania", 4: "osu!relax"}
 
+USER_STATS = {
+    "pp": "pp",
+    "total_hits": "circles clicked",
+    "plays": "plays",
+    "tscore": "total score"
+}
 
 class Mods(IntFlag):
     NF = 1 << 0
@@ -55,21 +61,30 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
+    global_stats = {}
+
     with db.cursor() as cursor:
         cursor.execute("SELECT * FROM users")
         users = cursor.fetchall()
 
-    return render_template("index.html", users=users)
+        for stat_name, stat_desc in USER_STATS.items():
+            cursor.execute(f"SELECT SUM({stat_name}) FROM stats")
+            stats = cursor.fetchone()
+            global_stats[stat_desc] = int(list(stats.values())[0])
+
+    return render_template("index.html", users=users, stats=global_stats)
 
 
 @app.route("/u/<int:user_id>", methods=['GET'])
 def user_view(user_id, response=None):
     score_data = {mode_name: {
         "scores": [],
-    } for mode_name in web_modes.values()}
+    } for mode_name in WEB_MODES.values()}
 
-    default_mode = web_modes[0]
-    most_plays = 0
+    overall_stats = {stat_name: 0 for stat_name in USER_STATS.values()}
+
+    default_mode = WEB_MODES[0]
+    most_pp = 0
 
     with db.cursor() as cursor:
         cursor.execute(
@@ -78,19 +93,22 @@ def user_view(user_id, response=None):
         )
         user = cursor.fetchone()
 
-        for mode_id, mode_name in web_modes.items():
+        for mode_id, mode_name in WEB_MODES.items():
             cursor.execute(
-                "SELECT pp, plays, rscore, tscore FROM stats "
-                "WHERE id=(%s) && mode=(%s)",
+                "SELECT * FROM stats WHERE id=(%s) && mode=(%s)",
                 (user_id, mode_id,)
             )
 
             stats = cursor.fetchone()
-            score_data[mode_name].update(stats)
 
-            if stats["plays"] > most_plays:
-                default_mode = web_modes[mode_id]
-                most_plays = stats["plays"]
+            for stat_name, stat_desc in USER_STATS.items():
+                score_data[mode_name][stat_desc] = stats[stat_name]
+                overall_stats[stat_desc] += stats[stat_name]
+
+            # make your best gamemode the default
+            if score_data[mode_name]["pp"] > most_pp:
+                default_mode = WEB_MODES[mode_id]
+                most_pp = score_data[mode_name]["pp"]
 
         cursor.execute(
             "SELECT * FROM scores "
@@ -99,17 +117,17 @@ def user_view(user_id, response=None):
             (user_id,)
         )
         scores = cursor.fetchall()
-        last_scores = {mode: None for mode in web_modes.values()}
+        last_scores = {mode: None for mode in WEB_MODES.values()}
         recent_scores = []
 
         # filter for top 100 pp-yielding scores in each mode
-        seen_md5s = {mode_id: set() for mode_id in web_modes}
+        seen_md5s = {mode_id: set() for mode_id in WEB_MODES}
         for score in scores:
             mode = score["mode"]
-            if mode not in web_modes:
+            if mode not in WEB_MODES:
                 continue
 
-            mode_name = web_modes[mode]
+            mode_name = WEB_MODES[mode]
             if len(score_data[mode_name]["scores"]) >= 100:
                 continue
 
@@ -120,7 +138,7 @@ def user_view(user_id, response=None):
             seen_md5s[mode].add(map_md5)
 
             # no need to show +RX on relax page
-            shown_mods = Mods(score["mods"]) & ~Mods.RX 
+            shown_mods = Mods(score["mods"]) & ~Mods.RX
             score["mods_str"] = str(shown_mods)
 
             cursor.execute(
@@ -152,6 +170,7 @@ def user_view(user_id, response=None):
         last_scores=last_scores,
         recent_scores=recent_scores,
         default_mode=default_mode,
+        overall_stats=overall_stats,
         response=response
     )
 

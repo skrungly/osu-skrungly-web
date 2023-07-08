@@ -32,6 +32,23 @@
     </div>
 
     <div class="hero-foot">
+
+      <div class="container has-text-centered is-max-desktop">
+        <div id="extra-stats">
+          <div class="columns is-centered">
+            {% for stat_name, stat_value in overall_stats.items() %}
+              <div class="column has-text-centered">
+                <p class="heading">overall {{ stat_name }}</p>
+                <p class="title">{{ '{:,}'.format(stat_value) }}</p>
+              </div>
+            {% endfor %}
+          </div>
+          <br>
+        </div>
+      </div>
+
+      <br>
+
       <nav class="tabs is-boxed is-fullwidth is-medium">
         <div class="container">
           <ul id="nav-modes">
@@ -98,6 +115,8 @@
       {% endfor %}
     </div>
 
+    <hr>
+
     {% for beatmap, score in mode_data['scores'] %}
     {% if score['id'] == last_scores[mode_name]['id'] %}
     <div class="card is-shadowless has-background-success-light">
@@ -125,16 +144,21 @@
           {% endif %}
 
           <div class="media-content">
-            <p class="title is-4 is-hidden-mobile">
+            <p class="title is-4">
               <a class="has-text-dark" href="https://osu.ppy.sh/beatmapsets/{{ beatmap['set_id'] }}">
                 {{ beatmap['artist'] }} - {{ beatmap['title'] }}
               </a>
               <span class="number is-size-6 mx-1">{{ score['play_time'].strftime('%b %d %Y') }}</span>
             </p>
-            <p class="subtitle is-6 is-hidden-mobile">
+            <p class="subtitle is-6">
               <span class="tag is-{{tag_class}}">{{ score['grade'] }}</span>
               <span class="tag is-{{tag_class}} is-light">{{ '{:.02f}'.format(score['acc']) }}%</span>
-              [{{ beatmap['version'] }}] {{ score['mods_str'] }}
+              [{{ beatmap['version'] }}]
+              {% if not score['mods_str'] %}
+              @ {{ '{:.02f}'.format(beatmap['diff']) }}
+              <span class="has-text-weight-semibold">☆</span>
+              {% endif %}
+              {{ score['mods_str'] }}
             </p>
           </div>
 
