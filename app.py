@@ -28,6 +28,8 @@ USER_STATS = {
     "tscore": "total score"
 }
 
+RANKED_MODES = [2, 3]
+
 class Mods(IntFlag):
     NF = 1 << 0
     EZ = 1 << 1
@@ -147,7 +149,7 @@ def user_view(user_id, response=None):
             )
             beatmap = cursor.fetchone()
 
-            if not beatmap or beatmap["status"] != 2:
+            if not beatmap or beatmap["status"] not in RANKED_MODES:
                 continue
 
             score_data[mode_name]["scores"].append(
