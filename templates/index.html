@@ -28,7 +28,7 @@
     <div class="card-content">
       <div class="media">
         <div class="media-left">
-          <a href="/u/{{ user['id'] }}">
+          <a href="/u/{{ user['safe_name'] }}">
             <figure class="image is-128x128">
               <img src="https://a.skrungly.com/{{ user['id'] }}">
             </figure>
@@ -37,7 +37,7 @@
 
         <div class="media-content">
           <p class="title is-4">
-            <a class="has-text-dark" href="/u/{{ user['id'] }}">
+            <a class="has-text-dark" href="/u/{{ user['safe_name'] }}">
               {{ user['name'] }}
             </a>
           </p>

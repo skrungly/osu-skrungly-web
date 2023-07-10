@@ -3,7 +3,7 @@ from enum import IntFlag
 import hashlib
 import os
 
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 import bcrypt
 import pymysql
 
@@ -78,7 +78,19 @@ def index():
 
 
 @app.route("/u/<int:user_id>", methods=['GET'])
-def user_view(user_id, response=None):
+def user_view_id(user_id, response=None):
+    with db.cursor() as cursor:
+        cursor.execute(
+            "SELECT safe_name FROM users WHERE id=(%s)",
+            (user_id,)
+        )
+        safe_name = cursor.fetchone()["safe_name"]
+
+    return redirect(url_for("user_view_name", safe_name=safe_name))
+
+
+@app.route("/u/<safe_name>", methods=['GET'])
+def user_view_name(safe_name, response=None):
     score_data = {mode_name: {
         "scores": [],
     } for mode_name in WEB_MODES.values()}
@@ -90,15 +102,17 @@ def user_view(user_id, response=None):
 
     with db.cursor() as cursor:
         cursor.execute(
-            "SELECT * FROM users WHERE id=(%s)",
-            (user_id,)
+            # i don't know if this could clash at all, but it's
+            # not going to be an issue on a server like this!
+            "SELECT * FROM users WHERE safe_name=(%s)",
+            (safe_name,)
         )
         user = cursor.fetchone()
 
         for mode_id, mode_name in WEB_MODES.items():
             cursor.execute(
                 "SELECT * FROM stats WHERE id=(%s) && mode=(%s)",
-                (user_id, mode_id,)
+                (user["id"], mode_id,)
             )
 
             stats = cursor.fetchone()
@@ -116,7 +130,7 @@ def user_view(user_id, response=None):
             "SELECT * FROM scores "
             "WHERE userid=(%s) && status=2 "
             "ORDER BY pp DESC",
-            (user_id,)
+            (user["id"],)
         )
         scores = cursor.fetchall()
         last_scores = {mode: None for mode in WEB_MODES.values()}

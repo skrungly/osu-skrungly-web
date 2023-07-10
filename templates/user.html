@@ -59,7 +59,7 @@
             {% else %}
             <li id="tab-{{ mode_name }}">
             {% endif %}
-              <a onclick="showMode('{{ mode_name }}')">
+              <a onclick="showModeAnchor()" href="#{{ mode_name }}">
                 {{ mode_name }}
               </a>
             </li>
