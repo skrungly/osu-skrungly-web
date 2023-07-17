@@ -154,24 +154,38 @@
               <span class="tag is-{{tag_class}}">{{ score['grade'] }}</span>
               <span class="tag is-{{tag_class}} is-light">{{ '{:.02f}'.format(score['acc']) }}%</span>
               [{{ beatmap['version'] }}]
-              {% if not score['mods_str'] %}
-              @ {{ '{:.02f}'.format(beatmap['diff']) }}
-              <span class="has-text-weight-semibold">☆</span>
-              {% endif %}
-              {{ score['mods_str'] }}
+              <span class="has-text-grey">
+                {% if not score['mods_str'] %}
+                @ {{ '{:.02f}'.format(beatmap['diff']) }}
+                <span class="has-text-weight-semibold">☆</span>
+                {% endif %}
+                {{ score['mods_str'] }}
+              </span>
+              <span class="has-text-grey-light">
+                ({{ score['max_combo'] }} / {{ beatmap['max_combo'] }}x)
+              </span>
             </p>
           </div>
 
           {% set pp_weight = 0.95 ** (loop.index - 1) %}
           <div class="media-right has-text-right">
-            <p class="title is-4">
-              {{ score['pp']|int }}pp
-            </p>
-            <p class="subtitle is-6">
-              weighted
-              <span class="is-hidden-touch">{{ '{:.0%}'.format(pp_weight) }}: </span>
-              {{ (score['pp'] * pp_weight)|int }}pp
-            </p>
+            <div class="columns is-vcentered">
+              <div class="column is-11">
+                <p class="title is-4">
+                  {{ score['pp']|int }}pp
+                </p>
+                <p class="subtitle is-6">
+                  weighted
+                  <span class="is-hidden-touch">{{ '{:.0%}'.format(pp_weight) }}: </span>
+                  {{ (score['pp'] * pp_weight)|int }}pp
+                </p>
+              </div>
+              <div class="column is-1">
+                <a class="has-text-dark" href="https://api.chimu.moe/v1/download/{{ beatmap['set_id'] }}" class="icon">
+                  <i class="fas fa-download"></i>
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>
