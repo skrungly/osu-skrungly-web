@@ -81,7 +81,16 @@ def index():
     global_stats = {}
 
     with db.cursor() as cursor:
-        cursor.execute("SELECT * FROM users")
+        cursor.execute(
+            "SELECT * FROM users u "
+            "INNER JOIN ( "
+            "    SELECT id, SUM(plays) _plays "
+            "    FROM stats "
+            "    GROUP BY id "
+            ") p ON u.id = p.id "
+            "ORDER BY p._plays DESC "
+        )
+
         users = cursor.fetchall()
 
         for stat_name, stat_desc in USER_STATS.items():
