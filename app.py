@@ -206,8 +206,16 @@ def user_view_name(safe_name, response=None):
     )
 
 
-@app.route("/u/<int:user_id>", methods=['POST'])
-def user_edit(user_id):
+@app.route("/u/<safe_name>", methods=['POST'])
+def user_edit_name(safe_name):
+    with db.cursor() as cursor:
+        cursor.execute(
+            "SELECT id FROM users WHERE safe_name=(%s)",
+            (safe_name,)
+        )
+
+        user_id = cursor.fetchone()['id']
+
     form_data = request.form
 
     error_reasons = []
@@ -273,7 +281,7 @@ def user_edit(user_id):
             "message": "\n".join(error_reasons),
             "type": "danger",
         }
-        return user_view(user_id, error)
+        return user_view_name(safe_name, error)
 
     with db.cursor() as cursor:
         if username:
@@ -305,7 +313,8 @@ def user_edit(user_id):
         "message": "the changes you've made should already be visible.",
         "type": "success",
     }
-    return user_view(user_id, response)
+
+    return user_view_name(safe_name, response)
 
 
 if __name__ == "__main__":
