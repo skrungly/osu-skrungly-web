@@ -59,6 +59,7 @@
           <ul id="nav-modes">
             {% for mode_name in score_data %}
 
+            {% if score_data[mode_name]['scores'] %}
             {% if mode_name == default_mode %}
             <li class="is-active" id="tab-{{ mode_name }}">
             {% else %}
@@ -68,6 +69,7 @@
                 {{ mode_name }}
               </a>
             </li>
+            {% endif %}
 
             {% endfor %}
           </ul>
