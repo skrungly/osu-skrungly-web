@@ -116,7 +116,7 @@
       {% if mode_data[stat_name] is number %}
       <div class="column has-text-centered is-one-fifth">
         <p class="heading">{{ stat_name }}</p>
-        {% if not (user['id'] == 4 and stat_name == "pp" and mode_name == "osu!mania") %}
+        {% if not (user['id'] == 0 and stat_name == "pp" and mode_name == "osu!mania") %}
         <p class="title">{{ '{:,}'.format(mode_data[stat_name]) }}</p>
         {% else %}
         <img src="https://cdn.discordapp.com/emojis/1027102204051595264.webp?size=48&quality=lossless" alt="???">
