@@ -39,7 +39,7 @@
             {% for stat_name, stat_value in overall_stats.items() %}
               <div class="column has-text-centered">
                 <p class="heading">overall {{ stat_name }}</p>
-                {% if not (user['id'] == 4 and stat_name == "pp") %}
+                {% if not (user['id'] == 0 and stat_name == "pp") %}
                 <p class="title">{{ '{:,}'.format(stat_value) }}</p>
                 {% else %}
                 <img src="https://cdn.discordapp.com/emojis/1027102204051595264.webp?size=48&quality=lossless" alt="???">
