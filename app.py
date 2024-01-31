@@ -3,7 +3,7 @@ from enum import IntFlag
 import hashlib
 import os
 
-from flask import Flask, redirect, render_template, request, url_for
+from flask import Flask, redirect, render_template, request, send_from_directory, url_for
 import bcrypt
 import pymysql
 
@@ -330,6 +330,15 @@ def user_edit_name(safe_name):
     }
 
     return user_view_name(safe_name, response)
+
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(
+        os.path.join(app.root_path, 'static'),
+        'favicon.ico'
+    )
 
 
 if __name__ == "__main__":
