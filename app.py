@@ -80,6 +80,7 @@ app = Flask(__name__)
 def index():
     global_stats = {}
 
+    db.ping()
     with db.cursor() as cursor:
         cursor.execute(
             "SELECT * FROM users u "
@@ -103,6 +104,7 @@ def index():
 
 @app.route("/u/<int:user_id>", methods=['GET'])
 def user_view_id(user_id, response=None):
+    db.ping()
     with db.cursor() as cursor:
         cursor.execute(
             "SELECT safe_name FROM users WHERE id=(%s)",
@@ -124,6 +126,7 @@ def user_view_name(safe_name, response=None):
     default_mode = WEB_MODES[0]
     most_pp = 0
 
+    db.ping()
     with db.cursor() as cursor:
         cursor.execute(
             # i don't know if this could clash at all, but it's
@@ -217,6 +220,7 @@ def user_view_name(safe_name, response=None):
 
 @app.route("/u/<safe_name>", methods=['POST'])
 def user_edit_name(safe_name):
+    db.ping()
     with db.cursor() as cursor:
         cursor.execute(
             "SELECT id FROM users WHERE safe_name=(%s)",
@@ -236,6 +240,7 @@ def user_edit_name(safe_name):
 
     pw_md5 = hashlib.md5(password.encode()).hexdigest().encode()
 
+    db.ping()
     with db.cursor() as cursor:
         cursor.execute(
             "SELECT pw_bcrypt FROM users WHERE id=(%s)",
@@ -292,6 +297,7 @@ def user_edit_name(safe_name):
         }
         return user_view_name(safe_name, error)
 
+    db.ping()
     with db.cursor() as cursor:
         if username:
             safe_name = username.lower().replace(" ", "_")
