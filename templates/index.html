@@ -12,7 +12,7 @@
           {% for global_stat, global_value in stats.items() %}
             <div class="column has-text-centered">
               <p class="heading">global {{ global_stat }}</p>
-              <p class="title">{{ '{:,}'.format(global_value) }}</p>
+              <p class="title is-4">{{ '{:,}'.format(global_value) }}</p>
             </div>
           {% endfor %}
         </div>

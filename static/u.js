@@ -1,6 +1,3 @@
-
-var defaultMode = 'osu!'
-
 function switchMode(event) {
     let prevTab = $('li.is-active [id^="tab-"]');
     let prevMode = prevTab.attr('id').slice(4);

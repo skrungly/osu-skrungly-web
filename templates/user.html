@@ -8,27 +8,31 @@
 
 {% block header %}
   <section class="hero is-primary">
-    <div class="hero-body">
-      <br>
-      <div class="columns is-mobile is-centered">
-        <div class="column is-narrow">
-          <div class="box">
-            <figure class="image is-128x128">
-              <img src="https://a.skrungly.com/{{ user['id'] }}">
-            </figure>
+    <div class="container is-max-fullhd">
+      <div class="hero-body">
+        <br>
+        <div class="columns is-mobile is-centered">
+          <div class="column is-narrow">
+            <div class="box">
+              <figure class="image is-128x128">
+                <img src="https://a.skrungly.com/{{ user['id'] }}">
+              </figure>
+            </div>
           </div>
         </div>
+        <p class="title has-text-centered">
+          <span class="icon-text">
+            <span>{{ user['name'] }}</span>
+            &nbsp;
+            <a class="icon">
+              <i id="show-edit" class="fas fa-edit fa-sm"></i>
+            </a>
+          </span>
+        </p>
+        <p class="subtitle has-text-justified">
+          {{ user['userpage_content'] or '' }}
+        </p>
       </div>
-      <p class="title has-text-centered">
-        <span class="icon-text">
-          <span>{{ user['name'] }}</span>
-          &nbsp;
-          <a class="icon">
-            <i id="show-edit" class="fas fa-edit fa-sm"></i>
-          </a>
-        </span>
-      </p>
-      <p class="subtitle has-text-centered">{{ user['userpage_content'] or '' }}</p>
     </div>
 
     <div class="hero-foot">
@@ -40,7 +44,7 @@
               <div class="column has-text-centered">
                 <p class="heading">overall {{ stat_name }}</p>
                 {% if not (user['id'] == 0 and stat_name == "pp") %}
-                <p class="title">{{ '{:,}'.format(stat_value) }}</p>
+                <p class="title is-4">{{ '{:,}'.format(stat_value) }}</p>
                 {% else %}
                 <img src="https://cdn.discordapp.com/emojis/1027102204051595264.webp?size=48&quality=lossless" alt="???">
                 {% endif %}
@@ -116,7 +120,7 @@
       <div class="column has-text-centered is-one-fifth">
         <p class="heading">{{ stat_name }}</p>
         {% if not (user['id'] == 0 and stat_name == "pp" and mode_name == "osu!mania") %}
-        <p class="title">{{ '{:,}'.format(mode_data[stat_name]) }}</p>
+        <p class="title is-4">{{ '{:,}'.format(mode_data[stat_name]) }}</p>
         {% else %}
         <img src="https://cdn.discordapp.com/emojis/1027102204051595264.webp?size=48&quality=lossless" alt="???">
         {% endif %}
@@ -214,7 +218,7 @@
         <nav class="level">
           <div class="level-left">
             <div class="level-item">
-              <p class="title">Edit Profile</p>
+              <p class="title is-4">edit profile</p>
             </div>
           </div>
           <div class="level-right">
@@ -253,12 +257,7 @@
             </div>
           </div>
 
-          <div class="block">
-            <p class="is-size-7">
-              <span class="has-text-weight-semibold has-text-danger">note:</span>
-              passwords are sent to the server in plain text bc i'm a lazy fuck.
-            </p>
-          </div>
+          <br/>
 
           <div class="field">
             <div class="control">
