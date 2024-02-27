@@ -23,8 +23,8 @@
         <span class="icon-text">
           <span>{{ user['name'] }}</span>
           &nbsp;
-          <a onclick="showEdit()" class="icon">
-            <i class="fas fa-edit fa-sm"></i>
+          <a class="icon">
+            <i id="show-edit" class="fas fa-edit fa-sm"></i>
           </a>
         </span>
       </p>
@@ -56,18 +56,17 @@
 
       <nav class="tabs is-boxed is-fullwidth is-medium">
         <div class="container">
-          <ul id="nav-modes">
+          <ul>
             {% for mode_name in score_data %}
+            {% set short_name = mode_name[4:] or "standard" %}
 
             {% if score_data[mode_name]['scores'] %}
             {% if mode_name == default_mode %}
-            <li class="is-active" id="tab-{{ mode_name }}">
+            <li class="is-active">
             {% else %}
-            <li id="tab-{{ mode_name }}">
+            <li>
             {% endif %}
-              <a onclick="showModeAnchor()" href="#{{ mode_name }}">
-                {{ mode_name }}
-              </a>
+              <a id="tab-{{ short_name }}">{{ mode_name }}</a>
             </li>
             {% endif %}
 
@@ -88,11 +87,11 @@
       <article class="message is-{{ response['type'] }}">
         <div class="message-header">
           <p>{{ response['title'] }}</p>
-          <button onclick="closeResponse()" class="delete" aria-label="delete"></button>
+          <button id="close_response" class="delete" aria-label="delete"></button>
         </div>
         <div class="message-body">
         {% for line in response['message'].splitlines() %}
-          <p>{{ line }}</p>
+          <p>- {{ line }}</p>
         {% endfor %}
         </div>
       </article>
@@ -102,13 +101,13 @@
 
   {% for mode_name in score_data %}
   {% set mode_data = score_data[mode_name] %}
+  {% set short_name = mode_name[4:] or "standard" %}
 
   {% if mode_name == default_mode %}
-  <div id="plays-{{ mode_name }}" class="box">
+  <div id="plays-{{ short_name }}" class="box">
   {% else %}
-  <div id="plays-{{ mode_name }}" class="box is-hidden">
+  <div id="plays-{{ short_name }}" class="box is-hidden">
   {% endif %}
-
     <h1 class="title">{{ mode_name }}</h1>
 
     <div class="columns is-centered">
@@ -219,8 +218,8 @@
             </div>
           </div>
           <div class="level-right">
-            <div class="level-item">
-              <button onclick="closeEdit()" class="delete is-large" aria-label="delete"></button>
+            <div id="close-edit" class="level-item">
+              <button class="delete is-large" aria-label="delete"></button>
             </div>
           </div>
         </nav>

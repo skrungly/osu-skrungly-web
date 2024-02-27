@@ -1,57 +1,38 @@
-var defaultMode = "osu!"
 
-function getActiveTab() {
-    return document.getElementById("nav-modes")
-        .getElementsByClassName("is-active")[0];
-}
+var defaultMode = 'osu!'
 
-function showModeAnchor() {
-    var url = window.location.href;
-    activeTab = getActiveTab();
+function switchMode(event) {
+    let prevTab = $('li.is-active [id^="tab-"]');
+    let prevMode = prevTab.attr('id').slice(4);
+    let prevPlays = $(`#plays-${prevMode}`);
 
-    if (url.indexOf("#") > 0) {
-        var nextMode = url.substring(url.indexOf("#") + 1);
-    } else {
-        var nextMode = defaultMode;
-    }
+    let nextMode = event.target.id.slice(4);
+    let nextTab = $(`#tab-${nextMode}`);
+    let nextPlays = $(`#plays-${nextMode}`);
 
-    prevMode = activeTab.id.slice(4);
-    var nextTab = document.getElementById("tab-" + nextMode);
-    var nextPlays = document.getElementById("plays-" + nextMode);
-
-    if (nextTab == null || nextMode == prevMode) {
+    if (nextTab === null || nextMode === prevMode) {
         return;
     }
 
-    var activePlays = document.getElementById("plays-" + prevMode);
+    prevTab.parent().removeClass('is-active');
+    prevPlays.addClass('is-hidden');
 
-    activeTab.classList.remove("is-active");
-    activePlays.classList.add("is-hidden");
-
-    nextTab.classList.add("is-active");
-    nextPlays.classList.remove("is-hidden");
+    nextTab.parent().addClass('is-active');
+    nextPlays.removeClass('is-hidden');
 }
 
-window.addEventListener('hashchange', showModeAnchor);
-window.onload = function() {
-    defaultMode = getActiveTab().id.slice(4);
-    showModeAnchor();
-};
+$(document).ready(() => {
+    $('[id^="tab-"]').click(switchMode);
 
-function showEdit() {
-    var editModal = document.getElementById("modal-edit");
-    editModal.classList.add("is-active");
-}
+    $('#show-edit').click(() => {
+        $('#modal-edit').addClass('is-active');
+    });
 
-function closeEdit() {
-    var editModal = document.getElementById("modal-edit");
-    editModal.classList.remove("is-active");
-}
+    $('#close-edit').click(() => {
+        $('#modal-edit').removeClass('is-active');
+    });
 
-function saveEdit() {
-    var editForm = document.getElementById("modal-edit");
-}
-
-function closeResponse() {
-    document.getElementById("response-box").classList.add("is-hidden");
-}
+    $('#close_response').click(() => {
+        $('#response-box').addClass('is-hidden');
+    });
+});
