@@ -6,4 +6,4 @@ RUN pip install -r requirements.txt
 COPY . .
 
 ENTRYPOINT ["python"]
-CMD ["app.py"]
+CMD ["web.py"]
