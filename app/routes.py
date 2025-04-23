@@ -49,7 +49,7 @@ def index():
     return render_template("index.html", users=users, stats=global_stats)
 
 
-@app.route("/u/<int:user_id>", methods=['GET'])
+# @app.route("/u/<int:user_id>", methods=['GET'])
 def user_view_id(user_id, response=None):
     db.ping()
     with db.cursor() as cursor:
@@ -62,7 +62,7 @@ def user_view_id(user_id, response=None):
     return redirect(url_for("user_view_name", safe_name=safe_name))
 
 
-@app.route("/u/<safe_name>", methods=['GET'])
+# @app.route("/u/<safe_name>", methods=['GET'])
 def user_view_name(safe_name, response=None):
     score_data = {mode_name: {
         "scores": [],
@@ -165,7 +165,7 @@ def user_view_name(safe_name, response=None):
     )
 
 
-@app.route("/u/<safe_name>", methods=['POST'])
+# @app.route("/u/<safe_name>", methods=['POST'])
 def user_edit_name(safe_name):
     db.ping()
     with db.cursor() as cursor:
