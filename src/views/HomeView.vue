@@ -1,9 +1,5 @@
-<script setup>
-import HelloWorld from '../components/HelloWorld.vue'
-</script>
-
 <template>
-  <main>
-
-  </main>
+  <section>
+    <h2>homepage!</h2>
+  </section>
 </template>

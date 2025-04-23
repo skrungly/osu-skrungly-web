@@ -1,29 +1,32 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
   <header>
     <nav>
-      <a href="/"><img src="@/assets/logo.svg"></a>
+      <RouterLink to="/"><img src="@/assets/logo.svg"></RouterLink>
       <div class="nav__links">
-        <a href>
+        <RouterLink to="/players">
           <font-awesome-icon icon="users" />
           <span>players</span>
-        </a>
-        <a class="nav__link--disabled" href>
+        </RouterLink>
+        <RouterLink class="nav__link--disabled" to="">
           <font-awesome-icon icon="music" />
           <span>beatmaps</span>
-        </a>
-        <a class="nav__link--split nav__link--disabled" href>
+        </RouterLink>
+        <RouterLink class="nav__link--split nav__link--disabled" to="">
           <font-awesome-icon icon="right-to-bracket" />
           <span>login</span>
-        </a>
+        </RouterLink>
       </div>
     </nav>
   </header>
-  <RouterView />
+  <main>
+    <RouterView />
+  </main>
+  <footer>
+  </footer>
 </template>
 
 <style scoped>
@@ -53,10 +56,6 @@ nav {
   flex-flow: row;
   align-items: center;
   gap: 2rem;
-
-  svg {
-    margin: 0 0.5rem;
-  }
 }
 
 .nav__links {
@@ -112,9 +111,5 @@ main {
   max-width: 90%;
   margin-left: auto;
   margin-right: auto;
-
-  height: 10em;
-
-  border-radius: 0.5rem 0.5rem 0 0;
 }
 </style>
