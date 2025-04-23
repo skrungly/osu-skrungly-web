@@ -3,28 +3,33 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://kit.fontawesome.com/2aa707f633.js"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/font-awesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/font-awesome/css/solid.min.css') }}">
     <title>{% block title %}{% endblock %} - osu!skrungly</title>
   </head>
   <body>
-    {% block script %}{% endblock %}
     <header>
-      <section class="hero is-primary">
-        <div class="hero-body">
-          <a href="/">
-            <h1 class="title has-text-centered">osu!skrungly</h1>
-            <h2 class="subtitle has-text-centered">well this was a mistake but here we are</h2>
+      <nav>
+        <a href="/"><img src="{{ url_for('static', filename='logo.svg') }}"></a>
+        <div class="nav__links">
+          <a href="/players">
+            <i class="fa-solid fa-users"></i>
+            <span>players</span>
+          </a>
+          <a href="/beatmaps">
+            <i class="fa-solid fa-music"></i>
+            <span>beatmaps</span>
+          </a>
+          <a class="nav__link--split" href="/login">
+            <i class="fa-solid fa-right-to-bracket"></i>
+            <span>login</span>
           </a>
         </div>
-      </section>
-      {% block header %}{% endblock %}
+      </nav>
     </header>
-    <section class="section">
-      <div class="container">
-        {% block content %}{% endblock %}
-      </div>
-    </section>
+    <main>
+      {% block content %}{% endblock %}
+    </main>
   </body>
 </html>
