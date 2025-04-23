@@ -1,14 +1,12 @@
-FROM python:3.11-alpine
+FROM node:lts-alpine
 
-RUN apk add --no-cache npm
-RUN npm install -g sass
+# temporary, for early-stage testing
+RUN npm install -g http-server
 
-COPY requirements.txt ./
-RUN pip install -r requirements.txt
-
-COPY app/static/style app/static/style
-RUN sass --style=compressed app/static/style/style.scss app/static/style/style.css
+COPY package*.json ./
+RUN npm install
 
 COPY . .
+RUN npm run build
 
-CMD ["gunicorn", "app:app", "-b", "0.0.0.0:80"]
+CMD ["http-server", "dist", "-p", "80"]

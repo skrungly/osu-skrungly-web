@@ -1,32 +1,34 @@
-$header-height: 5em;
-$header-overlap: 3em;
+<script setup>
+import { RouterLink, RouterView } from 'vue-router'
+import HelloWorld from './components/HelloWorld.vue'
+</script>
 
-$content-border: 0.5em;
+<template>
+  <header>
+    <nav>
+      <a href="/"><img src="@/assets/logo.svg"></a>
+      <div class="nav__links">
+        <a href>
+          <font-awesome-icon icon="users" />
+          <span>players</span>
+        </a>
+        <a class="nav__link--disabled" href>
+          <font-awesome-icon icon="music" />
+          <span>beatmaps</span>
+        </a>
+        <a class="nav__link--split nav__link--disabled" href>
+          <font-awesome-icon icon="right-to-bracket" />
+          <span>login</span>
+        </a>
+      </div>
+    </nav>
+  </header>
+  <RouterView />
+</template>
 
-@font-face {
-  font-family: Aller;
-  src: url("../fonts/Aller_Rg.ttf");
-}
-
-@font-face {
-  font-family: Aller;
-  src: url("../fonts/Aller_Bd.ttf");
-  font-weight: bold;
-}
-
-body {
-  font-family: Aller, Arial, Helvetica, sans-serif;
-  margin: 0;
-
-  min-height: 100vh;
-
-  background: #242424;
-  background: linear-gradient(60deg, #1f1f1f 0%, #272727 100%);
-}
-
+<style scoped>
 header {
-  /* padding-bottom: $header-overlap; */
-  min-height: $header-height;
+  min-height: 5rem;
   font-size: 1.25rem;
   background-color: #00000020;
 
@@ -44,7 +46,7 @@ header {
 nav {
   width: 85rem;
   max-width: 90%;
-  min-height: $header-height;
+  min-height: 5rem;
   margin: 0 auto;
 
   display: flex;
@@ -52,8 +54,8 @@ nav {
   align-items: center;
   gap: 2rem;
 
-  i {
-    margin: 0 0.25rem;
+  svg {
+    margin: 0 0.5rem;
   }
 }
 
@@ -67,6 +69,11 @@ nav {
   .nav__link--split {
     margin-left: auto;
   }
+}
+
+.nav__link--disabled {
+  color: #ffffff40;
+  cursor: not-allowed;
 }
 
 @media screen and (max-width: 50em) {
@@ -101,15 +108,13 @@ nav {
 }
 
 main {
-  position: relative;
-
   width: 85rem;
   max-width: 90%;
   margin-left: auto;
   margin-right: auto;
-  margin-top: -$header-overlap;
 
   height: 10em;
 
   border-radius: 0.5rem 0.5rem 0 0;
 }
+</style>

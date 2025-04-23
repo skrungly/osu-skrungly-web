@@ -1,4 +1,3 @@
-# web.bancho.py
+# osu!skrungly web
 
-a small flask-based browser-facing web server for handling
-non-bancho requests like the home page and user profiles.
+a little website for a little osu server!
