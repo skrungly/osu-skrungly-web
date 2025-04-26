@@ -30,7 +30,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   <section>
     <div class="player-page__title">
       <h2><font-awesome-icon icon="users" />players</h2>
-      <div>
+      <div class="mode-buttons">
         <RadioButtons :options="GAME_MODES" @choose="(m) => chosenMode = m" />
       </div>
     </div>
@@ -63,6 +63,13 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
+}
+
+.mode-buttons {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 1rem;
 }
 
 .player-list {
@@ -116,6 +123,10 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   .player-page__title {
     flex-direction: column;
     gap: 1rem;
+  }
+
+  .mode-buttons {
+    gap: 0.5rem;
   }
 
   .player-list__row {
