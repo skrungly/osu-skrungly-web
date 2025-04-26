@@ -22,7 +22,7 @@ watch(choice, () => (emit("choose", choice.value)))
 <style scoped>
 button {
   color: #ffffff40;
-  padding: 0.5rem;
+  padding: 0.5rem 1rem;
 }
 
 button:hover {

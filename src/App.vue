@@ -56,7 +56,7 @@ header {
 
 nav {
   width: 85rem;
-  max-width: 90%;
+  max-width: calc(100vw - 2rem);
   min-height: 5rem;
   margin: 0 auto;
 
