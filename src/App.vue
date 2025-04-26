@@ -3,33 +3,41 @@ import { RouterLink, RouterView } from 'vue-router'
 </script>
 
 <template>
-  <header>
-    <nav>
-      <RouterLink to="/"><img src="@/assets/logo.svg"></RouterLink>
-      <div class="nav__links">
-        <RouterLink to="/players">
-          <font-awesome-icon icon="users" />
-          <span>players</span>
-        </RouterLink>
-        <RouterLink class="nav__link--disabled" to="">
-          <font-awesome-icon icon="music" />
-          <span>beatmaps</span>
-        </RouterLink>
-        <RouterLink class="nav__link--split nav__link--disabled" to="">
-          <font-awesome-icon icon="right-to-bracket" />
-          <span>login</span>
-        </RouterLink>
-      </div>
-    </nav>
-  </header>
-  <main>
-    <RouterView />
-  </main>
-  <footer>
-  </footer>
+  <div class="page">
+    <header>
+      <nav>
+        <RouterLink to="/"><img src="@/assets/logo.svg"></RouterLink>
+        <div class="nav__links">
+          <RouterLink to="/players">
+            <font-awesome-icon icon="users" />
+            <span>players</span>
+          </RouterLink>
+          <RouterLink class="nav__link--disabled" to="">
+            <font-awesome-icon icon="music" />
+            <span>beatmaps</span>
+          </RouterLink>
+          <RouterLink class="nav__link--split nav__link--disabled" to="">
+            <font-awesome-icon icon="right-to-bracket" />
+            <span>login</span>
+          </RouterLink>
+        </div>
+      </nav>
+    </header>
+    <main>
+      <RouterView />
+    </main>
+    <footer>
+    </footer>
+  </div>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 header {
   min-height: 5rem;
   font-size: 1.25rem;
@@ -107,9 +115,18 @@ nav {
 }
 
 main {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  flex-grow: 1;
+
+  margin: 1rem auto;
   width: 85rem;
-  max-width: 90%;
-  margin-left: auto;
-  margin-right: auto;
+  max-width: calc(100vw - 2rem);
+}
+
+footer {
+  min-height: 5rem;
+  background-color: #00000020;
 }
 </style>

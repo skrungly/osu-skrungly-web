@@ -22,14 +22,24 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0.5rem 0;
 }
 
+button {
+  border-radius: 0;
+  text-align: inherit;
+  background: none;
+  box-shadow: none;
+  padding: 0;
+  cursor: pointer;
+  border: none;
+  color: inherit;
+  font: inherit;
+}
+
 .svg-inline--fa {
   margin: 0 0.5rem;
 }
 
 section {
-  margin-top: 1rem;
   padding: 1rem;
-
   background-color: #00000020;
   border-radius: 0.5rem;
 }
