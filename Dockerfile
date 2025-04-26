@@ -1,7 +1,4 @@
-FROM node:lts-alpine
-
-# temporary, for early-stage testing
-RUN npm install -g http-server
+FROM node:lts-alpine AS build-stage
 
 COPY package*.json ./
 RUN npm install
@@ -9,4 +6,8 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-CMD ["http-server", "dist", "-p", "80"]
+FROM nginx:stable-alpine AS production-stage
+COPY --from=build-stage /dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+CMD ["nginx", "-g", "daemon off;"]
