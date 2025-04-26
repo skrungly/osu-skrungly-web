@@ -10,15 +10,15 @@ import { RouterLink, RouterView } from 'vue-router'
         <div class="nav__links">
           <RouterLink to="/players">
             <font-awesome-icon icon="users" />
-            <span>players</span>
+            <span>players!</span>
           </RouterLink>
           <RouterLink class="nav__link--disabled" to="">
             <font-awesome-icon icon="music" />
-            <span>beatmaps</span>
+            <span>beatmaps!</span>
           </RouterLink>
           <RouterLink class="nav__link--split nav__link--disabled" to="">
             <font-awesome-icon icon="right-to-bracket" />
-            <span>login</span>
+            <span>login!</span>
           </RouterLink>
         </div>
       </nav>

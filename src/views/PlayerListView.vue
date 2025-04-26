@@ -29,20 +29,20 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 <template>
   <section>
     <div class="player-page__title">
-      <h2><font-awesome-icon icon="users" />players</h2>
+      <h2><font-awesome-icon icon="users" />players!</h2>
       <div class="mode-buttons">
         <RadioButtons :options="GAME_MODES" @choose="(m) => chosenMode = m" />
       </div>
     </div>
     <div class="player-list">
-      <div class="player-list__row">
-        <!-- no need to label these ones -->
+      <div class="player-info">
+        <!-- this is just the table header of sorts -->
         <div class="player-info__rank"></div>
         <div class="player-info__avatar"></div>
         <div class="player-info__name"></div>
         <RadioButtons :options="SORT_MODES" @choose="(s) => chosenSort = s" />
       </div>
-      <div class="player-list__row" v-if="players" v-for="(player, index) of players.leaderboard">
+      <div class="player-info" v-if="players" v-for="(player, index) of players.leaderboard">
         <div class="player-info__rank">#{{ index + 1 }}</div>
         <div class="player-info__avatar">
           <img :src="'https://a.skrungly.dev/' + player.player_id" />
@@ -77,7 +77,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   flex-flow: column;
 }
 
-.player-list__row {
+.player-info {
   display: flex;
   align-items: center;
   gap: 1rem;
@@ -129,7 +129,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
     gap: 0.5rem;
   }
 
-  .player-list__row {
+  .player-info {
     .player-info__stat:last-of-type, button:last-of-type {
       display: none;
     }
@@ -144,12 +144,12 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   }
 }
 
-.player-list__row:hover {
+.player-info:hover {
   background-color: #ffffff10;
   transition: 0.25s;
 }
 
-.player-list__row:first-of-type:hover {
+.player-info:first-of-type:hover {
   background-color: inherit;
 }
 </style>
