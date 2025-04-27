@@ -23,6 +23,7 @@ async function fetchPlayers() {
   }
 
   players.value = await fetchFromAPI("get_leaderboard", params)
+  console.log(players.value)
 }
 
 watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
@@ -50,7 +51,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
           <img :src="'https://a.skrungly.dev/' + player.player_id" />
         </div>
         <div class="player-info__name">
-          <a :href="'/u/' + player.player_id">{{ player.name }}</a>
+          <RouterLink :to="'/u/' + player.name">{{ player.name }}</RouterLink>
         </div>
         <div class="player-info__stat">{{ player.pp }}pp</div>
         <div class="player-info__stat">{{ player.plays }}</div>
@@ -65,13 +66,6 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   align-items: center;
   justify-content: space-between;
   margin-bottom: 1rem;
-}
-
-.mode-buttons {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
-  gap: 1rem;
 }
 
 .player-list {

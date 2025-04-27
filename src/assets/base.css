@@ -43,3 +43,34 @@ section {
   background-color: #00000020;
   border-radius: 0.5rem;
 }
+
+.section__banner {
+  margin: -1rem -1rem 0rem -1rem;
+  width: calc(100% + 2rem);
+  height: calc((100vw - 2em) / 6);
+  max-height: calc(85rem / 6);
+}
+
+.section__banner img {
+  border-radius: 0.5rem 0.5rem 0 0;
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.mode-buttons {
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: center;
+  gap: 1rem;
+  margin: 1.25rem;
+}
+
+@media screen and (max-width: 35em) {
+  section {
+    h1, h2, h3, h4, h5, h6 {
+      text-align: center;
+    }
+  }
+}
