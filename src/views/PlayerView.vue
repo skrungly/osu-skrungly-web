@@ -45,7 +45,7 @@ onMounted(async () => {
 <template>
   <section v-if="playerInfo">
     <div class="section__banner">
-      <img src="https://kingsley.skrungly.com/static/gallery/IMG_0778.JPG" />
+      <img src="@/assets/default-banner.jpg" />
     </div>
     <div class="userpage-header">
       <div class="userpage-identity">
