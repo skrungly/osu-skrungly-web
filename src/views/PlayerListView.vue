@@ -40,7 +40,6 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
           :content="mode"
           @click="() => chosenMode = index"
         />
-        <!-- <RadioButtons :options="GAME_MODES"  /> -->
       </div>
     </div>
     <div class="player-list">
@@ -56,7 +55,6 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
           :content="sort"
           @click="() => chosenSort = sort"
         />
-        <!-- <RadioButtons :options="SORT_MODES" @choose="(s) => chosenSort = s" /> -->
       </div>
       <div class="player-info" v-if="players" v-for="(player, index) of players.leaderboard">
         <div class="player-info__rank">#{{ index + 1 }}</div>
@@ -66,8 +64,8 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         <div class="player-info__name">
           <RouterLink :to="'/u/' + player.name">{{ player.name }}</RouterLink>
         </div>
-        <div class="player-info__stat">{{ player.pp }}pp</div>
-        <div class="player-info__stat">{{ player.plays }}</div>
+        <div class="player-info__stat">{{ player.pp.toLocaleString() }}pp</div>
+        <div class="player-info__stat">{{ player.plays.toLocaleString() }}</div>
       </div>
     </div>
   </section>
@@ -134,6 +132,8 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   }
 
   .player-info {
+    padding: 0.25rem;
+
     .player-info__stat:last-of-type, button:last-of-type {
       display: none;
     }
