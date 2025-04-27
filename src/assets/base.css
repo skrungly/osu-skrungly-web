@@ -1,3 +1,15 @@
+:root {
+  --content-width: 85rem;
+  --border-radius: 0.5rem;
+
+  --section-margin: 1rem;
+  --section-padding: 1rem;
+  --button-padding: 0.5rem;
+  --header-height: 5rem;
+
+  --block-bg-colour: #00000020;
+}
+
 @font-face {
   font-family: Aller;
   src: url("./fonts/Aller_Rg.ttf");
@@ -39,20 +51,23 @@ button {
 }
 
 section {
-  padding: 1rem;
-  background-color: #00000020;
-  border-radius: 0.5rem;
+  padding: var(--section-padding);
+  background-color: var(--block-bg-colour);
+  border-radius: var(--border-radius);
+  --section-banner-width-to-height: 6 / 1
 }
 
 .section__banner {
-  margin: -1rem -1rem 0rem -1rem;
-  width: calc(100% + 2rem);
-  height: calc((100vw - 2em) / 6);
-  max-height: calc(85rem / 6);
+  margin: calc(-1 * var(--section-padding));
+  margin-bottom: 0;
+
+  width: calc(100% + 2 * var(--section-padding));
+  height: calc((100vw - 2 * var(--section-padding)) / 6);
+  max-height: calc(var(--content-width) / 6);
 }
 
 .section__banner img {
-  border-radius: 0.5rem 0.5rem 0 0;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
   height: 100%;
   width: 100%;
   object-fit: cover;

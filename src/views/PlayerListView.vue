@@ -78,7 +78,6 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1rem;
 }
 
 .player-list {
@@ -123,7 +122,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
     img {
       width: 100%;
       display: block;
-      border-radius: 0.5rem;
+      border-radius: var(--border-radius);
     }
   }
 }
@@ -132,10 +131,6 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   .player-page__title {
     flex-direction: column;
     gap: 1rem;
-  }
-
-  .mode-buttons {
-    gap: 0.5rem;
   }
 
   .player-info {
@@ -154,7 +149,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 }
 
 .player-info:hover {
-  background-color: #ffffff10;
+  background-color: #ffffff04;
   transition: 0.25s;
 }
 

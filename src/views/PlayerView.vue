@@ -84,16 +84,16 @@ onMounted(async () => {
 }
 
 .userpage-identity {
-  height: 5rem;
+  height: var(--header-height);
   display: flex;
   flex-direction: row;
   align-items: center;
   gap: 1rem;
 
   img {
-    height: 8rem;
+    max-height: 8rem;
     margin-top: -3rem;
-    border-radius: 0.5rem;
+    border-radius: var(--border-radius);
     box-shadow: 0 2px 16px #00000080;
   }
 
@@ -120,11 +120,11 @@ onMounted(async () => {
 
 .mode-buttons {
   position: absolute;
-  right: 0.25rem;
-  top: 1.25rem;
+  right: 0.75rem;
+  top: 1.5rem;
 }
 
-@media screen and (max-width: 40em) {
+@media screen and (max-width: 35em) {
   .userpage-header {
     padding-bottom: 3rem;
   }
@@ -134,9 +134,10 @@ onMounted(async () => {
     height: auto;
 
     img {
-      height: calc(100vw / 5);
-      min-height: 4rem;
-      margin-top: calc(100vw / 5 * (-3 / 8));
+      --adjusted-height: calc(100vw / 5);
+
+      height: var(--adjusted-height);
+      margin-top: calc(var(--adjusted-height) * -3 / 8);
     }
   }
 

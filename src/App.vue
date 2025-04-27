@@ -40,12 +40,12 @@ import { RouterLink, RouterView } from 'vue-router'
 }
 
 header {
-  min-height: 5rem;
+  min-height: var(--header-height);
   font-size: 1.25rem;
-  background-color: #00000020;
+  background-color: var(--block-bg-colour);
 
   a {
-    padding: 0.5rem;
+    padding: var(--button-padding);
     text-decoration: none;
     color: #ffffff;
   }
@@ -56,9 +56,9 @@ header {
 }
 
 nav {
-  width: 85rem;
-  max-width: calc(100vw - 2rem);
-  min-height: 5rem;
+  width: var(--content-width);
+  max-width: calc(100vw - 2 * var(--section-padding));
+  min-height: var(--header-height);
   margin: 0 auto;
 
   display: flex;
@@ -100,7 +100,7 @@ nav {
 
 @media screen and (max-width: 35em) {
   header {
-    padding: 0.75rem;
+    padding: var(--section-padding);
   }
 
   nav {
@@ -118,16 +118,16 @@ nav {
 main {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--section-margin);
   flex-grow: 1;
 
-  margin: 1rem auto;
-  width: 85rem;
-  max-width: calc(100vw - 2rem);
+  margin: var(--section-margin) auto;
+  width: var(--content-width);
+  max-width: calc(100vw - 2 * var(--section-margin));
 }
 
 footer {
-  min-height: 5rem;
-  background-color: #00000020;
+  min-height: var(--header-height);
+  background-color: var(--block-bg-colour);
 }
 </style>
