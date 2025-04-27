@@ -32,7 +32,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   <section>
     <div class="player-page__title">
       <h2><FontAwesomeIcon icon="users" />players!</h2>
-      <div class="mode-buttons">
+      <div>
         <RadioButton
           v-for="(mode, index) of GAME_MODES"
           :state="chosenMode"

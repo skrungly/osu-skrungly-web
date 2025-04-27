@@ -18,7 +18,7 @@ const buttonStyle = computed(() => ({
 <style scoped>
 button {
   color: #ffffff40;
-  padding: 0.25rem;
+  padding: 0.5rem;
 }
 
 button:hover {

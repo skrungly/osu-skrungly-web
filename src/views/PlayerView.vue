@@ -88,7 +88,6 @@ onMounted(async () => {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin-top: 0.75rem;
   gap: 1rem;
 
   img {
@@ -121,11 +120,11 @@ onMounted(async () => {
 
 .mode-buttons {
   position: absolute;
-  right: 0;
+  right: 0.25rem;
   top: 1.25rem;
 }
 
-@media screen and (max-width: 45em) {
+@media screen and (max-width: 40em) {
   .userpage-header {
     padding-bottom: 3rem;
   }
@@ -136,6 +135,8 @@ onMounted(async () => {
 
     img {
       height: calc(100vw / 5);
+      min-height: 4rem;
+      margin-top: calc(100vw / 5 * (-3 / 8));
     }
   }
 
@@ -145,7 +146,7 @@ onMounted(async () => {
 
   .mode-buttons {
     top: auto;
-    bottom: -1rem;
+    bottom: 0;
     left: 0;
     right: 0;
 
