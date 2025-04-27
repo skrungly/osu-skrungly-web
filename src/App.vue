@@ -1,4 +1,5 @@
 <script setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { RouterLink, RouterView } from 'vue-router'
 </script>
 
@@ -9,15 +10,15 @@ import { RouterLink, RouterView } from 'vue-router'
         <RouterLink to="/"><img src="@/assets/logo.svg"></RouterLink>
         <div class="nav__links">
           <RouterLink to="/players">
-            <font-awesome-icon icon="users" />
+            <FontAwesomeIcon icon="users" />
             <span>players!</span>
           </RouterLink>
           <RouterLink class="nav__link--disabled" to="">
-            <font-awesome-icon icon="music" />
+            <FontAwesomeIcon icon="music" />
             <span>beatmaps!</span>
           </RouterLink>
           <RouterLink class="nav__link--split nav__link--disabled" to="">
-            <font-awesome-icon icon="right-to-bracket" />
+            <FontAwesomeIcon icon="right-to-bracket" />
             <span>login!</span>
           </RouterLink>
         </div>

@@ -1,6 +1,8 @@
 <script setup>
 import { ref, watch } from 'vue'
 
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
+
 import { fetchFromAPI } from '../api'
 import RadioButtons from '../components/RadioButtons.vue'
 
@@ -29,7 +31,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 <template>
   <section>
     <div class="player-page__title">
-      <h2><font-awesome-icon icon="users" />players!</h2>
+      <h2><FontAwesomeIcon icon="users" />players!</h2>
       <div class="mode-buttons">
         <RadioButtons :options="GAME_MODES" @choose="(m) => chosenMode = m" />
       </div>
