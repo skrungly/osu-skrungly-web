@@ -3,7 +3,7 @@ import { onMounted, reactive, ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
 import { fetchFromAPI } from "../api"
-import RadioButtons from "@/components/RadioButtons.vue"
+import RadioButton from "@/components/RadioButton.vue"
 
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
 
@@ -18,9 +18,10 @@ if (/^\d+$/.test(routeParams.id)) {
   apiParams.name = routeParams.id
 }
 
-const playerInfoResponse = ref(null)
-const playerModes = reactive({})
-const currentMode = ref("osu!")
+const playerInfo = ref(null)
+const playerStats = ref(null)
+const playerModes = {}
+const currentMode = ref(0)
 
 const userpageContentHidden = ref(true)
 const userpageContentStyle = reactive({
@@ -28,38 +29,49 @@ const userpageContentStyle = reactive({
 })
 
 onMounted(async () => {
-  playerInfoResponse.value = await fetchFromAPI("get_player_info", apiParams)
-  for (const stats of Object.values(playerInfoResponse.value.player.stats)) {
-    const modeName = GAME_MODES[stats.mode]
-    if (stats.pp && modeName) playerModes[modeName] = stats
+  const response = await fetchFromAPI("get_player_info", apiParams)
+
+  for (const stats of Object.values(response.player.stats)) {
+    if (stats.mode < GAME_MODES.length && stats.pp) {
+      playerModes[stats.mode] = stats
+    }
   }
+
+  playerInfo.value = response.player.info
+  playerStats.value = response.player.stats
 })
 </script>
 
 <template>
-  <section v-if="playerInfoResponse">
+  <section v-if="playerInfo">
     <div class="section__banner">
       <img src="https://kingsley.skrungly.com/static/gallery/IMG_0778.JPG" />
     </div>
     <div class="userpage-header">
       <div class="userpage-identity">
-        <img :src="'https://a.skrungly.dev/' + playerInfoResponse.player.info.id" />
-        <span class="userpage-identity__name">{{ playerInfoResponse.player.info.name }}</span>
+        <img :src="'https://a.skrungly.dev/' + playerInfo.id" />
+        <span class="userpage-identity__name">{{ playerInfo.name }}</span>
       </div>
       <div
         class="userpage-content"
         :class="userpageContentStyle"
         @click="() => userpageContentHidden = !userpageContentHidden"
       >
-        {{ playerInfoResponse.player.info.userpage_content }}
+        {{ playerInfo.userpage_content }}
       </div>
       <div class="mode-buttons">
-        <RadioButtons :options="Object.keys(playerModes)" @choose="(m) => currentMode = GAME_MODES[m]"/>
+        <RadioButton
+          v-for="mode in Object.keys(playerModes)"
+          :state="currentMode"
+          :option="mode"
+          :content="GAME_MODES[mode]"
+          @click="() => currentMode = mode"
+        />
       </div>
     </div>
   </section>
-  <section v-if="playerInfoResponse">
-    <h1>{{ currentMode }} stats</h1>
+  <section v-if="playerStats">
+    <h1>{{ GAME_MODES[currentMode] }} stats</h1>
   </section>
 </template>
 
@@ -113,7 +125,7 @@ onMounted(async () => {
   top: 1.25rem;
 }
 
-@media screen and (max-width: 40em) {
+@media screen and (max-width: 45em) {
   .userpage-header {
     padding-bottom: 3rem;
   }

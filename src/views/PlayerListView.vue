@@ -4,13 +4,13 @@ import { ref, watch } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import { fetchFromAPI } from '../api'
-import RadioButtons from '../components/RadioButtons.vue'
+import RadioButton from '@/components/RadioButton.vue'
 
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
 const SORT_MODES = ["pp", "plays"]
 
 const chosenMode = ref(0)
-const chosenSort = ref(0)
+const chosenSort = ref("pp")
 
 const players = ref(null)
 
@@ -19,11 +19,10 @@ async function fetchPlayers() {
 
   const params = {
     "mode": chosenMode.value,
-    "sort": SORT_MODES[chosenSort.value]
+    "sort": chosenSort.value
   }
 
   players.value = await fetchFromAPI("get_leaderboard", params)
-  console.log(players.value)
 }
 
 watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
@@ -34,7 +33,14 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
     <div class="player-page__title">
       <h2><FontAwesomeIcon icon="users" />players!</h2>
       <div class="mode-buttons">
-        <RadioButtons :options="GAME_MODES" @choose="(m) => chosenMode = m" />
+        <RadioButton
+          v-for="(mode, index) of GAME_MODES"
+          :state="chosenMode"
+          :option="index"
+          :content="mode"
+          @click="() => chosenMode = index"
+        />
+        <!-- <RadioButtons :options="GAME_MODES"  /> -->
       </div>
     </div>
     <div class="player-list">
@@ -43,7 +49,14 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         <div class="player-info__rank"></div>
         <div class="player-info__avatar"></div>
         <div class="player-info__name"></div>
-        <RadioButtons :options="SORT_MODES" @choose="(s) => chosenSort = s" />
+        <RadioButton
+          v-for="sort of SORT_MODES"
+          :state="chosenSort"
+          :option="sort"
+          :content="sort"
+          @click="() => chosenSort = sort"
+        />
+        <!-- <RadioButtons :options="SORT_MODES" @choose="(s) => chosenSort = s" /> -->
       </div>
       <div class="player-info" v-if="players" v-for="(player, index) of players.leaderboard">
         <div class="player-info__rank">#{{ index + 1 }}</div>
