@@ -2,10 +2,17 @@
 import { onMounted, reactive, ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
-import { fetchFromAPI } from "../api"
+import { fetchFromAPI } from "@/api"
 import RadioButton from "@/components/RadioButton.vue"
+import ScoreList from "@/components/ScoreList.vue"
 
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
+const SHOW_STATS = {
+  pp: "pp",
+  plays: "plays",
+  total_hits: "notes hit",
+  rscore: "ranked score",
+}
 
 const routeParams = useRoute().params
 const apiParams = { scope: "all" }
@@ -20,7 +27,7 @@ if (/^\d+$/.test(routeParams.id)) {
 
 const playerInfo = ref(null)
 const playerStats = ref(null)
-const playerModes = {}
+const playerModes = []
 const currentMode = ref(0)
 
 const userpageContentHidden = ref(true)
@@ -33,7 +40,7 @@ onMounted(async () => {
 
   for (const stats of Object.values(response.player.stats)) {
     if (stats.mode < GAME_MODES.length && stats.pp) {
-      playerModes[stats.mode] = stats
+      playerModes.push(stats.mode)
     }
   }
 
@@ -61,7 +68,7 @@ onMounted(async () => {
       </div>
       <div class="mode-buttons">
         <RadioButton
-          v-for="mode in Object.keys(playerModes)"
+          v-for="mode in playerModes"
           :state="currentMode"
           :option="mode"
           :content="GAME_MODES[mode]"
@@ -70,8 +77,14 @@ onMounted(async () => {
       </div>
     </div>
   </section>
-  <section v-if="playerStats">
-    <h1>{{ GAME_MODES[currentMode] }} stats</h1>
+  <section v-if="playerStats" class="container">
+    <div v-for="[stat, name] in Object.entries(SHOW_STATS)" class="stats">
+      <span class="stats__name">{{ name }}</span>
+      <span class="stats__value">{{ playerStats[currentMode][stat].toLocaleString() }}</span>
+    </div>
+  </section>
+  <section v-if="playerInfo">
+    <ScoreList :player="playerInfo.id" :mode="currentMode" scope="best" />
   </section>
 </template>
 
