@@ -23,7 +23,8 @@ async function fetchPlayers() {
 
   const params = {
     "mode": chosenMode.value,
-    "sort": chosenSort.value
+    "sort": chosenSort.value,
+    "limit": 100,
   }
 
   try {
