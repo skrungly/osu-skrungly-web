@@ -22,7 +22,7 @@ async function fetchPlayers() {
     "sort": chosenSort.value
   }
 
-  players.value = await fetchFromAPI("get_leaderboard", params)
+  players.value = await fetchFromAPI("/leaderboard", params)
 }
 
 watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
@@ -56,10 +56,10 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
           @click="() => chosenSort = sort"
         />
       </div>
-      <div class="player-info" v-if="players" v-for="(player, index) of players.leaderboard">
+      <div class="player-info" v-if="players" v-for="(player, index) of players">
         <div class="player-info__rank">#{{ index + 1 }}</div>
         <div class="player-info__avatar">
-          <img :src="'https://a.skrungly.dev/' + player.player_id" />
+          <img :src="'https://a.skrungly.dev/' + player.id" />
         </div>
         <div class="player-info__name">
           <RouterLink :to="'/u/' + player.name">{{ player.name }}</RouterLink>

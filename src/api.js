@@ -1,4 +1,4 @@
-const API_URL = "https://api.skrungly.dev/v1/"
+const API_URL = "https://api.skrungly.dev"
 
 export async function fetchFromAPI(endpoint, params) {
     const request_url = API_URL + endpoint + "?" + new URLSearchParams(params).toString()

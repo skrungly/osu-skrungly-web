@@ -15,15 +15,6 @@ const SHOW_STATS = {
 }
 
 const routeParams = useRoute().params
-const apiParams = { scope: "all" }
-
-// we may be given a username or numeric id, and the
-// bancho.py api offers options for either one:
-if (/^\d+$/.test(routeParams.id)) {
-  apiParams.id = routeParams.id
-} else {
-  apiParams.name = routeParams.id
-}
 
 const playerInfo = ref(null)
 const playerStats = ref(null)
@@ -36,16 +27,16 @@ const userpageContentStyle = reactive({
 })
 
 onMounted(async () => {
-  const response = await fetchFromAPI("get_player_info", apiParams)
+  const response = await fetchFromAPI("/players/" + routeParams.id)
 
-  for (const stats of Object.values(response.player.stats)) {
+  for (const stats of response.stats) {
     if (stats.mode < GAME_MODES.length && stats.pp) {
       playerModes.push(stats.mode)
     }
   }
 
-  playerInfo.value = response.player.info
-  playerStats.value = response.player.stats
+  playerInfo.value = response
+  playerStats.value = response.stats
 })
 </script>
 
@@ -84,7 +75,10 @@ onMounted(async () => {
     </div>
   </section>
   <section v-if="playerInfo">
-    <ScoreList :player="playerInfo.id" :mode="currentMode" scope="best" />
+    <ScoreList :player="playerInfo.id" :mode="currentMode" sort="pp" />
+  </section>
+  <section v-if="playerInfo">
+    <ScoreList :player="playerInfo.id" :mode="currentMode" sort="recent" />
   </section>
 </template>
 
