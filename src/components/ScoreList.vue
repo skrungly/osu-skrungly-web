@@ -62,7 +62,7 @@ watch([player, mode], refreshScores, { immediate: true })
       :rank="props.sort == 'pp' ? index + 1 : null"
     />
     <button @click="fetchScores" class="load-button" :class="buttonStyle">
-      <FontAwesomeIcon icon="caret-down" /> load more <FontAwesomeIcon icon="caret-down" />
+      <FontAwesomeIcon icon="caret-down" /> load {{ LOAD_PER_CHUNK }} more <FontAwesomeIcon icon="caret-down" />
     </button>
   </div>
 </template>
@@ -76,7 +76,7 @@ watch([player, mode], refreshScores, { immediate: true })
 }
 
 .load-button {
-  padding: 1em;
+  padding: 0.25rem;
   border-radius: var(--border-radius);
   margin: auto;
 }

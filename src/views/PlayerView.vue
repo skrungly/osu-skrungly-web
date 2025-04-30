@@ -14,10 +14,8 @@ const SHOW_STATS = {
   rscore: "ranked score",
 }
 
-const routeParams = useRoute().params
-
+const player = useRoute().params.id
 const playerInfo = ref(null)
-const playerStats = ref(null)
 const playerModes = []
 const currentMode = ref(0)
 
@@ -27,7 +25,7 @@ const userpageContentStyle = reactive({
 })
 
 onMounted(async () => {
-  const response = await fetchFromAPI("/players/" + routeParams.id)
+  const response = await fetchFromAPI(`/players/${player}`)
 
   for (const stats of response.stats) {
     if (stats.mode < GAME_MODES.length && stats.pp) {
@@ -36,7 +34,6 @@ onMounted(async () => {
   }
 
   playerInfo.value = response
-  playerStats.value = response.stats
 })
 </script>
 
@@ -68,10 +65,10 @@ onMounted(async () => {
       </div>
     </div>
   </section>
-  <section v-if="playerStats" class="container">
+  <section v-if="playerInfo" class="container">
     <div v-for="[stat, name] in Object.entries(SHOW_STATS)" class="stats">
       <span class="stats__name">{{ name }}</span>
-      <span class="stats__value">{{ playerStats[currentMode][stat].toLocaleString() }}</span>
+      <span class="stats__value">{{ playerInfo.stats[currentMode][stat].toLocaleString() }}</span>
     </div>
   </section>
   <section v-if="playerInfo">
