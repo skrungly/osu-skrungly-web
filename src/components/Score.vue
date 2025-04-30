@@ -103,7 +103,8 @@ const modString = getModString()
   height: 4rem;
 
   img {
-    width: 100%;
+    width: 4rem;
+    height: 3rem;
     vertical-align: bottom;
     border-radius: var(--border-radius) var(--border-radius) 0 0;
   }
@@ -216,6 +217,7 @@ const modString = getModString()
 .score__pp {
   text-align: right;
   align-self: center;
+  font-size: 1.25rem;
 }
 
 @media screen and (max-width: 35em) {

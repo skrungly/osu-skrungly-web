@@ -16,17 +16,7 @@ const buttonStyle = computed(() => ({
 </template>
 
 <style scoped>
-button {
-  color: #ffffff40;
-  padding: 0.5rem;
-}
-
-button:hover {
-  color: #ffffff60;
-  transition: 0.25s;
-}
-
-button.radio-button--chosen {
+.radio-button--chosen {
   color: #ffffff;
 }
 </style>
