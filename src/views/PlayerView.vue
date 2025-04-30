@@ -63,13 +63,13 @@ onMounted(async () => {
         <img :src="`${AVATAR_URL}/${playerInfo.id}`" />
         <span class="userpage-identity__name">{{ playerInfo.name }}</span>
       </div>
-      <div
+      <q
         class="userpage-content"
         :class="userpageContentStyle"
         @click="() => userpageContentHidden = !userpageContentHidden"
       >
         {{ playerInfo.userpage_content }}
-      </div>
+      </q>
       <div class="mode-buttons">
         <RadioButton
           v-for="mode in playerModes"
