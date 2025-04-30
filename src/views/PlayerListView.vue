@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue'
+import { reactive, ref, watch } from 'vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -13,17 +13,22 @@ const chosenMode = ref(0)
 const chosenSort = ref("pp")
 
 const players = ref(null)
+const loading = ref(false)
 
 async function fetchPlayers() {
-  players.value = null
+  loading.value = true
 
   const params = {
     "mode": chosenMode.value,
     "sort": chosenSort.value
   }
 
-  players.value = await fetchFromAPI("/leaderboard", params)
+  const response = await fetchFromAPI("/leaderboard", params)
+  loading.value = false
+  players.value = response
 }
+
+const loadingStyle = reactive({ "loading": loading })
 
 watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 </script>
@@ -42,7 +47,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         />
       </div>
     </div>
-    <div class="player-list">
+    <div class="player-list" :class="loadingStyle">
       <div class="player-info">
         <!-- this is just the table header of sorts -->
         <div class="player-info__rank"></div>

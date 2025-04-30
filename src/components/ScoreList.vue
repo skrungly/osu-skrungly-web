@@ -15,15 +15,15 @@ const LOAD_PER_CHUNK = 10
 const scores = reactive([])
 const page = ref(0)
 const loadMore = ref(true)
+const loading = ref(false)
 
-async function refreshScores() {
-  scores.length = 0
-  page.value = 0
-  loadMore.value = true
-  await fetchScores()
-}
+async function fetchScores(refresh=false) {
+  if (refresh) {
+    page.value = 0
+    loadMore.value = true
+    loading.value = true;
+  }
 
-async function fetchScores() {
   if (!loadMore.value || player.value === null) return
 
   const params = {
@@ -41,27 +41,34 @@ async function fetchScores() {
     page.value += 1
   }
 
+  if (refresh) {
+    scores.length = 0
+  }
+
   scores.push(...response)
+  loading.value = false
 }
 
 const buttonStyle = computed(() => ({
   "load-button--hidden": !loadMore.value
 }))
 
-watch([player, mode], refreshScores, { immediate: true })
+const loadingStyle = reactive({ "loading": loading })
+
+watch([player, mode], () => fetchScores(true), { immediate: true })
 </script>
 
 <template>
   <h2 v-if="props.sort == 'pp'"><FontAwesomeIcon icon="trophy" />top plays</h2>
   <h2 v-if="props.sort == 'recent'"><FontAwesomeIcon icon="clock-rotate-left" />recent plays</h2>
-  <div class="score-list">
+  <div class="score-list" :class="loadingStyle">
     <Score
       v-if="scores.length"
       v-for="(score, index) in scores"
       :score="score"
       :rank="props.sort == 'pp' ? index + 1 : null"
     />
-    <button @click="fetchScores" class="load-button" :class="buttonStyle">
+    <button @click="() => fetchScores(false)" class="load-button" :class="buttonStyle">
       <FontAwesomeIcon icon="caret-down" /> load {{ LOAD_PER_CHUNK }} more <FontAwesomeIcon icon="caret-down" />
     </button>
   </div>

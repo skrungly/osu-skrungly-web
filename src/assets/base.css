@@ -126,3 +126,9 @@ section {
     flex-flow: column;
   }
 }
+
+.loading {
+  opacity: 40%;
+  pointer-events: none;
+  transition: opacity 0.5s;
+}
