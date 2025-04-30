@@ -51,8 +51,6 @@ function getModString() {
 
   return "+" + mods.join("")
 }
-
-const modString = getModString()
 </script>
 
 <template>
@@ -73,7 +71,7 @@ const modString = getModString()
         <span class="score__diff">
           [<span class="score__info--truncate">{{ score.beatmap.version }}</span>]
         </span>
-        <span class="score__mods score__info--secondary">{{ modString }}</span>
+        <span class="score__mods score__info--secondary">{{ getModString() }}</span>
       </div>
       <div class="score__info--secondary score__info--truncate">
         played {{ new Date(Date.parse(score.play_time)).toLocaleDateString() }}
