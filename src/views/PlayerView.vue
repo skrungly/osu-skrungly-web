@@ -6,6 +6,7 @@ import { fetchFromAPI } from "@/api"
 import RadioButton from "@/components/RadioButton.vue"
 import ScoreList from "@/components/ScoreList.vue"
 
+const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
 const SHOW_STATS = {
   pp: "pp",
@@ -44,7 +45,7 @@ onMounted(async () => {
     </div>
     <div class="userpage-header">
       <div class="userpage-identity">
-        <img :src="'https://a.skrungly.dev/' + playerInfo.id" />
+        <img :src="`${AVATAR_URL}/${playerInfo.id}`" />
         <span class="userpage-identity__name">{{ playerInfo.name }}</span>
       </div>
       <div
