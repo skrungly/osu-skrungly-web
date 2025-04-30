@@ -52,8 +52,6 @@ header {
 
   h1 {
     font-size: 2rem;
-    margin-top: 0.2rem;
-
     background-color: #ffffff00;
     background-image: linear-gradient(30deg, #ffff00 -20%, #ff00ff 135%);
     background-size: 100%;
