@@ -28,6 +28,9 @@ import { RouterLink, RouterView } from 'vue-router'
       <RouterView />
     </main>
     <footer>
+      <a href="https://github.com/skrungly/osu-skrungly"><FontAwesomeIcon icon="code" />source</a>
+      |
+      <img src="https://cronitor.io/badges/1VWGlD/production/oFMDB4n4aHcqPp9uaJWugntGQ5I.svg"></img>
     </footer>
   </div>
 </template>
@@ -135,6 +138,12 @@ main {
 }
 
 footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  color: #ffffff80;
+
   min-height: var(--header-height);
   background-color: var(--block-bg-colour);
 }
