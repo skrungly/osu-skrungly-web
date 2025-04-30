@@ -19,6 +19,7 @@ const player = useRoute().params.id
 const playerInfo = ref(null)
 const playerModes = []
 const currentMode = ref(0)
+const error = ref(null)
 
 const userpageContentHidden = ref(true)
 const userpageContentStyle = reactive({
@@ -26,7 +27,13 @@ const userpageContentStyle = reactive({
 })
 
 onMounted(async () => {
-  const response = await fetchFromAPI(`/players/${player}`)
+  error.value = null
+
+  try {
+    var response = await fetchFromAPI(`/players/${player}`)
+  } catch (e) {
+    error.value = e
+  }
 
   for (const stats of response.stats) {
     if (stats.mode < GAME_MODES.length && stats.pp) {
@@ -39,6 +46,9 @@ onMounted(async () => {
 </script>
 
 <template>
+  <div v-if="error" class="message message--error">
+    oops :( an error occurred while fetching player info. <span class="error-text">[{{ error }}]</span>
+  </div>
   <section v-if="playerInfo">
     <div class="section__banner">
       <img src="@/assets/default-banner.jpg" />

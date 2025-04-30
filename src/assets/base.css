@@ -132,3 +132,19 @@ section {
   pointer-events: none;
   transition: opacity 0.5s;
 }
+
+.message {
+  padding: var(--section-padding);
+  border-radius: var(--border-radius);
+  background-color: var(--block-bg-colour);
+}
+
+.message--error {
+  background-color: #ff4848c0;
+}
+
+.error-text {
+  font-family: monospace;
+  font-size: 1rem;
+  margin: 0.5rem;
+}

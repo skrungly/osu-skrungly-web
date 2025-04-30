@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { fetchFromAPI } from '../api'
 import RadioButton from '@/components/RadioButton.vue'
 
+const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
 const SORT_MODES = ["pp", "plays"]
 
@@ -14,18 +15,25 @@ const chosenSort = ref("pp")
 
 const players = ref(null)
 const loading = ref(false)
+const error = ref(null)
 
 async function fetchPlayers() {
   loading.value = true
+  error.value = null
 
   const params = {
     "mode": chosenMode.value,
     "sort": chosenSort.value
   }
 
-  const response = await fetchFromAPI("/leaderboard", params)
+  try {
+    var response = await fetchFromAPI("/leaderboard", params)
+  } catch (e) {
+    error.value = e
+  }
+
   loading.value = false
-  players.value = response
+  if (response) players.value = response
 }
 
 const loadingStyle = reactive({ "loading": loading })
@@ -34,6 +42,9 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 </script>
 
 <template>
+  <div v-if="error" class="message message--error">
+    oops :( an error occurred while fetching player list. <span class="error-text">[{{ error }}]</span>
+  </div>
   <section>
     <div class="player-page__title">
       <h2><FontAwesomeIcon icon="users" />players!</h2>
@@ -64,7 +75,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
       <div class="player-info" v-if="players" v-for="(player, index) of players">
         <div class="player-info__rank">#{{ index + 1 }}</div>
         <div class="player-info__avatar">
-          <img :src="'https://a.skrungly.dev/' + player.id" />
+          <img :src="`${AVATAR_URL}/${player.id}`" />
         </div>
         <div class="player-info__name">
           <RouterLink :to="'/u/' + player.name">{{ player.name }}</RouterLink>
