@@ -35,8 +35,13 @@ onMounted(async () => {
     error.value = e
   }
 
+  var bestPerformance = 0
   for (const stats of response.stats) {
     if (stats.mode < GAME_MODES.length && stats.pp) {
+      if (stats.pp > bestPerformance) {
+        bestPerformance = stats.pp
+        currentMode.value = stats.mode
+      }
       playerModes.push(stats.mode)
     }
   }
