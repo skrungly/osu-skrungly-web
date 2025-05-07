@@ -17,7 +17,7 @@ import { RouterLink, RouterView } from 'vue-router'
             <FontAwesomeIcon icon="music" />
             <span>beatmaps!</span>
           </RouterLink>
-          <RouterLink class="nav__link--split nav__link--disabled" to="">
+          <RouterLink class="nav__link--split" to="/login">
             <FontAwesomeIcon icon="right-to-bracket" />
             <span>login!</span>
           </RouterLink>
