@@ -75,8 +75,9 @@ section {
   margin: calc(-1 * var(--section-padding));
   margin-bottom: 0;
 
-  width: calc(100% + 2 * var(--section-padding));
-  height: calc((100vw - 2 * var(--section-padding)) / 6);
+  --width: calc(100% + 2 * var(--section-padding));
+  width: var(--width);
+  height: calc(var(--width) / 6);
   max-height: calc(var(--content-width) / 6);
 }
 
