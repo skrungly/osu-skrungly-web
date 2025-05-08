@@ -1,6 +1,14 @@
 <script setup>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { RouterLink, RouterView } from 'vue-router'
+import { reactive, ref } from "vue"
+
+import LoginModal from '@/components/LoginModal.vue'
+
+const hideLogin = ref(true)
+const modalStyle = reactive({
+  "modal--hidden": hideLogin
+})
 </script>
 
 <template>
@@ -17,10 +25,10 @@ import { RouterLink, RouterView } from 'vue-router'
             <FontAwesomeIcon icon="music" />
             <span>beatmaps!</span>
           </RouterLink>
-          <RouterLink class="nav__link--split" to="/login">
+          <a @click="() => hideLogin = false" class="nav__link--split">
             <FontAwesomeIcon icon="right-to-bracket" />
             <span>login!</span>
-          </RouterLink>
+          </a>
         </div>
       </nav>
     </header>
@@ -32,6 +40,9 @@ import { RouterLink, RouterView } from 'vue-router'
       |
       <img src="https://cronitor.io/badges/1VWGlD/production/oFMDB4n4aHcqPp9uaJWugntGQ5I.svg"></img>
     </footer>
+    <div @click="() => hideLogin = true" class="modal" :class="modalStyle">
+      <LoginModal v-on:click.stop />
+    </div>
   </div>
 </template>
 
@@ -84,6 +95,10 @@ nav {
   gap: 2rem;
 
   flex-grow: 1;
+
+  a {
+    cursor: pointer;
+  }
 
   .nav__link--split {
     margin-left: auto;
