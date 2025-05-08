@@ -40,7 +40,7 @@ watch(username, checkUsername)
 </script>
 
 <template>
-  <section class="login">
+  <section>
     <div class="section__banner">
       <img src="@/assets/default-banner.jpg" />
       <div class="avatar-preview" :class="avatarStyle">
@@ -60,13 +60,19 @@ watch(username, checkUsername)
     <label for="password">password</label>
     <br/>
     <input v-model="password" id="password" type="password">
+    <br/>
+    <button>
+      login
+    </button>
   </section>
 </template>
 
 <style lang="scss" scoped>
-.login {
-  width: 20rem;
-  margin: auto;
+section {
+  width: 18rem;
+  margin-left: var(--section-margin);
+  margin-right: var(--section-margin);
+  box-shadow: 0 2px 16px #00000020;
 }
 
 .section__banner {
@@ -91,6 +97,7 @@ watch(username, checkUsername)
 
     img {
       border-radius: var(--border-radius);
+      box-shadow: 0 2px 16px #00000080;
       width: 100%;
     }
   }
@@ -99,7 +106,7 @@ watch(username, checkUsername)
     opacity: 0%;
     top: 1.5rem;
     transition:
-      top 0.5s ease,
+      top 0s ease 0.5s,
       opacity 0.5s ease;
   }
 }
