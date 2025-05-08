@@ -1,9 +1,11 @@
 <script setup>
 import { reactive, ref, watch } from "vue"
 
-import { fetchFromAPI } from "@/api"
+import { loginToAPI, fetchFromAPI } from "@/api"
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
+
+const emit = defineEmits(["login"])
 
 const username = ref("")
 const password = ref("")
@@ -29,6 +31,14 @@ async function checkUsername() {
   if (response) {
     player.value = response
     loadAvatar.value = true
+  }
+}
+
+async function attemptLogin() {
+  const response = await loginToAPI(username.value, password.value)
+
+  if (response.success) {
+    emit("login")
   }
 }
 
@@ -61,7 +71,7 @@ watch(username, checkUsername)
     <br/>
     <input v-model="password" id="password" type="password">
     <br/>
-    <button>
+    <button @click="attemptLogin">
       login
     </button>
   </section>

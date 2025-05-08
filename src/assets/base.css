@@ -42,12 +42,12 @@ button {
   cursor: pointer;
   border: none;
   font: inherit;
-  color: #ffffff40;
+  color: #ffffff80;
   padding: 0.5rem;
 }
 
 button:hover {
-  color: #ffffff60;
+  color: #ffffffc0;
   transition: 0.25s;
 }
 

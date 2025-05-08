@@ -3,12 +3,27 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { RouterLink, RouterView } from 'vue-router'
 import { reactive, ref } from "vue"
 
+import { fetchFromAPI, getIdentity } from "@/api"
 import LoginModal from '@/components/LoginModal.vue'
 
-const hideLogin = ref(true)
+const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
+
+const currentUser = ref(null)
+
+const hideLoginModal = ref(true)
 const modalStyle = reactive({
-  "modal--hidden": hideLogin
+  "modal--hidden": hideLoginModal
 })
+
+async function updateLogin() {
+  const identity = (await getIdentity()).logged_in_as
+  if (identity === null) return
+
+  currentUser.value = await fetchFromAPI(`/players/${identity}`)
+  hideLoginModal.value = true
+}
+
+updateLogin()
 </script>
 
 <template>
@@ -25,10 +40,13 @@ const modalStyle = reactive({
             <FontAwesomeIcon icon="music" />
             <span>beatmaps!</span>
           </RouterLink>
-          <a @click="() => hideLogin = false" class="nav__link--split">
+          <RouterLink v-if="currentUser" class="profile nav__link--split" :to="'/u/' + currentUser.name">
+            <img :src="`${AVATAR_URL}/${currentUser.id}`" /> <span>{{ currentUser.name }}</span>
+          </RouterLink>
+          <button v-else @click="() => hideLoginModal = false" class="nav__link--split">
             <FontAwesomeIcon icon="right-to-bracket" />
             <span>login!</span>
-          </a>
+          </button>
         </div>
       </nav>
     </header>
@@ -40,8 +58,8 @@ const modalStyle = reactive({
       |
       <img src="https://cronitor.io/badges/1VWGlD/production/oFMDB4n4aHcqPp9uaJWugntGQ5I.svg"></img>
     </footer>
-    <div @click="() => hideLogin = true" class="modal" :class="modalStyle">
-      <LoginModal v-on:click.stop />
+    <div @click="() => hideLoginModal = true" class="modal" :class="modalStyle">
+      <LoginModal v-on:click.stop @login="updateLogin"/>
     </div>
   </div>
 </template>
@@ -95,6 +113,7 @@ nav {
   gap: 2rem;
 
   flex-grow: 1;
+  align-items: center;
 
   a {
     cursor: pointer;
@@ -161,5 +180,16 @@ footer {
 
   min-height: var(--header-height);
   background-color: var(--block-bg-colour);
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  img {
+    height: 3rem;
+    border-radius: var(--border-radius)
+  }
 }
 </style>
