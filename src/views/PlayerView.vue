@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, reactive, ref, watch } from "vue"
+import { reactive, ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
 import { fetchFromAPI } from "@/api"
@@ -15,7 +15,7 @@ const SHOW_STATS = {
   rscore: "ranked score",
 }
 
-const player = useRoute().params.id
+const route = useRoute()
 const playerInfo = ref(null)
 const playerModes = []
 const currentMode = ref(0)
@@ -26,13 +26,16 @@ const userpageContentStyle = reactive({
   "userpage-content--hidden": userpageContentHidden
 })
 
-onMounted(async () => {
+async function updatePlayerInfo() {
   error.value = null
+  playerModes.length = 0
+  playerInfo.value = null
 
   try {
-    var response = await fetchFromAPI(`/players/${player}`)
+    var response = await fetchFromAPI(`/players/${route.params.id}`)
   } catch (e) {
     error.value = e
+    return
   }
 
   var bestPerformance = 0
@@ -47,7 +50,9 @@ onMounted(async () => {
   }
 
   playerInfo.value = response
-})
+}
+
+watch(() => route.params.id, updatePlayerInfo, { immediate: true })
 </script>
 
 <template>
