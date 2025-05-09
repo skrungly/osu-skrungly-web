@@ -38,13 +38,11 @@ export async function getIdentity() {
   return response.json()
 }
 
-export async function changeName(name) {
+export async function putUserEdits(params) {
   const identity = (await getIdentity()).logged_in_as
-  console.log(identity)
-
   if (identity === null) return
 
-  const paramString = new URLSearchParams({name: name}).toString()
+  const paramString = new URLSearchParams(params).toString()
   const requestUrl = `${import.meta.env.VITE_API_URL}/players/${identity}?${paramString}`
   console.log(paramString, requestUrl)
 
