@@ -2,7 +2,9 @@
 import { reactive, ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
-import { fetchFromAPI } from "@/api"
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+
+import { fetchFromAPI, getIdentity, putUserEdits } from "@/api"
 import RadioButton from "@/components/RadioButton.vue"
 import ScoreList from "@/components/ScoreList.vue"
 
@@ -16,22 +18,43 @@ const SHOW_STATS = {
 }
 
 const route = useRoute()
+const error = ref(null)
+
+const identity = ref(null)
 const playerInfo = ref(null)
 const playerModes = []
 const currentMode = ref(0)
-const error = ref(null)
+
+const canEdit = ref(false)
+const editControlsHidden = ref(true)
+const inputtedInfo = reactive({
+  "name": null,
+  "userpage_content": null,
+})
+
 
 const userpageContentHidden = ref(true)
 const userpageContentStyle = reactive({
   "userpage-content--hidden": userpageContentHidden
 })
 
-async function updatePlayerInfo() {
+const editControlsStyle = reactive({
+  "edit-controls--hidden": editControlsHidden
+})
+
+function resetInfoEdits() {
+  inputtedInfo.name = playerInfo.value.name
+  inputtedInfo.userpage_content = playerInfo.value.userpage_content
+}
+
+async function fetchPlayerInfo() {
   error.value = null
   playerModes.length = 0
-  playerInfo.value = null
+  canEdit.value = false
+  editControlsHidden.value = true
 
   try {
+    identity.value = (await getIdentity()).logged_in_as
     var response = await fetchFromAPI(`/players/${route.params.id}`)
   } catch (e) {
     error.value = e
@@ -49,32 +72,70 @@ async function updatePlayerInfo() {
     }
   }
 
+  canEdit.value = identity.value && identity.value == response.id
   playerInfo.value = response
+  resetInfoEdits()
 }
 
-watch(() => route.params.id, updatePlayerInfo, { immediate: true })
+async function checkForEdits() {
+  const editedInfo = {}
+  let edited = false
+
+  for (const property in inputtedInfo) {
+    if (playerInfo.value[property] != inputtedInfo[property]) {
+      edited = true
+      editControlsHidden.value = false
+      editedInfo[property] = inputtedInfo[property]
+    }
+  }
+
+  if (!edited) {
+    editControlsHidden.value = true
+  }
+
+  return editedInfo
+}
+
+async function uploadEdits() {
+  const edits = await checkForEdits()
+  await putUserEdits(edits)
+
+  const routePath = route.path.substring(0, route.path.lastIndexOf("/"))
+  window.location.replace(`${routePath}/${inputtedInfo.name}`)
+}
+
+watch(() => route.params.id, fetchPlayerInfo, { immediate: true })
+watch(inputtedInfo, checkForEdits)
 </script>
 
 <template>
   <div v-if="error" class="message message--error">
     oops :( an error occurred while fetching player info. <span class="error-text">[{{ error }}]</span>
   </div>
+
   <section v-if="playerInfo">
     <div class="section__banner">
       <img src="@/assets/default-banner.jpg" />
     </div>
+
     <div class="userpage-header">
       <div class="userpage-identity">
         <img :src="`${AVATAR_URL}/${playerInfo.id}`" />
-        <span class="userpage-identity__name">{{ playerInfo.name }}</span>
+        <input v-if="canEdit" type="text" v-model="inputtedInfo.name" />
+        <span v-else>{{ playerInfo.name }}</span>
       </div>
-      <q
+
+      <textarea v-if="canEdit"
+        class="userpage-content"
+        type="text"
+        v-model="inputtedInfo.userpage_content"
+      ></textarea>
+      <span v-else
         class="userpage-content"
         :class="userpageContentStyle"
         @click="() => userpageContentHidden = !userpageContentHidden"
-      >
-        {{ playerInfo.userpage_content }}
-      </q>
+      >{{ playerInfo.userpage_content }}</span>
+
       <div class="mode-buttons">
         <RadioButton
           v-for="mode in playerModes"
@@ -86,18 +147,31 @@ watch(() => route.params.id, updatePlayerInfo, { immediate: true })
       </div>
     </div>
   </section>
+
   <section v-if="playerInfo" class="container">
     <div v-for="[stat, name] in Object.entries(SHOW_STATS)" class="stats">
       <span class="stats__name">{{ name }}</span>
       <span class="stats__value">{{ playerInfo.stats[currentMode][stat].toLocaleString() }}</span>
     </div>
   </section>
+
   <section v-if="playerInfo">
     <ScoreList :player="playerInfo.id" :mode="currentMode" sort="pp" />
   </section>
+
   <section v-if="playerInfo">
     <ScoreList :player="playerInfo.id" :mode="currentMode" sort="recent" />
   </section>
+
+  <div class="edit-controls" :class="editControlsStyle">
+    <section>
+      <p>your profile has unsaved changes!</p>
+      <div class="container">
+        <button @click="uploadEdits"><FontAwesomeIcon icon="floppy-disk" /> save!</button>
+        <button @click="resetInfoEdits"><FontAwesomeIcon icon="rotate-left" /> restore!</button>
+      </div>
+    </section>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -106,6 +180,14 @@ watch(() => route.params.id, updatePlayerInfo, { immediate: true })
   display: flex;
   flex-flow: column;
   gap: 1rem;
+
+  input, textarea {
+    border: none;
+    border-bottom: 0.0625rem solid #ffffff60;
+    background: #00000000;
+    color: #ffffff;
+    resize: vertical;
+  }
 }
 
 .userpage-identity {
@@ -122,9 +204,9 @@ watch(() => route.params.id, updatePlayerInfo, { immediate: true })
     box-shadow: 0 2px 16px #00000080;
   }
 
-  .userpage-identity__name {
+  span, input {
     font-size: 1.5rem;
-    flex-grow: 1;
+    max-width: 20rem;
   }
 }
 
@@ -149,9 +231,44 @@ watch(() => route.params.id, updatePlayerInfo, { immediate: true })
   top: 1.5rem;
 }
 
-@media screen and (max-width: 35em) {
+.edit-controls {
+  position: sticky;
+  bottom: var(--section-margin);
+  opacity: 100%;
+
+  transition:
+    opacity 0.5s ease,
+    bottom 0.5s ease;
+
+  display: flex;
+  justify-content: center;
+
+  text-align: center;
+
+  section {
+    width: 18rem;
+    border: 0.0625rem solid rgb(255, 84, 84);
+    box-shadow: 0 0.125rem 1rem #00000020;
+  }
+}
+
+.edit-controls--hidden {
+  opacity: 0%;
+  bottom: -4rem;
+
+  transition:
+    opacity 0.5s ease,
+    bottom 0s ease 0.5s;
+}
+
+@media screen and (max-width: 50em) {
   .userpage-header {
     padding-bottom: 3rem;
+    text-align: center;
+
+    input, span, textarea {
+      text-align: center;
+    }
   }
 
   .userpage-identity {
@@ -164,10 +281,6 @@ watch(() => route.params.id, updatePlayerInfo, { immediate: true })
       height: var(--adjusted-height);
       margin-top: calc(var(--adjusted-height) * -3 / 8);
     }
-  }
-
-  .userpage-content {
-    text-align: center;
   }
 
   .mode-buttons {
