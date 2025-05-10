@@ -22,7 +22,7 @@ const error = ref(null)
 
 const identity = ref(null)
 const playerInfo = ref(null)
-const playerModes = []
+const playerModes = ref([])
 const currentMode = ref(0)
 
 const canEdit = ref(false)
@@ -49,7 +49,7 @@ function resetInfoEdits() {
 
 async function fetchPlayerInfo() {
   error.value = null
-  playerModes.length = 0
+  playerModes.value = []
   canEdit.value = false
   editControlsHidden.value = true
 
@@ -68,7 +68,7 @@ async function fetchPlayerInfo() {
         bestPerformance = stats.pp
         currentMode.value = stats.mode
       }
-      playerModes.push(stats.mode)
+      playerModes.value.push(stats.mode)
     }
   }
 
