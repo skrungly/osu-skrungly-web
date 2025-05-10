@@ -54,7 +54,7 @@ async function fetchPlayerInfo() {
   editControlsHidden.value = true
 
   try {
-    identity.value = (await getIdentity()).logged_in_as
+    identity.value = await getIdentity()
     var response = await fetchFromAPI(`/players/${route.params.id}`)
   } catch (e) {
     error.value = e
@@ -121,13 +121,14 @@ watch(inputtedInfo, checkForEdits)
     <div class="userpage-header">
       <div class="userpage-identity">
         <img :src="`${AVATAR_URL}/${playerInfo.id}`" />
-        <input v-if="canEdit" type="text" v-model="inputtedInfo.name" />
+        <input v-if="canEdit" type="text" maxlength="15" v-model="inputtedInfo.name" />
         <span v-else>{{ playerInfo.name }}</span>
       </div>
 
       <textarea v-if="canEdit"
         class="userpage-content"
         type="text"
+        maxlength="2048"
         v-model="inputtedInfo.userpage_content"
       ></textarea>
       <span v-else

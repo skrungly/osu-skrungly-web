@@ -16,7 +16,7 @@ const modalStyle = reactive({
 })
 
 async function updateLogin() {
-  const identity = (await getIdentity()).logged_in_as
+  const identity = await getIdentity()
   if (identity === null) return
 
   currentUser.value = await fetchFromAPI(`/players/${identity}`)
