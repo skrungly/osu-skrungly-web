@@ -183,10 +183,6 @@ watch(inputtedInfo, checkForEdits)
   gap: 1rem;
 
   input, textarea {
-    border: none;
-    border-bottom: 0.0625rem solid #ffffff60;
-    background: #00000000;
-    color: #ffffff;
     resize: vertical;
   }
 }
