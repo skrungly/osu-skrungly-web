@@ -133,7 +133,7 @@ nav {
   .nav__links {
     justify-content: space-around;
 
-    a span {
+    span {
       display: none;
     }
 
@@ -185,7 +185,7 @@ footer {
 .profile {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
 
   img {
     height: 3rem;
