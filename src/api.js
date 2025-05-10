@@ -4,9 +4,13 @@ function getCookie(name) {
   if (parts.length === 2) return parts.pop().split(';').shift();
 }
 
-export async function fetchFromAPI(endpoint, params) {
+function formatRequestUrl(endpoint, params={}) {
   const paramString = new URLSearchParams(params).toString()
-  const requestUrl = `${import.meta.env.VITE_API_URL}/${endpoint}?${paramString}`
+  return `${import.meta.env.VITE_API_URL}/${endpoint}?${paramString}`
+}
+
+export async function fetchFromAPI(endpoint, params) {
+  const requestUrl = formatRequestUrl(endpoint, params)
 
   const response = await fetch(requestUrl)
   if (!response.ok) { throw new Error(response.status) }
@@ -21,9 +25,7 @@ export async function loginToAPI(name, password) {
     cookie: true,
   }
 
-  const paramString = new URLSearchParams(params).toString()
-  const requestUrl = `${import.meta.env.VITE_API_URL}/auth/login?${paramString}`
-
+  const requestUrl = formatRequestUrl("/auth/login", params)
   const response = await fetch(requestUrl, {
     method: "POST",
     credentials: "same-origin",
@@ -32,14 +34,35 @@ export async function loginToAPI(name, password) {
   return response.json()
 }
 
-export async function getIdentity() {
-  const requestUrl = `${import.meta.env.VITE_API_URL}/auth`
-  const response = await fetch(requestUrl)
-  return response.json()
+export async function getIdentity(refresh=true) {
+  const authUrl = formatRequestUrl("/auth")
+  const authResponse = await fetch(authUrl)
+
+  if (authResponse.ok) {
+    return (await authResponse.json()).logged_in_as
+  }
+
+  // if not authorised, see if we can refresh token
+  const csrfRefreshToken = getCookie("csrf_refresh_token")
+  if (refresh && authResponse.status == 401 && csrfRefreshToken !== null) {
+    await fetch(
+      formatRequestUrl("/auth/refresh", {cookie: true}), {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "X-CSRF-TOKEN": csrfRefreshToken,
+        }
+      }
+    )
+
+    // try once more upon refreshing (though api should
+    // return the identity along with these responses!)
+    return await getIdentity(refresh=false)
+  }
 }
 
 export async function putUserEdits(params) {
-  const identity = (await getIdentity()).logged_in_as
+  const identity = await getIdentity()
   if (identity === null) return
 
   const paramString = new URLSearchParams(params).toString()

@@ -61,19 +61,16 @@ watch(username, checkUsername)
         />
       </div>
     </div>
-    <label for="username">username</label>
-    <br/>
-    <input v-model="username" id="username">
-    <br/>
-    <br/>
 
-    <label for="password">password</label>
-    <br/>
-    <input v-model="password" id="password" type="password">
-    <br/>
-    <button @click="attemptLogin">
-      login
-    </button>
+    <form @submit.prevent="attemptLogin">
+      <label for="username">username</label>
+      <input v-model="username" id="username" type="text">
+
+      <label for="password">password</label>
+      <input v-model="password" id="password" type="password">
+
+      <button type="submit">login</button>
+    </form>
   </section>
 </template>
 
@@ -118,6 +115,18 @@ section {
     transition:
       top 0s ease 0.5s,
       opacity 0.5s ease;
+  }
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: center;
+  gap: 0.5rem;
+
+  input[type="text"], input[type="password"] {
+    margin-bottom: 0.5rem;
   }
 }
 </style>
