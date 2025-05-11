@@ -165,7 +165,7 @@ watch(inputtedInfo, checkForEdits)
   </section>
 
   <div class="edit-controls" :class="editControlsStyle">
-    <section>
+    <section class="warning">
       <p>your profile has unsaved changes!</p>
       <div class="container">
         <button @click="uploadEdits"><FontAwesomeIcon icon="floppy-disk" /> save!</button>
@@ -244,7 +244,6 @@ watch(inputtedInfo, checkForEdits)
 
   section {
     width: 18rem;
-    border: 0.0625rem solid rgb(255, 84, 84);
     box-shadow: 0 0.125rem 1rem #00000020;
   }
 }
