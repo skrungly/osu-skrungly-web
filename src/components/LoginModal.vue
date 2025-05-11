@@ -10,6 +10,9 @@ const emit = defineEmits(["login"])
 const username = ref("")
 const password = ref("")
 
+const usernameError = ref(false)
+const passwordError = ref(false)
+
 const player = ref(null)
 const loadAvatar = ref(false)
 const hideAvatar = ref(true)
@@ -32,18 +35,36 @@ async function checkUsername() {
     player.value = response
     loadAvatar.value = true
   }
+
+  usernameError.value = false
 }
 
 async function attemptLogin() {
+  // indicate whether a user has been selected
+  if (!loadAvatar.value || hideAvatar.value) {
+    usernameError.value = true
+    return
+  }
+
   const response = await loginToAPI(username.value, password.value)
 
   if (response.success) {
     emit("login")
+  } else {
+    passwordError.value = true
   }
 }
 
-const avatarStyle = reactive({
+const avatarState = reactive({
   "avatar-preview--hidden": hideAvatar
+})
+
+const usernameState = reactive({
+  "error": usernameError
+})
+
+const passwordState = reactive({
+  "error": passwordError
 })
 
 watch(username, checkUsername)
@@ -53,7 +74,7 @@ watch(username, checkUsername)
   <section>
     <div class="section__banner">
       <img src="@/assets/default-banner.jpg" />
-      <div class="avatar-preview" :class="avatarStyle">
+      <div class="avatar-preview" :class="avatarState">
         <img
           v-if="loadAvatar"
           @load="() => (hideAvatar = false)"
@@ -64,10 +85,10 @@ watch(username, checkUsername)
 
     <form @submit.prevent="attemptLogin">
       <label for="username">username</label>
-      <input v-model="username" id="username" type="text">
+      <input v-model="username" id="username" type="text" :class="usernameState">
 
       <label for="password">password</label>
-      <input v-model="password" id="password" type="password">
+      <input v-model="password" id="password" type="password" :class="passwordState">
 
       <button type="submit">login</button>
     </form>

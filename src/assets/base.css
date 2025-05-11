@@ -192,3 +192,11 @@ section {
   margin-top: 5rem;
   transition: margin-top 0.25s ease 0.25s;
 }
+
+.error {
+  border: 0.0625rem solid #ff5454;
+}
+
+.warning {
+  border: 0.0625rem solid #fdb823;
+}
