@@ -10,13 +10,20 @@ const buttonStyle = computed(() => ({
 </script>
 
 <template>
-  <button :class="buttonStyle">
+  <button class="radio-button" :class="buttonStyle">
     {{ content }}
   </button>
 </template>
 
 <style scoped>
+.radio-button {
+  opacity: 50%;
+  background: none;
+  border: none;
+  padding: 0.5rem;
+}
+
 .radio-button--chosen {
-  color: #ffffff;
+  opacity: 100%;
 }
 </style>

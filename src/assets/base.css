@@ -7,7 +7,7 @@
   --button-padding: 0.5rem;
   --header-height: 5rem;
 
-  --block-bg-colour: #1b1b1b;
+  --block-bg-colour: #202020;
 }
 
 @font-face {
@@ -34,29 +34,23 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0.5rem 0 1rem 0;
 }
 
-input, select, textarea {
+input, select, textarea, button {
   font-family: inherit;
+  font-size: inherit;
   padding: 0.5rem;
-  color: #ffffff;
-  background: #00000010;
-  border: 1px solid #ffffff10;
+  color: inherit;
+  background: #1b1b1b;
+  border: 1px solid #ffffff20;
 }
 
 button {
-  border-radius: 0;
-  text-align: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0.5rem 1rem;
+  color: inherit;
   background: none;
-  box-shadow: none;
-  cursor: pointer;
   border: none;
-  font: inherit;
-  color: #ffffff80;
-  padding: 0.5rem;
-}
-
-button:hover {
-  color: #ffffffc0;
-  transition: 0.25s;
+  cursor: pointer;
 }
 
 a {
@@ -195,8 +189,24 @@ section {
 
 .error {
   border: 0.0625rem solid #ff5454;
+  transition: border 0.25s;
 }
 
 .warning {
-  border: 0.0625rem solid #fdb823;
+  border: 0.0625rem solid #ffb254;
+  transition: border 0.25s;
+}
+
+.confirm {
+  border: 0.0625rem solid #80ff54;
+  transition: border 0.25s;
+}
+
+.highlight {
+  border: double 1px transparent;
+  background-image:
+    linear-gradient(#242424, #242424),
+    linear-gradient(30deg, #ffff00 -20%, #ff00ff 135%);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }

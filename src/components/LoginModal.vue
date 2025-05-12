@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, watch } from "vue"
+import { computed, reactive, ref, watch } from "vue"
 
 import { loginToAPI, fetchFromAPI } from "@/api"
 
@@ -59,9 +59,10 @@ const avatarState = reactive({
   "avatar-preview--hidden": hideAvatar
 })
 
-const usernameState = reactive({
-  "error": usernameError
-})
+const usernameState = computed(() => ({
+  "error": usernameError.value,
+  "confirm": !hideAvatar.value,
+}))
 
 const passwordState = reactive({
   "error": passwordError
@@ -90,7 +91,7 @@ watch(username, checkUsername)
       <label for="password">password</label>
       <input v-model="password" id="password" type="password" :class="passwordState">
 
-      <button type="submit">login</button>
+      <button class="highlight" type="submit">login</button>
     </form>
   </section>
 </template>
@@ -148,6 +149,12 @@ form {
 
   input[type="text"], input[type="password"] {
     margin-bottom: 0.5rem;
+  }
+
+  button {
+    align-self: center;
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 </style>
