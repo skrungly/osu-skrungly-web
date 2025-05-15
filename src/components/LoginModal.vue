@@ -99,8 +99,6 @@ watch(username, checkUsername)
 <style lang="scss" scoped>
 section {
   width: 18rem;
-  margin-left: var(--section-margin);
-  margin-right: var(--section-margin);
   box-shadow: 0 2px 16px #00000020;
 }
 
