@@ -30,7 +30,7 @@ updateLogin()
   <div class="page">
     <header>
       <nav>
-        <h1 class="main-title"><RouterLink to="/">osu!skrungly</RouterLink></h1>
+        <h1 class="highlight-text"><RouterLink to="/">osu!skrungly</RouterLink></h1>
         <div class="nav__links">
           <RouterLink to="/players">
             <FontAwesomeIcon icon="users" />
@@ -84,14 +84,6 @@ header {
 
   h1 {
     font-size: 2rem;
-    background-color: #ffffff00;
-    background-image: linear-gradient(30deg, #ffff00 -20%, #ff00ff 135%);
-    background-size: 100%;
-    background-clip: text;
-    -webkit-background-clip: text;
-    -moz-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    -moz-text-fill-color: transparent;
   }
 }
 

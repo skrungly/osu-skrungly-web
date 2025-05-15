@@ -7,7 +7,7 @@
   --button-padding: 0.5rem;
   --header-height: 5rem;
 
-  --block-bg-colour: #202020;
+  --block-bg-colour: #1b1b1b;
 }
 
 @font-face {
@@ -153,7 +153,7 @@ section {
 }
 
 .modal {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100vw;
@@ -202,11 +202,22 @@ section {
   transition: border 0.25s;
 }
 
-.highlight {
+/* .highlight-box {
   border: double 1px transparent;
   background-image:
-    linear-gradient(#242424, #242424),
-    linear-gradient(30deg, #ffff00 -20%, #ff00ff 135%);
-    background-origin: border-box;
-    background-clip: padding-box, border-box;
+  linear-gradient(#000000c0, #000000c0),
+  linear-gradient(30deg, #ffff00 -20%, #ff00ff 135%);
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+} */
+
+.highlight-text {
+  background-color: #ffffff00;
+  background-image: linear-gradient(30deg, #ffff00 -20%, #ff00ff 135%);
+  background-size: 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  -moz-text-fill-color: transparent;
 }
