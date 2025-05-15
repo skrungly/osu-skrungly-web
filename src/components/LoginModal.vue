@@ -91,7 +91,7 @@ watch(username, checkUsername)
       <label for="password">password</label>
       <input v-model="password" id="password" type="password" :class="passwordState">
 
-      <button class="highlight" type="submit">login</button>
+      <button class="highlight-text" type="submit">login</button>
     </form>
   </section>
 </template>
