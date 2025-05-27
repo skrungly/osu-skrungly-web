@@ -86,7 +86,7 @@ updateLogin()
       />
     </div>
 
-    <div @click="() => accountModalState['modal--hidden'] = true" class="modal" :class="accountModalState">
+    <div v-if="currentUser" @click="() => accountModalState['modal--hidden'] = true" class="modal" :class="accountModalState">
       <AccountModal
         v-on:click.stop
         @logout="logout"
