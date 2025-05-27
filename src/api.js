@@ -31,7 +31,7 @@ export async function loginToAPI(name, password) {
     credentials: "same-origin",
   })
 
-  return response.json()
+  return await response.json()
 }
 
 export async function getIdentity(refresh=true) {
@@ -76,4 +76,6 @@ export async function putUserEdits(params) {
       "X-CSRF-TOKEN": getCookie("csrf_access_token"),
     },
   })
+
+  return response
 }
