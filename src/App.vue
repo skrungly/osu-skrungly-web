@@ -9,18 +9,14 @@ import LoginModal from '@/components/LoginModal.vue'
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 
 const currentUser = ref(null)
-
-const hideLoginModal = ref(true)
-const modalStyle = reactive({
-  "modal--hidden": hideLoginModal
-})
+const loginModalState = reactive({ "modal--hidden": true })
 
 async function updateLogin() {
   const identity = await getIdentity()
   if (identity === null) return
 
   currentUser.value = await fetchFromAPI(`/players/${identity}`)
-  hideLoginModal.value = true
+  loginModalState["modal--hidden"] = true
 }
 
 updateLogin()
@@ -40,10 +36,10 @@ updateLogin()
             <FontAwesomeIcon icon="music" />
             <span>beatmaps!</span>
           </RouterLink>
-          <RouterLink v-if="currentUser" class="profile nav__link--split" :to="'/u/' + currentUser.name">
+          <RouterLink v-if="currentUser" class="profile nav__link--split" :to="`/u/${currentUser.name}`">
             <img :src="`${AVATAR_URL}/${currentUser.id}`" /> <span>{{ currentUser.name }}</span>
           </RouterLink>
-          <button v-else @click="() => hideLoginModal = false" class="nav__link--split">
+          <button v-else @click="() => loginModalState['modal--hidden'] = false" class="nav__link--split">
             <FontAwesomeIcon icon="right-to-bracket" />
             <span>login!</span>
           </button>
@@ -58,8 +54,12 @@ updateLogin()
       |
       <img src="https://cronitor.io/badges/1VWGlD/production/oFMDB4n4aHcqPp9uaJWugntGQ5I.svg"></img>
     </footer>
-    <div @click="() => hideLoginModal = true" class="modal" :class="modalStyle">
-      <LoginModal v-on:click.stop @login="updateLogin"/>
+    <!-- TODO: move <div class="modal" into the modal components? -->
+    <div @click="() => loginModalState['modal--hidden'] = true" class="modal" :class="loginModalState">
+      <LoginModal
+        v-on:click.stop
+        @login="updateLogin"
+      />
     </div>
   </div>
 </template>
@@ -178,6 +178,7 @@ footer {
   display: flex;
   align-items: center;
   gap: 1rem;
+  cursor: pointer;
 
   img {
     height: 3rem;

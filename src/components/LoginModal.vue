@@ -91,7 +91,7 @@ watch(username, checkUsername)
       <label for="password">password</label>
       <input v-model="password" id="password" type="password" :class="passwordState">
 
-      <button class="highlight-text" type="submit">login</button>
+      <button class="highlight-button" type="submit">login</button>
     </form>
   </section>
 </template>
@@ -135,24 +135,6 @@ section {
     transition:
       top 0s ease 0.5s,
       opacity 0.5s ease;
-  }
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  text-align: center;
-  gap: 0.5rem;
-
-  input[type="text"], input[type="password"] {
-    margin-bottom: 0.5rem;
-  }
-
-  button {
-    align-self: center;
-    padding-left: 1rem;
-    padding-right: 1rem;
   }
 }
 </style>

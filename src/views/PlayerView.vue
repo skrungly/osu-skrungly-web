@@ -5,6 +5,7 @@ import { useRoute } from "vue-router"
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { fetchFromAPI, getIdentity, putUserEdits } from "@/api"
+import AccountModal from '@/components/AccountModal.vue'
 import RadioButton from "@/components/RadioButton.vue"
 import ScoreList from "@/components/ScoreList.vue"
 
@@ -32,7 +33,6 @@ const inputtedInfo = reactive({
   "userpage_content": null,
 })
 
-
 const userpageContentHidden = ref(true)
 const userpageContentStyle = reactive({
   "userpage-content--hidden": userpageContentHidden
@@ -40,6 +40,12 @@ const userpageContentStyle = reactive({
 
 const editControlsStyle = reactive({
   "edit-controls--hidden": editControlsHidden
+})
+
+// TODO: this way of doing reactive styles is better
+// than the method above, so update those ones!
+const accountModalState = reactive({
+  "modal--hidden": true
 })
 
 function resetInfoEdits() {
@@ -116,6 +122,10 @@ watch(inputtedInfo, checkForEdits)
   <section v-if="playerInfo">
     <div class="section__banner">
       <img src="@/assets/default-banner.jpg" />
+      <button v-if="canEdit" @click="() => accountModalState['modal--hidden'] = false">
+        <FontAwesomeIcon icon="user-gear" />
+        <span>settings</span>
+      </button>
     </div>
 
     <div class="userpage-header">
@@ -173,6 +183,16 @@ watch(inputtedInfo, checkForEdits)
       </div>
     </section>
   </div>
+
+  <!-- TODO: move <div class="modal" into the modal components? -->
+  <div @click="() => accountModalState['modal--hidden'] = true" class="modal" :class="accountModalState">
+    <AccountModal
+      v-on:click.stop
+      @close="() => accountModalState['modal--hidden'] = true"
+      @logout="() => currentUser = null"
+      :identity="currentUser"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -184,6 +204,18 @@ watch(inputtedInfo, checkForEdits)
 
   input, textarea {
     resize: vertical;
+  }
+}
+
+.section__banner {
+  position: relative;
+
+  button {
+    position: absolute;
+    top: var(--section-padding);
+    right: var(--section-padding);
+    background: #242424;
+    border-radius: var(--border-radius);
   }
 }
 
@@ -258,6 +290,10 @@ watch(inputtedInfo, checkForEdits)
 }
 
 @media screen and (max-width: 50em) {
+  .section__banner button span {
+    display: none;
+  }
+
   .userpage-header {
     padding-bottom: 3rem;
     text-align: center;
