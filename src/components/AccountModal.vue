@@ -4,7 +4,8 @@ import { reactive, ref, toRef } from "vue"
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { putUserEdits } from "@/api"
-const emit = defineEmits(["close", "logout"])
+
+const emit = defineEmits(["logout"])
 
 const password = ref("")
 const passwordState = reactive({
@@ -31,11 +32,9 @@ async function changePassword() {
     <form @submit.prevent="changePassword">
       <label for="change-password">change password</label>
       <input v-model="password" id="change-password" type="password" :class="passwordState">
-      <div class="account-buttons">
-        <button class="highlight-button" type="submit">save</button>
-        <button class="error disabled" disabled>logout</button>
-      </div>
+      <button class="highlight-button" type="submit">save</button>
     </form>
+    <button @click="() => emit('logout')" class="error">logout</button>
   </section>
 </template>
 
@@ -47,13 +46,6 @@ section {
 
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.account-buttons {
-  display: flex;
-  flex-flow: row wrap;
-  justify-content: center;
   gap: 1rem;
 }
 </style>

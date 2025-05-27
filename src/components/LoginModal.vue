@@ -7,15 +7,27 @@ const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 
 const emit = defineEmits(["login"])
 
-const username = ref("")
-const password = ref("")
-
-const usernameError = ref(false)
-const passwordError = ref(false)
-
 const player = ref(null)
 const loadAvatar = ref(false)
 const hideAvatar = ref(true)
+
+const avatarState = reactive({
+  "avatar-preview--hidden": hideAvatar
+})
+
+// to be initialised by a call to resetForm()
+const username = ref("")
+const password = ref("")
+const usernameState = reactive({})
+const passwordState = reactive({})
+
+function resetForm() {
+  username.value = ""
+  password.value = ""
+  usernameState["error"] = false
+  usernameState["confirm"] = false
+  passwordState["error"] = false
+}
 
 async function checkUsername() {
   try {
@@ -36,7 +48,8 @@ async function checkUsername() {
     loadAvatar.value = true
   }
 
-  usernameError.value = false
+  usernameState["error"] = false
+  usernameState["confirm"] = true
 }
 
 async function attemptLogin() {
@@ -48,26 +61,14 @@ async function attemptLogin() {
 
   const response = await loginToAPI(username.value, password.value)
 
-  if (response.success) {
+  if (response.ok) {
     emit("login")
   } else {
-    passwordError.value = true
+    passwordState["error"] = true
   }
 }
 
-const avatarState = reactive({
-  "avatar-preview--hidden": hideAvatar
-})
-
-const usernameState = computed(() => ({
-  "error": usernameError.value,
-  "confirm": !hideAvatar.value,
-}))
-
-const passwordState = reactive({
-  "error": passwordError
-})
-
+resetForm()
 watch(username, checkUsername)
 </script>
 

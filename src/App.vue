@@ -3,13 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { RouterLink, RouterView } from 'vue-router'
 import { reactive, ref } from "vue"
 
-import { fetchFromAPI, getIdentity } from "@/api"
+import { fetchFromAPI, getIdentity, logoutOfAPI } from "@/api"
 import LoginModal from '@/components/LoginModal.vue'
+import AccountModal from '@/components/AccountModal.vue'
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 
 const currentUser = ref(null)
 const loginModalState = reactive({ "modal--hidden": true })
+const accountModalState = reactive({ "modal--hidden": true })
 
 async function updateLogin() {
   const identity = await getIdentity()
@@ -17,6 +19,12 @@ async function updateLogin() {
 
   currentUser.value = await fetchFromAPI(`/players/${identity}`)
   loginModalState["modal--hidden"] = true
+}
+
+async function logout() {
+  logoutOfAPI()
+  currentUser.value = null
+  accountModalState["modal--hidden"] = true
 }
 
 updateLogin()
@@ -32,14 +40,24 @@ updateLogin()
             <FontAwesomeIcon icon="users" />
             <span>players!</span>
           </RouterLink>
+
           <RouterLink class="nav__link--disabled" to="">
             <FontAwesomeIcon icon="music" />
             <span>beatmaps!</span>
           </RouterLink>
-          <RouterLink v-if="currentUser" class="profile nav__link--split" :to="`/u/${currentUser.name}`">
-            <img :src="`${AVATAR_URL}/${currentUser.id}`" /> <span>{{ currentUser.name }}</span>
-          </RouterLink>
-          <button v-else @click="() => loginModalState['modal--hidden'] = false" class="nav__link--split">
+
+          <button v-if="currentUser"
+            @click="() => accountModalState['modal--hidden'] = false"
+            class="profile nav__link--split"
+          >
+            <img :src="`${AVATAR_URL}/${currentUser.id}`" />
+            <span>{{ currentUser.name }}</span>
+          </button>
+
+          <button v-else
+            @click="() => loginModalState['modal--hidden'] = false"
+            class="nav__link--split"
+          >
             <FontAwesomeIcon icon="right-to-bracket" />
             <span>login!</span>
           </button>
@@ -65,6 +83,13 @@ updateLogin()
       <LoginModal
         v-on:click.stop
         @login="updateLogin"
+      />
+    </div>
+
+    <div @click="() => accountModalState['modal--hidden'] = true" class="modal" :class="accountModalState">
+      <AccountModal
+        v-on:click.stop
+        @logout="logout"
       />
     </div>
   </div>
