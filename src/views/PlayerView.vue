@@ -1,11 +1,10 @@
 <script setup>
-import { reactive, ref, watch } from "vue"
+import { reactive, ref, toRef, watch } from "vue"
 import { useRoute } from "vue-router"
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { fetchFromAPI, getIdentity, putUserEdits } from "@/api"
-import AccountModal from '@/components/AccountModal.vue'
 import RadioButton from "@/components/RadioButton.vue"
 import ScoreList from "@/components/ScoreList.vue"
 
@@ -24,7 +23,6 @@ const currentUser = toRef(props, "currentUser")
 const route = useRoute()
 const error = ref(null)
 
-const identity = ref(null)
 const playerInfo = ref(null)
 const playerModes = ref([])
 const currentMode = ref(0)
@@ -45,13 +43,10 @@ const editControlsStyle = reactive({
   "edit-controls--hidden": editControlsHidden
 })
 
-// TODO: this way of doing reactive styles is better
-// than the method above, so update those ones!
-const accountModalState = reactive({
-  "modal--hidden": true
-})
-
 function resetInfoEdits() {
+  if (playerInfo.value === null) return
+
+  canEdit.value = currentUser.value !== null && currentUser.value.id == playerInfo.value.id
   inputtedInfo.name = playerInfo.value.name
   inputtedInfo.userpage_content = playerInfo.value.userpage_content
 }
@@ -63,7 +58,6 @@ async function fetchPlayerInfo() {
   editControlsHidden.value = true
 
   try {
-    identity.value = await getIdentity()
     var response = await fetchFromAPI(`/players/${route.params.id}`)
   } catch (e) {
     error.value = e
@@ -81,7 +75,6 @@ async function fetchPlayerInfo() {
     }
   }
 
-  canEdit.value = identity.value && identity.value == response.id
   playerInfo.value = response
   resetInfoEdits()
 }
@@ -115,6 +108,7 @@ async function uploadEdits() {
 
 watch(() => route.params.id, fetchPlayerInfo, { immediate: true })
 watch(inputtedInfo, checkForEdits)
+watch(currentUser, resetInfoEdits)
 </script>
 
 <template>
@@ -125,10 +119,6 @@ watch(inputtedInfo, checkForEdits)
   <section v-if="playerInfo">
     <div class="section__banner">
       <img src="@/assets/default-banner.jpg" />
-      <button v-if="canEdit" @click="() => accountModalState['modal--hidden'] = false">
-        <FontAwesomeIcon icon="user-gear" />
-        <span>settings</span>
-      </button>
     </div>
 
     <div class="userpage-header">
@@ -186,16 +176,6 @@ watch(inputtedInfo, checkForEdits)
       </div>
     </section>
   </div>
-
-  <!-- TODO: move <div class="modal" into the modal components? -->
-  <div @click="() => accountModalState['modal--hidden'] = true" class="modal" :class="accountModalState">
-    <AccountModal
-      v-on:click.stop
-      @close="() => accountModalState['modal--hidden'] = true"
-      @logout="() => currentUser = null"
-      :identity="currentUser"
-    />
-  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -207,18 +187,6 @@ watch(inputtedInfo, checkForEdits)
 
   input, textarea {
     resize: vertical;
-  }
-}
-
-.section__banner {
-  position: relative;
-
-  button {
-    position: absolute;
-    top: var(--section-padding);
-    right: var(--section-padding);
-    background: #242424;
-    border-radius: var(--border-radius);
   }
 }
 

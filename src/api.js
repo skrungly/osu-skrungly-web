@@ -26,27 +26,35 @@ export async function loginToAPI(name, password) {
   }
 
   const requestUrl = formatRequestUrl("/auth/login", params)
-  const response = await fetch(requestUrl, {
+  return await fetch(requestUrl, {
     method: "POST",
     credentials: "same-origin",
   })
-
-  return await response.json()
 }
 
-export async function getIdentity(refresh=true) {
+export async function logoutOfAPI() {
+  return await fetch(formatRequestUrl("/auth/logout"), {
+    method: "DELETE",
+    credentials: "same-origin",
+    headers: {
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+    }
+  })
+}
+
+export async function getIdentity() {
   const authUrl = formatRequestUrl("/auth")
   const authResponse = await fetch(authUrl)
 
   if (authResponse.ok) {
-    return (await authResponse.json()).logged_in_as
+    return (await authResponse.json()).identity
   }
 
   // if not authorised, see if we can refresh token
   const csrfRefreshToken = getCookie("csrf_refresh_token")
-  if (refresh && authResponse.status == 401 && csrfRefreshToken !== null) {
-    await fetch(
-      formatRequestUrl("/auth/refresh", {cookie: true}), {
+  if (authResponse.status == 401 && csrfRefreshToken !== null) {
+    const refreshResponse = await fetch(
+      formatRequestUrl("/auth/refresh"), {
         method: "POST",
         credentials: "same-origin",
         headers: {
@@ -55,9 +63,9 @@ export async function getIdentity(refresh=true) {
       }
     )
 
-    // try once more upon refreshing (though api should
-    // return the identity along with these responses!)
-    return await getIdentity(refresh=false)
+    if (refreshResponse.ok) {
+      return (await refreshResponse.json()).identity
+    }
   }
 }
 
