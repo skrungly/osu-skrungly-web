@@ -6,5 +6,5 @@ services:
 
 networks:
   default:
-    name: osu
+    name: osu-nginx
     external: true
