@@ -47,13 +47,19 @@ updateLogin()
       </nav>
     </header>
     <main>
-      <RouterView />
+      <RouterView v-slot="{ Component }">
+        <component
+          :is="Component"
+          :currentUser="currentUser"
+        />
+      </RouterView>
     </main>
     <footer>
       <a href="https://github.com/skrungly/osu-skrungly"><FontAwesomeIcon icon="code" />source</a>
       |
       <img src="https://cronitor.io/badges/1VWGlD/production/oFMDB4n4aHcqPp9uaJWugntGQ5I.svg"></img>
     </footer>
+
     <!-- TODO: move <div class="modal" into the modal components? -->
     <div @click="() => loginModalState['modal--hidden'] = true" class="modal" :class="loginModalState">
       <LoginModal

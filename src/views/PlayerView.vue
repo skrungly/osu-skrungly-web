@@ -18,6 +18,9 @@ const SHOW_STATS = {
   rscore: "ranked score",
 }
 
+const props = defineProps(["currentUser"])
+const currentUser = toRef(props, "currentUser")
+
 const route = useRoute()
 const error = ref(null)
 

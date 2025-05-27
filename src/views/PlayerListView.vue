@@ -10,6 +10,10 @@ const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
 const SORT_MODES = ["pp", "plays"]
 
+// the current user identity is passed to all router views,
+// even though it's not used in some (like in this case).
+defineProps(["currentUser"])
+
 const chosenMode = ref(0)
 const chosenSort = ref("pp")
 
