@@ -50,6 +50,7 @@ button {
   color: inherit;
   background: none;
   border: none;
+  border-radius: var(--border-radius);
   cursor: pointer;
 }
 
@@ -233,6 +234,7 @@ section {
 
 .highlight-button {
   border: double 1px transparent;
+  border-radius: var(--border-radius);
   background-image:
     linear-gradient(#000000c0, #000000c0),
     linear-gradient(30deg, #ffff00 -20%, #ff00ff 135%);
