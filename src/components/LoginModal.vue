@@ -55,7 +55,7 @@ async function checkUsername() {
 async function attemptLogin() {
   // indicate whether a user has been selected
   if (!loadAvatar.value || hideAvatar.value) {
-    usernameError.value = true
+    usernameState["error"] = true
     return
   }
 
@@ -63,6 +63,7 @@ async function attemptLogin() {
 
   if (response.ok) {
     emit("login")
+    passwordState["error"] = false
   } else {
     passwordState["error"] = true
   }

@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import { putUserEdits } from "@/api"
 
-const emit = defineEmits(["logout"])
+const props = defineProps(["currentUser"])
+const emit = defineEmits(["logout", "close"])
 
 const password = ref("")
 const passwordState = reactive({
@@ -32,9 +33,13 @@ async function changePassword() {
     <form @submit.prevent="changePassword">
       <label for="change-password">change password</label>
       <input v-model="password" id="change-password" type="password" :class="passwordState">
-      <button class="highlight-button" type="submit">save</button>
     </form>
-    <button @click="() => emit('logout')" class="error">logout</button>
+
+    <div class="account-buttons">
+      <RouterLink @click="() => emit('close')" :to="'/u/' + props.currentUser.name" class="highlight-button">profile</RouterLink>
+      <button @click="changePassword" class="confirm">save</button>
+      <button @click="() => emit('logout')" class="error">logout</button>
+    </div>
   </section>
 </template>
 
@@ -47,5 +52,11 @@ section {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.account-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
 }
 </style>

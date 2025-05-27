@@ -90,6 +90,8 @@ updateLogin()
       <AccountModal
         v-on:click.stop
         @logout="logout"
+        @close="() => accountModalState['modal--hidden'] = true"
+        :currentUser="currentUser"
       />
     </div>
   </div>
