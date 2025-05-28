@@ -32,7 +32,7 @@ async function fetchPlayers() {
   }
 
   try {
-    var response = await fetchFromAPI("/leaderboard", params)
+    var response = await fetchFromAPI("/players", params)
   } catch (e) {
     error.value = e
   }

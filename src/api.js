@@ -43,7 +43,7 @@ export async function logoutOfAPI() {
 }
 
 export async function getIdentity() {
-  const authUrl = formatRequestUrl("/auth")
+  const authUrl = formatRequestUrl("/auth/identity")
   const authResponse = await fetch(authUrl)
 
   if (authResponse.ok) {
