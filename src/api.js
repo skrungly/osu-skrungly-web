@@ -75,16 +75,15 @@ export async function putUserEdits(params) {
   const identity = await getIdentity()
   if (identity === null) return
 
-  const paramString = new URLSearchParams(params).toString()
-  const requestUrl = `${import.meta.env.VITE_API_URL}/players/${identity}?${paramString}`
-  console.log(paramString, requestUrl)
-
+  const requestUrl = formatRequestUrl(`/players/${identity}`)
   const response = await fetch(requestUrl, {
     method: "PUT",
     credentials: "same-origin",
     headers: {
+      "Content-Type": "application/json",
       "X-CSRF-TOKEN": getCookie("csrf_access_token"),
     },
+    body: JSON.stringify(params)
   })
 
   return response
