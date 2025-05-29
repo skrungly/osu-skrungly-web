@@ -19,16 +19,18 @@ export async function fetchFromAPI(endpoint, params) {
 }
 
 export async function loginToAPI(name, password) {
-  const params = {
-    name: name,
-    password: password,
-    cookie: true,
-  }
-
-  const requestUrl = formatRequestUrl("/auth/login", params)
+  const requestUrl = formatRequestUrl("/auth/login")
   return await fetch(requestUrl, {
     method: "POST",
     credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: name,
+      password: password,
+      cookie: true,
+    })
   })
 }
 
