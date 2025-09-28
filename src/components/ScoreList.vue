@@ -27,13 +27,14 @@ async function fetchScores(refresh=false) {
   if (!loadMore.value || player.value === null) return
 
   const params = {
+    player: player.value,
     sort: props.sort,
     mode: mode.value,
     limit: LOAD_PER_CHUNK,
     page: page.value,
   }
 
-  const response = await fetchFromAPI(`/players/${player.value}/scores`, params)
+  const response = await fetchFromAPI("/scores", params)
 
   if (response.length < LOAD_PER_CHUNK) {
     loadMore.value = false
