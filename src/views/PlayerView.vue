@@ -28,19 +28,12 @@ const playerModes = ref([])
 const currentMode = ref(0)
 
 const canEdit = ref(false)
-const editControlsHidden = ref(true)
+const currentlyEditing = ref(false)
+const unsavedChanges = ref(false)
+
 const inputtedInfo = reactive({
   "name": null,
   "userpage_content": null,
-})
-
-const userpageContentHidden = ref(true)
-const userpageContentStyle = reactive({
-  "userpage-content--hidden": userpageContentHidden
-})
-
-const editControlsStyle = reactive({
-  "edit-controls--hidden": editControlsHidden
 })
 
 function resetInfoEdits() {
@@ -55,7 +48,7 @@ async function fetchPlayerInfo() {
   error.value = null
   playerModes.value = []
   canEdit.value = false
-  editControlsHidden.value = true
+  unsavedChanges.value = false
 
   try {
     var response = await fetchFromAPI(`/players/${route.params.id}`)
@@ -81,18 +74,13 @@ async function fetchPlayerInfo() {
 
 async function checkForEdits() {
   const editedInfo = {}
-  let edited = false
+  unsavedChanges.value = false
 
   for (const property in inputtedInfo) {
     if (playerInfo.value[property] != inputtedInfo[property]) {
-      edited = true
-      editControlsHidden.value = false
+      unsavedChanges.value = true
       editedInfo[property] = inputtedInfo[property]
     }
-  }
-
-  if (!edited) {
-    editControlsHidden.value = true
   }
 
   return editedInfo
@@ -119,26 +107,31 @@ watch(currentUser, resetInfoEdits)
   <section v-if="playerInfo">
     <div class="section__banner">
       <img src="@/assets/default-banner.jpg" />
+      <button
+        v-if="canEdit"
+        class="edit-button"
+        :disabled="unsavedChanges"
+        @click="() => currentlyEditing = !currentlyEditing"
+      >
+        <FontAwesomeIcon v-if="currentlyEditing" icon="circle-xmark" />
+        <FontAwesomeIcon v-else="currentlyEditing" icon="pen-to-square" />
+      </button>
     </div>
 
     <div class="userpage-header">
       <div class="userpage-identity">
         <img :src="`${AVATAR_URL}/${playerInfo.id}`" />
-        <input v-if="canEdit" type="text" maxlength="15" v-model="inputtedInfo.name" />
+        <input v-if="currentlyEditing" type="text" maxlength="15" v-model="inputtedInfo.name" />
         <span v-else>{{ playerInfo.name }}</span>
       </div>
 
-      <textarea v-if="canEdit"
+      <textarea v-if="currentlyEditing"
         class="userpage-content"
         type="text"
         maxlength="2048"
         v-model="inputtedInfo.userpage_content"
       ></textarea>
-      <span v-else
-        class="userpage-content"
-        :class="userpageContentStyle"
-        @click="() => userpageContentHidden = !userpageContentHidden"
-      >{{ playerInfo.userpage_content }}</span>
+      <span v-else class="userpage-content">{{ playerInfo.userpage_content }}</span>
 
       <div class="mode-buttons">
         <RadioButton
@@ -167,7 +160,7 @@ watch(currentUser, resetInfoEdits)
     <ScoreList :player="playerInfo.id" :mode="currentMode" sort="recent" />
   </section>
 
-  <div class="edit-controls" :class="editControlsStyle">
+  <div class="edit-controls" :class="{'edit-controls--hidden': !unsavedChanges}">
     <section class="warning">
       <p>your profile has unsaved changes!</p>
       <div class="container">
@@ -179,6 +172,19 @@ watch(currentUser, resetInfoEdits)
 </template>
 
 <style lang="scss" scoped>
+.edit-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background-color: var(--block-bg-colour);
+  transition: 0.5s;
+}
+
+.edit-button:disabled {
+  opacity: 75%;
+  cursor: not-allowed;
+}
+
 .userpage-header {
   position: relative;
   display: flex;
@@ -208,21 +214,6 @@ watch(currentUser, resetInfoEdits)
     font-size: 1.5rem;
     max-width: 20rem;
   }
-}
-
-.userpage-content--hidden {
-  position: relative;
-  max-height: 5rem;
-  overflow: hidden;
-
-  background-color: #ffffff00;
-  background-image: linear-gradient(180deg, #ffffff, #ffffff 3rem, #ffffff00 4.5rem);
-  background-size: 100%;
-  background-clip: text;
-  -webkit-background-clip: text;
-  -moz-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  -moz-text-fill-color: transparent;
 }
 
 .mode-buttons {

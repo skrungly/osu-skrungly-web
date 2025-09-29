@@ -71,6 +71,7 @@ section {
 }
 
 .section__banner {
+  position: relative;
   margin: calc(-1 * var(--section-padding));
   margin-bottom: 0;
 
