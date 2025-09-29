@@ -34,6 +34,10 @@ async function fetchScores(refresh=false) {
     page: page.value,
   }
 
+  if (props.sort == "pp") {
+    params["status"] = "best"
+  }
+
   const response = await fetchFromAPI("/scores", params)
 
   if (response.length < LOAD_PER_CHUNK) {
