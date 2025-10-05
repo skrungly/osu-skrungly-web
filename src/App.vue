@@ -157,6 +157,7 @@ nav {
 @media screen and (max-width: 50em) {
   .nav__links {
     justify-content: space-around;
+    gap: 1.5rem;
 
     span {
       display: none;
@@ -181,7 +182,6 @@ nav {
   .nav__links {
     align-self: stretch;
     justify-content: center;
-    gap: 1.5rem;
   }
 }
 

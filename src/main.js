@@ -1,9 +1,9 @@
 import './assets/base.css'
 
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faUsers, faMusic, faRightToBracket, faTrophy, faClockRotateLeft, faCaretDown, faCode, faFloppyDisk, faRotateLeft, faUserGear, faPenToSquare, faCircleXmark } from '@fortawesome/free-solid-svg-icons'
+import { faUsers, faMusic, faRightToBracket, faTrophy, faClockRotateLeft, faCaretDown, faCode, faFloppyDisk, faRotateLeft, faUserGear, faPenToSquare, faCircleXmark, faFileArrowUp } from '@fortawesome/free-solid-svg-icons'
 
-library.add(faUsers, faMusic, faRightToBracket, faTrophy, faClockRotateLeft, faCaretDown, faCode, faFloppyDisk, faRotateLeft, faUserGear, faPenToSquare, faCircleXmark )
+library.add(faUsers, faMusic, faRightToBracket, faTrophy, faClockRotateLeft, faCaretDown, faCode, faFloppyDisk, faRotateLeft, faUserGear, faPenToSquare, faCircleXmark, faFileArrowUp )
 
 import { createApp } from 'vue'
 import App from './App.vue'

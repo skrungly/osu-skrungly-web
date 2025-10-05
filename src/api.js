@@ -88,3 +88,26 @@ export async function putUserEdits(params) {
 
   return response
 }
+
+export async function putUserBanner(bannerData) {
+  const identity = await getIdentity()
+  if (identity === null) return
+
+  const bannerResponse = await fetch(bannerData.value);
+  const bannerBlob = await bannerResponse.blob();
+
+  const formData = new FormData();
+  formData.append('file', bannerBlob);
+
+  const requestUrl = formatRequestUrl(`/players/${identity}/banner`)
+  const response = await fetch(requestUrl, {
+    method: "PUT",
+    credentials: "same-origin",
+    headers: {
+      "X-CSRF-TOKEN": getCookie("csrf_access_token"),
+    },
+    body: formData
+  })
+
+  return response
+}

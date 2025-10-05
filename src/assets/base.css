@@ -6,6 +6,7 @@
   --section-padding: 1rem;
   --button-padding: 0.5rem 1rem;
   --header-height: 5rem;
+  --section-banner-aspect: 6 / 1;
 
   --block-bg-colour: #1b1b1b;
 }
@@ -67,7 +68,6 @@ section {
   padding: var(--section-padding);
   background-color: var(--block-bg-colour);
   border-radius: var(--border-radius);
-  --section-banner-width-to-height: 6 / 1
 }
 
 .section__banner {
@@ -75,16 +75,14 @@ section {
   margin: calc(-1 * var(--section-padding));
   margin-bottom: 0;
 
-  --width: calc(100% + 2 * var(--section-padding));
-  width: var(--width);
-  height: calc(var(--width) / 6);
-  max-height: calc(var(--content-width) / 6);
+  width: calc(100% + 2 * var(--section-padding));
+  aspect-ratio: var(--section-banner-aspect);
 }
 
 .section__banner img {
   border-radius: var(--border-radius) var(--border-radius) 0 0;
-  height: 100%;
   width: 100%;
+  height: 100%;
   object-fit: cover;
   overflow: hidden;
 }

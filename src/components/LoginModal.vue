@@ -76,7 +76,7 @@ watch(username, checkUsername)
 <template>
   <section>
     <div class="section__banner">
-      <img src="@/assets/default-banner.jpg" />
+      <img :src="`${AVATAR_URL}/banners/default`" />
       <div class="avatar-preview" :class="avatarState">
         <img
           v-if="loadAvatar"

@@ -4,7 +4,7 @@ import { useRoute } from "vue-router"
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { fetchFromAPI, getIdentity, putUserEdits } from "@/api"
+import { fetchFromAPI, putUserBanner, putUserEdits } from "@/api"
 import RadioButton from "@/components/RadioButton.vue"
 import ScoreList from "@/components/ScoreList.vue"
 
@@ -30,11 +30,14 @@ const currentMode = ref(0)
 const canEdit = ref(false)
 const currentlyEditing = ref(false)
 const unsavedChanges = ref(false)
+const unsavedBanner = ref(false)
 
 const inputtedInfo = reactive({
   "name": null,
   "userpage_content": null,
 })
+
+const bannerPath = ref(null)
 
 function resetInfoEdits() {
   if (playerInfo.value === null) return
@@ -42,6 +45,12 @@ function resetInfoEdits() {
   canEdit.value = currentUser.value !== null && currentUser.value.id == playerInfo.value.id
   inputtedInfo.name = playerInfo.value.name
   inputtedInfo.userpage_content = playerInfo.value.userpage_content
+
+  // TODO: find a better solution to avoiding cache on banner changes
+  bannerPath.value = `${AVATAR_URL}/banners/${playerInfo.value.id}.jpg?${new Date().getTime()}`
+
+  unsavedChanges.value = false
+  unsavedBanner.value = false
 }
 
 async function fetchPlayerInfo() {
@@ -88,10 +97,33 @@ async function checkForEdits() {
 
 async function uploadEdits() {
   const edits = await checkForEdits()
-  await putUserEdits(edits)
+  if (unsavedChanges.value) {
+    await putUserEdits(edits)
+  }
+
+  if (unsavedBanner.value) {
+    await putUserBanner(bannerPath)
+  }
 
   const routePath = route.path.substring(0, route.path.lastIndexOf("/"))
   window.location.replace(`${routePath}/${inputtedInfo.name}`)
+}
+
+async function onBannerChange(event) {
+  const file = event.target.files[0]
+
+  if (!file || !file.type.match("image.*")) {
+    return false
+  }
+
+  const reader = new FileReader()
+  reader.onload = function (e) {
+    bannerPath.value = e.target.result
+    unsavedChanges.value = true
+    unsavedBanner.value = true
+  }
+
+  reader.readAsDataURL(file)
 }
 
 watch(() => route.params.id, fetchPlayerInfo, { immediate: true })
@@ -106,7 +138,23 @@ watch(currentUser, resetInfoEdits)
 
   <section v-if="playerInfo">
     <div class="section__banner">
-      <img src="@/assets/default-banner.jpg" />
+      <img :src="bannerPath" />
+      <div
+        v-if="currentlyEditing"
+        class="banner-input"
+        :class="{'banner-input--hidden': unsavedBanner}"
+      >
+        <div class="banner-input__prompt">
+          <span>
+            <FontAwesomeIcon icon="file-arrow-up" /> choose a banner image!
+          </span>
+          <span class="banner-input__hint">
+            an image resolution of 1360x230 is recommended.
+          </span>
+        </div>
+        <input v-if="canEdit" type="file" @change="onBannerChange" accept="image/*">
+      </div>
+
       <button
         v-if="canEdit"
         class="edit-button"
@@ -177,12 +225,60 @@ watch(currentUser, resetInfoEdits)
   top: 1rem;
   right: 1rem;
   background-color: var(--block-bg-colour);
-  transition: 0.5s;
+  transition: opacity 0.5s;
 }
 
 .edit-button:disabled {
   opacity: 75%;
   cursor: not-allowed;
+}
+
+.banner-input {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  aspect-ratio: var(--section-banner-aspect);
+  padding: 0;
+
+  background-color: #000000;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  opacity: 20%;
+  transition: opacity 0.5s;
+
+  input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  .banner-input__prompt {
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+    height: 100%;
+
+    font-size: 1.5rem;
+  }
+
+  .banner-input__hint {
+    font-size: 0.75rem;
+  }
+}
+
+.banner-input--hidden {
+  opacity: 0;
+}
+
+.banner-input:hover {
+  opacity: 40%
 }
 
 .userpage-header {
@@ -193,6 +289,7 @@ watch(currentUser, resetInfoEdits)
 
   input, textarea {
     resize: vertical;
+    padding: 0.1rem;
   }
 }
 
@@ -212,7 +309,8 @@ watch(currentUser, resetInfoEdits)
 
   span, input {
     font-size: 1.5rem;
-    max-width: 20rem;
+    width: 20rem;
+    max-width: calc(100% - 0.25rem);
   }
 }
 
@@ -256,6 +354,18 @@ watch(currentUser, resetInfoEdits)
     display: none;
   }
 
+  .banner-input {
+    justify-content: start;
+    gap: 0;
+
+    .banner-input__prompt {
+      // this fits the prompt text neatly above the user avatar
+      height: 57%;
+      gap: 0;
+      font-size: 1.25rem;
+    }
+  }
+
   .userpage-header {
     padding-bottom: 3rem;
     text-align: center;
@@ -285,6 +395,18 @@ watch(currentUser, resetInfoEdits)
 
     margin-inline: auto;
     width: fit-content;
+  }
+}
+
+@media screen and (max-width: 35em) {
+  .edit-button {
+    top: 0.75rem;
+    right: 0.75rem;
+    padding: 0.5rem 0.25rem;
+  }
+
+  .banner-input__hint {
+    display: none;
   }
 }
 </style>
