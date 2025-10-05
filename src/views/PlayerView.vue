@@ -4,7 +4,8 @@ import { useRoute } from "vue-router"
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { fetchFromAPI, putUserBanner, putUserEdits } from "@/api"
+import { fetchFromAPI, logoutOfAPI, putUserBanner, putUserEdits } from "@/api"
+import AccountModal from "@/components/AccountModal.vue"
 import RadioButton from "@/components/RadioButton.vue"
 import ScoreList from "@/components/ScoreList.vue"
 
@@ -31,6 +32,8 @@ const canEdit = ref(false)
 const currentlyEditing = ref(false)
 const unsavedChanges = ref(false)
 const unsavedBanner = ref(false)
+
+const showAccountModal = ref(false)
 
 const inputtedInfo = reactive({
   "name": null,
@@ -126,6 +129,13 @@ async function onBannerChange(event) {
   reader.readAsDataURL(file)
 }
 
+async function logout() {
+  await logoutOfAPI()
+  currentUser.value = null
+  showAccountModal.value = false
+  window.location.reload()
+}
+
 watch(() => route.params.id, fetchPlayerInfo, { immediate: true })
 watch(inputtedInfo, checkForEdits)
 watch(currentUser, resetInfoEdits)
@@ -139,11 +149,8 @@ watch(currentUser, resetInfoEdits)
   <section v-if="playerInfo">
     <div class="section__banner">
       <img class="banner-image" :src="bannerPath" />
-      <div
-        v-if="currentlyEditing"
-        class="banner-input"
-        :class="{'banner-input--hidden': unsavedBanner}"
-      >
+
+      <div v-if="currentlyEditing" class="banner-input" :class="{'banner-input--hidden': unsavedBanner}">
         <div class="banner-input__prompt">
           <span>
             <FontAwesomeIcon icon="file-arrow-up" /> choose a banner image!
@@ -157,12 +164,27 @@ watch(currentUser, resetInfoEdits)
 
       <button
         v-if="canEdit"
+        class="settings-button"
+        @click="() => showAccountModal = true"
+      >
+        <FontAwesomeIcon icon="user-gear" />
+        <span class="button-text">settings</span>
+      </button>
+
+      <button
+        v-if="canEdit"
         class="edit-button"
         :disabled="unsavedChanges"
         @click="() => currentlyEditing = !currentlyEditing"
       >
-        <FontAwesomeIcon v-if="currentlyEditing" icon="circle-xmark" />
-        <FontAwesomeIcon v-else="currentlyEditing" icon="pen-to-square" />
+        <span v-if="currentlyEditing">
+          <span class="button-text">cancel</span>
+          <FontAwesomeIcon icon="circle-xmark" />
+        </span>
+        <span v-else>
+          <span class="button-text">edit profile</span>
+          <FontAwesomeIcon icon="pen-to-square" />
+        </span>
       </button>
     </div>
 
@@ -217,20 +239,43 @@ watch(currentUser, resetInfoEdits)
       </div>
     </section>
   </div>
+
+  <div
+    v-if="canEdit"
+    @click="() => showAccountModal = false"
+    class="modal"
+    :class="{'modal--hidden': !showAccountModal}"
+  >
+    <AccountModal
+      v-on:click.stop
+      @logout="logout"
+      @close="() => showAccountModal = false"
+      :currentUser="currentUser"
+    />
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.edit-button {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  background-color: var(--block-bg-colour);
-  transition: opacity 0.5s;
-}
+.section__banner {
+  button {
+    position: absolute;
+    top: 1rem;
+    background-color: var(--block-bg-colour);
+    transition: opacity 0.5s;
+  }
 
-.edit-button:disabled {
-  opacity: 75%;
-  cursor: not-allowed;
+  .settings-button {
+    left: 1rem;
+  }
+
+  .edit-button {
+    right: 1rem;
+  }
+
+  .edit-button:disabled {
+    opacity: 75%;
+    cursor: not-allowed;
+  }
 }
 
 .banner-input {
@@ -350,10 +395,6 @@ watch(currentUser, resetInfoEdits)
 }
 
 @media screen and (max-width: 50em) {
-  .section__banner button span {
-    display: none;
-  }
-
   .banner-input {
     justify-content: start;
     gap: 0;
@@ -399,10 +440,23 @@ watch(currentUser, resetInfoEdits)
 }
 
 @media screen and (max-width: 35em) {
-  .edit-button {
-    top: 0.75rem;
-    right: 0.75rem;
-    padding: 0.5rem 0.25rem;
+  .section__banner {
+    button {
+      top: 0.75rem;
+      padding: 0.5rem 0.25rem;
+    }
+
+    .settings-button {
+      left: 0.75rem;
+    }
+
+    .edit-button {
+      right: 0.75rem;
+    }
+
+    .button-text {
+      display: none;
+    }
   }
 
   .banner-input__hint {

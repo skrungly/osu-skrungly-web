@@ -1,30 +1,22 @@
 <script setup>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { RouterLink, RouterView } from 'vue-router'
-import { reactive, ref } from "vue"
+import { ref } from "vue"
 
-import { fetchFromAPI, getIdentity, logoutOfAPI } from "@/api"
+import { fetchFromAPI, getIdentity } from "@/api"
 import LoginModal from '@/components/LoginModal.vue'
-import AccountModal from '@/components/AccountModal.vue'
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 
 const currentUser = ref(null)
-const loginModalState = reactive({ "modal--hidden": true })
-const accountModalState = reactive({ "modal--hidden": true })
+const showLoginModal = ref(false)
 
 async function updateLogin() {
   const identity = await getIdentity()
   if (identity === null) return
 
   currentUser.value = await fetchFromAPI(`/players/${identity}`)
-  loginModalState["modal--hidden"] = true
-}
-
-async function logout() {
-  logoutOfAPI()
-  currentUser.value = null
-  accountModalState["modal--hidden"] = true
+  showLoginModal.value = false
 }
 
 updateLogin()
@@ -46,18 +38,12 @@ updateLogin()
             <span>beatmaps!</span>
           </RouterLink>
 
-          <button v-if="currentUser"
-            @click="() => accountModalState['modal--hidden'] = false"
-            class="profile nav__link--split"
-          >
+          <RouterLink v-if="currentUser" :to="'/u/' + currentUser.name" class="profile nav__link--split" >
             <img :src="`${AVATAR_URL}/${currentUser.id}`" />
             <span>{{ currentUser.name }}</span>
-          </button>
+          </RouterLink>
 
-          <button v-else
-            @click="() => loginModalState['modal--hidden'] = false"
-            class="nav__link--split"
-          >
+          <button v-else @click="() => showLoginModal = true" class="nav__link--split">
             <FontAwesomeIcon icon="right-to-bracket" />
             <span>login!</span>
           </button>
@@ -78,21 +64,9 @@ updateLogin()
       <img src="https://cronitor.io/badges/1VWGlD/production/oFMDB4n4aHcqPp9uaJWugntGQ5I.svg"></img>
     </footer>
 
-    <!-- TODO: move <div class="modal" into the modal components? -->
-    <div @click="() => loginModalState['modal--hidden'] = true" class="modal" :class="loginModalState">
-      <LoginModal
-        v-on:click.stop
-        @login="updateLogin"
-      />
-    </div>
-
-    <div v-if="currentUser" @click="() => accountModalState['modal--hidden'] = true" class="modal" :class="accountModalState">
-      <AccountModal
-        v-on:click.stop
-        @logout="logout"
-        @close="() => accountModalState['modal--hidden'] = true"
-        :currentUser="currentUser"
-      />
+    <!-- TODO: move <div class="modal"> into the modal components? -->
+    <div @click="() => showLoginModal = false" class="modal" :class="{'modal--hidden': !showLoginModal}">
+      <LoginModal v-on:click.stop @login="updateLogin" />
     </div>
   </div>
 </template>

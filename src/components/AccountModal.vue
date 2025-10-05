@@ -14,12 +14,26 @@ const passwordState = reactive({
   "confirm": false
 })
 
+const confirmPassword = ref("")
+const confirmState = reactive({
+  "error": false,
+  "confirm": false
+})
+
 async function changePassword() {
+  if (password.value != confirmPassword.value) {
+    confirmState["error"] = true
+    return
+  } else {
+    confirmState["error"] = false
+  }
+
   const response = await putUserEdits({ "password": password.value })
 
   if (response.ok) {
     passwordState["confirm"] = true
     passwordState["error"] = false
+    confirmState["confirm"] = true
   } else {
     passwordState["error"] = true
     passwordState["confirm"] = false
@@ -33,10 +47,12 @@ async function changePassword() {
     <form @submit.prevent="changePassword">
       <label for="change-password">change password</label>
       <input v-model="password" id="change-password" type="password" :class="passwordState">
+
+      <label for="confirm-password">confirm password</label>
+      <input v-model="confirmPassword" id="confirm-password" type="password" :class="confirmState">
     </form>
 
     <div class="account-buttons">
-      <RouterLink @click="() => emit('close')" :to="'/u/' + props.currentUser.name" class="highlight-button">profile</RouterLink>
       <button @click="changePassword" class="confirm">save</button>
       <button @click="() => emit('logout')" class="error">logout</button>
     </div>
