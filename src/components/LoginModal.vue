@@ -11,10 +11,6 @@ const player = ref(null)
 const loadAvatar = ref(false)
 const hideAvatar = ref(true)
 
-const avatarState = reactive({
-  "avatar-preview--hidden": hideAvatar
-})
-
 // to be initialised by a call to resetForm()
 const username = ref("")
 const password = ref("")
@@ -76,8 +72,15 @@ watch(username, checkUsername)
 <template>
   <section>
     <div class="section__banner">
-      <img :src="`${AVATAR_URL}/banners/default`" />
-      <div class="avatar-preview" :class="avatarState">
+      <!-- lay user banner on top of the default one -->
+      <img class="banner-image" :src="`${AVATAR_URL}/banners/default.jpg`" />
+      <img
+        :src="`${AVATAR_URL}/banners/${player ? player.id : 0}`"
+        class="banner-image banner-preview"
+        :class="{'banner-preview--hidden': hideAvatar}"
+      />
+
+      <div class="avatar-preview" :class="{'avatar-preview--hidden': hideAvatar}">
         <img
           v-if="loadAvatar"
           @load="() => (hideAvatar = false)"
@@ -135,8 +138,16 @@ section {
     opacity: 0%;
     top: 1.5rem;
     transition:
-      top 0s ease 0.5s,
-      opacity 0.5s ease;
+      top 0s ease 0.6s,
+      opacity 0.5s ease 0.1s;
+  }
+
+  .banner-preview {
+    transition: opacity 0.5s ease;
+  }
+
+  .banner-preview--hidden {
+    opacity: 0%;
   }
 }
 </style>

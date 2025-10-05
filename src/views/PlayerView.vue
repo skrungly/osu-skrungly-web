@@ -138,7 +138,7 @@ watch(currentUser, resetInfoEdits)
 
   <section v-if="playerInfo">
     <div class="section__banner">
-      <img :src="bannerPath" />
+      <img class="banner-image" :src="bannerPath" />
       <div
         v-if="currentlyEditing"
         class="banner-input"
