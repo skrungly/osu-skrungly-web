@@ -1,9 +1,9 @@
 <script setup>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { RouterLink, RouterView } from 'vue-router'
-import { ref } from "vue"
+import { onMounted, ref } from "vue"
 
-import { fetchFromAPI, getIdentity } from "@/api"
+import * as api from "@/api"
 import LoginModal from '@/components/LoginModal.vue'
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
@@ -12,14 +12,18 @@ const currentUser = ref(null)
 const showLoginModal = ref(false)
 
 async function updateLogin() {
-  const identity = await getIdentity()
-  if (identity === null) return
+  const identity = await api.identity();
+  if (identity === null) return;
 
-  currentUser.value = await fetchFromAPI(`/players/${identity}`)
-  showLoginModal.value = false
+  const response = await api.get(`/players/${identity}`);
+
+  if (response.ok) {
+    currentUser.value = await response.json();
+    showLoginModal.value = false;
+  }
 }
 
-updateLogin()
+onMounted(updateLogin)
 </script>
 
 <template>

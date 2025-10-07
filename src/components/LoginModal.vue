@@ -1,7 +1,7 @@
 <script setup>
-import { computed, reactive, ref, watch } from "vue"
+import { reactive, ref, watch } from "vue"
 
-import { loginToAPI, fetchFromAPI } from "@/api"
+import * as api from "@/api"
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 
@@ -26,21 +26,25 @@ function resetForm() {
 }
 
 async function checkUsername() {
-  try {
-    var response = await fetchFromAPI(`/players/${username.value}`)
-  } catch (e) {
+  if (!username.value) return
+
+  var response = await api.get(`/players/${username.value}`)
+
+  if (!response.ok) {
     hideAvatar.value = true
     return
   }
 
+  const chosenPlayerInfo = await response.json()
+
   // if player didn't change, just show the avatar again
-  if (player.value && player.value.id == response.id) {
+  if (player.value && player.value.id == chosenPlayerInfo.id) {
     hideAvatar.value = false
   }
 
   // update player and start loading the avatar element
   if (response) {
-    player.value = response
+    player.value = chosenPlayerInfo
     loadAvatar.value = true
   }
 
@@ -55,7 +59,7 @@ async function attemptLogin() {
     return
   }
 
-  const response = await loginToAPI(username.value, password.value)
+  const response = await api.login(username.value, password.value)
 
   if (response.ok) {
     emit("login")

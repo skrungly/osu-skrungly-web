@@ -3,7 +3,7 @@ import { computed, reactive, ref, toRef, watch } from "vue"
 
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
-import { fetchFromAPI } from "@/api"
+import * as api from "@/api"
 import Score from "@/components/Score.vue"
 
 const props = defineProps(["player", "mode", "sort"])
@@ -38,19 +38,21 @@ async function fetchScores(refresh=false) {
     params["status"] = "best"
   }
 
-  const response = await fetchFromAPI("/scores", params)
+  const response = await api.get("/scores", params)
 
-  if (response.length < LOAD_PER_CHUNK) {
+  if (!response.ok) return  // TODO: !!!
+
+  const scoreData = await response.json()
+
+  if (scoreData.length < LOAD_PER_CHUNK) {
     loadMore.value = false
   } else {
     page.value += 1
   }
 
-  if (refresh) {
-    scores.length = 0
-  }
+  if (refresh) scores.length = 0
 
-  scores.push(...response)
+  scores.push(...scoreData)
   loading.value = false
 }
 

@@ -1,42 +1,48 @@
 <script setup>
-import { reactive, ref, toRef } from "vue"
+import { reactive, ref, toRef } from "vue";
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { putUserEdits } from "@/api"
+import * as api from "@/api";
 
 const props = defineProps(["currentUser"])
+const currentUser = toRef(props, "currentUser")
+
 const emit = defineEmits(["logout", "close"])
 
 const password = ref("")
 const passwordState = reactive({
-  "error": false,
-  "confirm": false
+  error: false,
+  confirm: false
 })
 
 const confirmPassword = ref("")
 const confirmState = reactive({
-  "error": false,
-  "confirm": false
+  error: false,
+  confirm: false
 })
 
 async function changePassword() {
   if (password.value != confirmPassword.value) {
-    confirmState["error"] = true
+    confirmState.error = true
     return
-  } else {
-    confirmState["error"] = false
   }
 
-  const response = await putUserEdits({ "password": password.value })
+  confirmState.error = false
+
+  const response = await api.put(
+    `/players/${currentUser.value.id}`, {
+      "password": password.value
+    }
+  );
 
   if (response.ok) {
-    passwordState["confirm"] = true
-    passwordState["error"] = false
-    confirmState["confirm"] = true
+    passwordState.confirm = true
+    passwordState.error = false
+    confirmState.confirm = true
   } else {
-    passwordState["error"] = true
-    passwordState["confirm"] = false
+    passwordState.error = true
+    passwordState.confirm = false
   }
 }
 </script>

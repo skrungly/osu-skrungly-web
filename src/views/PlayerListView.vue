@@ -3,7 +3,7 @@ import { reactive, ref, watch } from 'vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import { fetchFromAPI } from '../api'
+import * as api from '../api'
 import RadioButton from '@/components/RadioButton.vue'
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
@@ -31,14 +31,16 @@ async function fetchPlayers() {
     "limit": 100,
   }
 
-  try {
-    var response = await fetchFromAPI("/players", params)
-  } catch (e) {
-    error.value = e
+  var response = await api.get("/players", params)
+
+  if (!response.ok) {
+    error.value = response.statusText;
   }
 
+  var playerList = await response.json()
+
   loading.value = false
-  if (response) players.value = response
+  if (playerList) players.value = playerList
 }
 
 const loadingStyle = reactive({ "loading": loading })

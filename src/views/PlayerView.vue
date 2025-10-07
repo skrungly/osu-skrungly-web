@@ -4,7 +4,7 @@ import { useRoute } from "vue-router"
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { fetchFromAPI, logoutOfAPI, putUserBanner, putUserEdits } from "@/api"
+import * as api from "@/api";
 import AccountModal from "@/components/AccountModal.vue"
 import RadioButton from "@/components/RadioButton.vue"
 import ScoreList from "@/components/ScoreList.vue"
@@ -41,6 +41,7 @@ const inputtedInfo = reactive({
 })
 
 const bannerPath = ref(null)
+const bannerFile = ref(null)
 
 function resetInfoEdits() {
   if (playerInfo.value === null) return
@@ -62,15 +63,17 @@ async function fetchPlayerInfo() {
   canEdit.value = false
   unsavedChanges.value = false
 
-  try {
-    var response = await fetchFromAPI(`/players/${route.params.id}`)
-  } catch (e) {
-    error.value = e
+  var response = await api.get(`/players/${route.params.id}`)
+
+  if (!response.ok) {
+    error.value = response.statusText
     return
   }
 
+  const player = await response.json()
+
   var bestPerformance = 0
-  for (const stats of response.stats) {
+  for (const stats of player.stats) {
     if (stats.mode < GAME_MODES.length && stats.pp) {
       if (stats.pp > bestPerformance) {
         bestPerformance = stats.pp
@@ -80,7 +83,7 @@ async function fetchPlayerInfo() {
     }
   }
 
-  playerInfo.value = response
+  playerInfo.value = player
   resetInfoEdits()
 }
 
@@ -100,12 +103,16 @@ async function checkForEdits() {
 
 async function uploadEdits() {
   const edits = await checkForEdits()
+
   if (unsavedChanges.value) {
-    await putUserEdits(edits)
+    await api.put(`/players/${currentUser.value.id}`, edits);
   }
 
   if (unsavedBanner.value) {
-    await putUserBanner(bannerPath)
+    await api.uploadFile(
+      `/players/${currentUser.value.id}/banner`,
+      bannerFile.value
+    );
   }
 
   const routePath = route.path.substring(0, route.path.lastIndexOf("/"))
@@ -122,6 +129,7 @@ async function onBannerChange(event) {
   const reader = new FileReader()
   reader.onload = function (e) {
     bannerPath.value = e.target.result
+    bannerFile.value = event.target.files[0]
     unsavedChanges.value = true
     unsavedBanner.value = true
   }
@@ -130,7 +138,7 @@ async function onBannerChange(event) {
 }
 
 async function logout() {
-  await logoutOfAPI()
+  await api.logout()
   currentUser.value = null
   showAccountModal.value = false
   window.location.reload()
