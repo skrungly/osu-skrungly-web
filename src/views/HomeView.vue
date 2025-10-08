@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue"
 
-import { fetchFromAPI } from "@/api"
+import * as api from "@/api"
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GLOBAL_STATS = {
@@ -11,23 +11,20 @@ const GLOBAL_STATS = {
   tscore: "total score",
 }
 
-// the current user identity is passed to all router views,
-// even though it's not used in some (like in this case).
-defineProps(["currentUser"])
-
 const error = ref(null)
 const stats = ref(null)
 
 onMounted(async () => {
-  error.value = null
+  error.value = null;
 
-  try {
-    var response = await fetchFromAPI("/stats")
-  } catch (e) {
-    error.value = e
+  var response = await api.get("/stats");
+
+  if (!response.ok) {
+    error.value = response.statusText;
+    return;
   }
 
-  stats.value = response
+  stats.value = await response.json();
 })
 </script>
 

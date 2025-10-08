@@ -1,42 +1,37 @@
 <script setup>
-import { reactive, ref, toRef } from "vue"
+import { ref } from "vue";
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { putUserEdits } from "@/api"
+import * as api from "@/api";
+import { auth } from "@/store";
 
-const props = defineProps(["currentUser"])
-const emit = defineEmits(["logout", "close"])
+const password = ref("");
+const repeatPassword = ref("");
 
-const password = ref("")
-const passwordState = reactive({
-  "error": false,
-  "confirm": false
-})
-
-const confirmPassword = ref("")
-const confirmState = reactive({
-  "error": false,
-  "confirm": false
-})
+const passwordStyle = ref({});
+const repeatStyle = ref({});
 
 async function changePassword() {
-  if (password.value != confirmPassword.value) {
-    confirmState["error"] = true
-    return
-  } else {
-    confirmState["error"] = false
+  if (password.value != repeatPassword.value) {
+    passwordStyle.value = {};
+    repeatStyle.value = { error: true };
+    return;
   }
 
-  const response = await putUserEdits({ "password": password.value })
+  repeatStyle.value = {}
+
+  const response = await api.put(
+    `/players/${auth.player.id}`, {
+      "password": password.value
+    }
+  );
 
   if (response.ok) {
-    passwordState["confirm"] = true
-    passwordState["error"] = false
-    confirmState["confirm"] = true
+    passwordStyle.value = { confirm: true };
+    repeatStyle.value = { confirm: true };
   } else {
-    passwordState["error"] = true
-    passwordState["confirm"] = false
+    passwordStyle.value = { error: true };
   }
 }
 </script>
@@ -46,15 +41,15 @@ async function changePassword() {
     <h2><FontAwesomeIcon icon="user-gear" />account settings</h2>
     <form @submit.prevent="changePassword">
       <label for="change-password">change password</label>
-      <input v-model="password" id="change-password" type="password" :class="passwordState">
+      <input v-model="password" id="change-password" type="password" :class="passwordStyle">
 
-      <label for="confirm-password">confirm password</label>
-      <input v-model="confirmPassword" id="confirm-password" type="password" :class="confirmState">
+      <label for="repeat-password">repeat password</label>
+      <input v-model="repeatPassword" id="repeat-password" type="password" :class="repeatStyle">
     </form>
 
     <div class="account-buttons">
+      <button @click="auth.logout()" class="error">logout</button>
       <button @click="changePassword" class="confirm">save</button>
-      <button @click="() => emit('logout')" class="error">logout</button>
     </div>
   </section>
 </template>

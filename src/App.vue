@@ -1,25 +1,17 @@
 <script setup>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { RouterLink, RouterView } from 'vue-router'
-import { ref } from "vue"
+import { ref, watch } from "vue"
 
-import { fetchFromAPI, getIdentity } from "@/api"
+import { auth } from "@/store"
 import LoginModal from '@/components/LoginModal.vue'
 
-const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
+const AVATAR_URL = import.meta.env.VITE_AVATAR_URL;
 
-const currentUser = ref(null)
-const showLoginModal = ref(false)
+const showLoginModal = ref(false);
 
-async function updateLogin() {
-  const identity = await getIdentity()
-  if (identity === null) return
-
-  currentUser.value = await fetchFromAPI(`/players/${identity}`)
-  showLoginModal.value = false
-}
-
-updateLogin()
+auth.update();
+watch(() => auth.player, () => showLoginModal.value = false);
 </script>
 
 <template>
@@ -38,9 +30,9 @@ updateLogin()
             <span>beatmaps!</span>
           </RouterLink>
 
-          <RouterLink v-if="currentUser" :to="'/u/' + currentUser.name" class="profile nav__link--split" >
-            <img :src="`${AVATAR_URL}/${currentUser.id}`" />
-            <span>{{ currentUser.name }}</span>
+          <RouterLink v-if="auth.player" :to="'/u/' + auth.player.name" class="profile nav__link--split" >
+            <img :src="`${AVATAR_URL}/${auth.player.id}`" />
+            <span>{{ auth.player.name }}</span>
           </RouterLink>
 
           <button v-else @click="() => showLoginModal = true" class="nav__link--split">
@@ -52,10 +44,7 @@ updateLogin()
     </header>
     <main>
       <RouterView v-slot="{ Component }">
-        <component
-          :is="Component"
-          :currentUser="currentUser"
-        />
+        <component :is="Component"/>
       </RouterView>
     </main>
     <footer>
@@ -66,7 +55,7 @@ updateLogin()
 
     <!-- TODO: move <div class="modal"> into the modal components? -->
     <div @click="() => showLoginModal = false" class="modal" :class="{'modal--hidden': !showLoginModal}">
-      <LoginModal v-on:click.stop @login="updateLogin" />
+      <LoginModal v-on:click.stop />
     </div>
   </div>
 </template>

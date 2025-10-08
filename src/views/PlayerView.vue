@@ -1,10 +1,11 @@
 <script setup>
-import { reactive, ref, toRef, watch } from "vue"
+import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-import { fetchFromAPI, logoutOfAPI, putUserBanner, putUserEdits } from "@/api"
+import * as api from "@/api";
+import { auth } from "@/store";
 import AccountModal from "@/components/AccountModal.vue"
 import RadioButton from "@/components/RadioButton.vue"
 import ScoreList from "@/components/ScoreList.vue"
@@ -17,9 +18,6 @@ const SHOW_STATS = {
   total_hits: "notes hit",
   rscore: "ranked score",
 }
-
-const props = defineProps(["currentUser"])
-const currentUser = toRef(props, "currentUser")
 
 const route = useRoute()
 const error = ref(null)
@@ -35,19 +33,21 @@ const unsavedBanner = ref(false)
 
 const showAccountModal = ref(false)
 
-const inputtedInfo = reactive({
+const inputtedInfo = ref({
   "name": null,
   "userpage_content": null,
 })
 
 const bannerPath = ref(null)
+const bannerFile = ref(null)
 
 function resetInfoEdits() {
+  showAccountModal.value = false
   if (playerInfo.value === null) return
 
-  canEdit.value = currentUser.value !== null && currentUser.value.id == playerInfo.value.id
-  inputtedInfo.name = playerInfo.value.name
-  inputtedInfo.userpage_content = playerInfo.value.userpage_content
+  canEdit.value = auth.player !== null && auth.player.id == playerInfo.value.id
+  inputtedInfo.value.name = playerInfo.value.name
+  inputtedInfo.value.userpage_content = playerInfo.value.userpage_content
 
   // TODO: find a better solution to avoiding cache on banner changes
   bannerPath.value = `${AVATAR_URL}/banners/${playerInfo.value.id}.jpg?${new Date().getTime()}`
@@ -62,15 +62,17 @@ async function fetchPlayerInfo() {
   canEdit.value = false
   unsavedChanges.value = false
 
-  try {
-    var response = await fetchFromAPI(`/players/${route.params.id}`)
-  } catch (e) {
-    error.value = e
+  var response = await api.get(`/players/${route.params.id}`)
+
+  if (!response.ok) {
+    error.value = response.statusText
     return
   }
 
+  const player = await response.json()
+
   var bestPerformance = 0
-  for (const stats of response.stats) {
+  for (const stats of player.stats) {
     if (stats.mode < GAME_MODES.length && stats.pp) {
       if (stats.pp > bestPerformance) {
         bestPerformance = stats.pp
@@ -80,7 +82,7 @@ async function fetchPlayerInfo() {
     }
   }
 
-  playerInfo.value = response
+  playerInfo.value = player
   resetInfoEdits()
 }
 
@@ -88,10 +90,10 @@ async function checkForEdits() {
   const editedInfo = {}
   unsavedChanges.value = false
 
-  for (const property in inputtedInfo) {
-    if (playerInfo.value[property] != inputtedInfo[property]) {
+  for (const property in inputtedInfo.value) {
+    if (playerInfo.value[property] != inputtedInfo.value[property]) {
       unsavedChanges.value = true
-      editedInfo[property] = inputtedInfo[property]
+      editedInfo[property] = inputtedInfo.value[property]
     }
   }
 
@@ -100,16 +102,20 @@ async function checkForEdits() {
 
 async function uploadEdits() {
   const edits = await checkForEdits()
+
   if (unsavedChanges.value) {
-    await putUserEdits(edits)
+    await api.put(`/players/${auth.player.id}`, edits);
   }
 
   if (unsavedBanner.value) {
-    await putUserBanner(bannerPath)
+    await api.uploadFile(
+      `/players/${auth.player.id}/banner`,
+      bannerFile.value
+    );
   }
 
   const routePath = route.path.substring(0, route.path.lastIndexOf("/"))
-  window.location.replace(`${routePath}/${inputtedInfo.name}`)
+  window.location.replace(`${routePath}/${inputtedInfo.value.name}`)
 }
 
 async function onBannerChange(event) {
@@ -122,6 +128,7 @@ async function onBannerChange(event) {
   const reader = new FileReader()
   reader.onload = function (e) {
     bannerPath.value = e.target.result
+    bannerFile.value = event.target.files[0]
     unsavedChanges.value = true
     unsavedBanner.value = true
   }
@@ -129,16 +136,9 @@ async function onBannerChange(event) {
   reader.readAsDataURL(file)
 }
 
-async function logout() {
-  await logoutOfAPI()
-  currentUser.value = null
-  showAccountModal.value = false
-  window.location.reload()
-}
-
 watch(() => route.params.id, fetchPlayerInfo, { immediate: true })
-watch(inputtedInfo, checkForEdits)
-watch(currentUser, resetInfoEdits)
+watch(inputtedInfo, checkForEdits, { deep: true })
+watch(() => auth.player, resetInfoEdits)
 </script>
 
 <template>
@@ -241,17 +241,11 @@ watch(currentUser, resetInfoEdits)
   </div>
 
   <div
-    v-if="canEdit"
     @click="() => showAccountModal = false"
     class="modal"
     :class="{'modal--hidden': !showAccountModal}"
   >
-    <AccountModal
-      v-on:click.stop
-      @logout="logout"
-      @close="() => showAccountModal = false"
-      :currentUser="currentUser"
-    />
+    <AccountModal v-on:click.stop @close="() => showAccountModal = false" />
   </div>
 </template>
 

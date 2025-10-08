@@ -1,71 +1,74 @@
 <script setup>
-import { computed, reactive, ref, watch } from "vue"
+import { ref, watch } from "vue"
 
-import { loginToAPI, fetchFromAPI } from "@/api"
+import * as api from "@/api"
+import { auth } from "@/store"
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 
-const emit = defineEmits(["login"])
-
-const player = ref(null)
-const loadAvatar = ref(false)
+const chosenPlayer = ref(null)
 const hideAvatar = ref(true)
 
-// to be initialised by a call to resetForm()
 const username = ref("")
 const password = ref("")
-const usernameState = reactive({})
-const passwordState = reactive({})
+
+const usernameStyle = ref({})
+const passwordStyle = ref({})
 
 function resetForm() {
   username.value = ""
   password.value = ""
-  usernameState["error"] = false
-  usernameState["confirm"] = false
-  passwordState["error"] = false
+
+  chosenPlayer.value = null
+  hideAvatar.value = true
+
+  usernameStyle.value = {}
+  passwordStyle.value = {}
 }
 
 async function checkUsername() {
-  try {
-    var response = await fetchFromAPI(`/players/${username.value}`)
-  } catch (e) {
+  if (!username.value) {
+    usernameStyle.value = {}
     hideAvatar.value = true
     return
   }
 
+  var response = await api.get(`/players/${username.value}`)
+
+  if (!response.ok) {
+    usernameStyle.value = {}
+    hideAvatar.value = true
+    return
+  }
+
+  const currentPlayer = await response.json()
+
   // if player didn't change, just show the avatar again
-  if (player.value && player.value.id == response.id) {
+  if (chosenPlayer.value && chosenPlayer.value.id == currentPlayer.id) {
     hideAvatar.value = false
   }
 
   // update player and start loading the avatar element
-  if (response) {
-    player.value = response
-    loadAvatar.value = true
-  }
-
-  usernameState["error"] = false
-  usernameState["confirm"] = true
+  chosenPlayer.value = currentPlayer
+  usernameStyle.value = { confirm: true }
 }
 
 async function attemptLogin() {
   // indicate whether a user has been selected
-  if (!loadAvatar.value || hideAvatar.value) {
-    usernameState["error"] = true
+  if (hideAvatar.value) {
+    usernameStyle.value = { error: true }
     return
   }
 
-  const response = await loginToAPI(username.value, password.value)
+  await auth.login(username.value, password.value)
 
-  if (response.ok) {
-    emit("login")
-    passwordState["error"] = false
+  if (auth.player) {
+    resetForm()
   } else {
-    passwordState["error"] = true
+    passwordStyle.value = { error: true }
   }
 }
 
-resetForm()
 watch(username, checkUsername)
 </script>
 
@@ -75,26 +78,27 @@ watch(username, checkUsername)
       <!-- lay user banner on top of the default one -->
       <img class="banner-image" :src="`${AVATAR_URL}/banners/default.jpg`" />
       <img
-        :src="`${AVATAR_URL}/banners/${player ? player.id : 0}`"
+        v-if="chosenPlayer"
+        :src="`${AVATAR_URL}/banners/${chosenPlayer.id}`"
         class="banner-image banner-preview"
         :class="{'banner-preview--hidden': hideAvatar}"
       />
 
       <div class="avatar-preview" :class="{'avatar-preview--hidden': hideAvatar}">
         <img
-          v-if="loadAvatar"
-          @load="() => (hideAvatar = false)"
-          :src="`${AVATAR_URL}/${player ? player.id : 0}`"
+          v-if="chosenPlayer"
+          @load="() => hideAvatar = false"
+          :src="`${AVATAR_URL}/${chosenPlayer.id}`"
         />
       </div>
     </div>
 
     <form @submit.prevent="attemptLogin">
       <label for="username">username</label>
-      <input v-model="username" id="username" type="text" :class="usernameState">
+      <input v-model="username" id="username" type="text" :class="usernameStyle">
 
       <label for="password">password</label>
-      <input v-model="password" id="password" type="password" :class="passwordState">
+      <input v-model="password" id="password" type="password" :class="passwordStyle">
 
       <button class="highlight-button" type="submit">login</button>
     </form>

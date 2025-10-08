@@ -1,18 +1,14 @@
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import { fetchFromAPI } from '../api'
+import * as api from '../api'
 import RadioButton from '@/components/RadioButton.vue'
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
 const SORT_MODES = ["pp", "plays"]
-
-// the current user identity is passed to all router views,
-// even though it's not used in some (like in this case).
-defineProps(["currentUser"])
 
 const chosenMode = ref(0)
 const chosenSort = ref("pp")
@@ -31,17 +27,17 @@ async function fetchPlayers() {
     "limit": 100,
   }
 
-  try {
-    var response = await fetchFromAPI("/players", params)
-  } catch (e) {
-    error.value = e
+  var response = await api.get("/players", params)
+
+  if (!response.ok) {
+    error.value = response.statusText;
   }
 
-  loading.value = false
-  if (response) players.value = response
-}
+  var playerList = await response.json()
 
-const loadingStyle = reactive({ "loading": loading })
+  loading.value = false
+  if (playerList) players.value = playerList
+}
 
 watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 </script>
@@ -63,7 +59,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         />
       </div>
     </div>
-    <div class="player-list" :class="loadingStyle">
+    <div class="player-list" :class="{'loading': loading}">
       <div class="player-info">
         <!-- this is just the table header of sorts -->
         <div class="player-info__rank"></div>
