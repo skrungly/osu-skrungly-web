@@ -2,10 +2,9 @@
 import { reactive, ref, watch } from "vue"
 
 import * as api from "@/api"
+import { auth } from "@/store"
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
-
-const emit = defineEmits(["login"])
 
 const player = ref(null)
 const loadAvatar = ref(false)
@@ -20,9 +19,14 @@ const passwordState = reactive({})
 function resetForm() {
   username.value = ""
   password.value = ""
-  usernameState["error"] = false
-  usernameState["confirm"] = false
-  passwordState["error"] = false
+
+  player.value = null
+  hideAvatar.value = true
+  loadAvatar.value = false
+
+  usernameState.error = false
+  usernameState.confirm = false
+  passwordState.error = false
 }
 
 async function checkUsername() {
@@ -31,6 +35,7 @@ async function checkUsername() {
   var response = await api.get(`/players/${username.value}`)
 
   if (!response.ok) {
+    usernameState.confirm = false
     hideAvatar.value = true
     return
   }
@@ -48,24 +53,23 @@ async function checkUsername() {
     loadAvatar.value = true
   }
 
-  usernameState["error"] = false
-  usernameState["confirm"] = true
+  usernameState.error = false
+  usernameState.confirm = true
 }
 
 async function attemptLogin() {
   // indicate whether a user has been selected
-  if (!loadAvatar.value || hideAvatar.value) {
-    usernameState["error"] = true
+  if (hideAvatar.value) {
+    usernameState.error = true
     return
   }
 
-  const response = await api.login(username.value, password.value)
+  await auth.login(username.value, password.value)
 
-  if (response.ok) {
-    emit("login")
-    passwordState["error"] = false
+  if (auth.player == null) {
+    passwordState.error = true
   } else {
-    passwordState["error"] = true
+    resetForm()
   }
 }
 

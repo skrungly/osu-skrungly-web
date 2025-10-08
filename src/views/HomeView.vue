@@ -11,10 +11,6 @@ const GLOBAL_STATS = {
   tscore: "total score",
 }
 
-// the current user identity is passed to all router views,
-// even though it's not used in some (like in this case).
-defineProps(["currentUser"])
-
 const error = ref(null)
 const stats = ref(null)
 

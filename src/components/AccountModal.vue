@@ -1,14 +1,10 @@
 <script setup>
-import { reactive, ref, toRef } from "vue";
+import { reactive, ref } from "vue";
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import * as api from "@/api";
-
-const props = defineProps(["currentUser"])
-const currentUser = toRef(props, "currentUser")
-
-const emit = defineEmits(["logout", "close"])
+import { auth } from "@/store";
 
 const password = ref("")
 const passwordState = reactive({
@@ -31,7 +27,7 @@ async function changePassword() {
   confirmState.error = false
 
   const response = await api.put(
-    `/players/${currentUser.value.id}`, {
+    `/players/${auth.player.id}`, {
       "password": password.value
     }
   );
@@ -60,7 +56,7 @@ async function changePassword() {
 
     <div class="account-buttons">
       <button @click="changePassword" class="confirm">save</button>
-      <button @click="() => emit('logout')" class="error">logout</button>
+      <button @click="auth.logout()" class="error">logout</button>
     </div>
   </section>
 </template>

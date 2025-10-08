@@ -14,12 +14,12 @@ async function request(method, endpoint, data, csrf) {
   if (csrf) options.headers["X-CSRF-TOKEN"] = getCookie(`csrf_${csrf}_token`);
 
   // handle GET requests separately since they're a bit different
-  if (method === "GET" && data !== undefined) {
+  if (method === "GET" && data) {
     let paramString = new URLSearchParams(data).toString();
     url = `${url}?${paramString}`;
 
   // now handle requests which involve sending data
-  } else if (data !== undefined) {
+  } else if (data) {
     // differentiate between multipart form data or JSON
     if (data instanceof FormData) {
       options.body = data;
@@ -29,7 +29,32 @@ async function request(method, endpoint, data, csrf) {
     }
   }
 
-  return await fetch(url, options);
+  var response = await fetch(url, options);
+
+  // send a refresh request if we're unauthorized due to expired tokens
+  if (response.status == 401 && csrf == "access") {
+    let identity = await refresh();
+
+    if (identity) {
+      // attempt the original request again
+      response = await fetch(url, options);
+    }
+  }
+
+  return response;
+}
+
+export async function refresh() {
+  // only bother refreshing if we have a token
+  if (getCookie("csrf_refresh_token")) {
+    const response = await request("POST", "/auth/refresh", null, "refresh");
+
+    if (response.ok) {
+      return (await response.json()).identity;
+    }
+  }
+
+  return null;
 }
 
 export async function get(endpoint, params, csrf) {
@@ -64,21 +89,13 @@ export async function logout() {
 }
 
 export async function identity() {
-  const idResponse = await post("/auth/refresh", null, "refresh");
+  const response = await get("/auth/identity", null);
 
-  if (idResponse.ok) {
-    return (await idResponse.json()).identity;
-
-  // code 401 means access token is expired
-  } else if (idResponse.status == 401) {
-    const refreshResponse = await post("/auth/refresh", null, "refresh");
-
-    if (refreshResponse.ok) {
-      return (await refreshResponse.json()).identity;
-    }
+  if (response.ok) {
+    return (await response.json()).identity;
+  } else {
+    return await refresh();
   }
-
-  return null;
 }
 
 export async function uploadFile(endpoint, file) {

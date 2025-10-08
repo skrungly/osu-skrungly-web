@@ -1,10 +1,11 @@
 <script setup>
-import { reactive, ref, toRef, watch } from "vue"
+import { reactive, ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import * as api from "@/api";
+import { auth } from "@/store";
 import AccountModal from "@/components/AccountModal.vue"
 import RadioButton from "@/components/RadioButton.vue"
 import ScoreList from "@/components/ScoreList.vue"
@@ -17,9 +18,6 @@ const SHOW_STATS = {
   total_hits: "notes hit",
   rscore: "ranked score",
 }
-
-const props = defineProps(["currentUser"])
-const currentUser = toRef(props, "currentUser")
 
 const route = useRoute()
 const error = ref(null)
@@ -44,9 +42,10 @@ const bannerPath = ref(null)
 const bannerFile = ref(null)
 
 function resetInfoEdits() {
+  showAccountModal.value = false
   if (playerInfo.value === null) return
 
-  canEdit.value = currentUser.value !== null && currentUser.value.id == playerInfo.value.id
+  canEdit.value = auth.player !== null && auth.player.id == playerInfo.value.id
   inputtedInfo.name = playerInfo.value.name
   inputtedInfo.userpage_content = playerInfo.value.userpage_content
 
@@ -105,12 +104,12 @@ async function uploadEdits() {
   const edits = await checkForEdits()
 
   if (unsavedChanges.value) {
-    await api.put(`/players/${currentUser.value.id}`, edits);
+    await api.put(`/players/${auth.player.id}`, edits);
   }
 
   if (unsavedBanner.value) {
     await api.uploadFile(
-      `/players/${currentUser.value.id}/banner`,
+      `/players/${auth.player.id}/banner`,
       bannerFile.value
     );
   }
@@ -139,14 +138,13 @@ async function onBannerChange(event) {
 
 async function logout() {
   await api.logout()
-  currentUser.value = null
-  showAccountModal.value = false
+  auth.player = null
   window.location.reload()
 }
 
 watch(() => route.params.id, fetchPlayerInfo, { immediate: true })
 watch(inputtedInfo, checkForEdits)
-watch(currentUser, resetInfoEdits)
+watch(() => auth.player, resetInfoEdits)
 </script>
 
 <template>
@@ -249,17 +247,11 @@ watch(currentUser, resetInfoEdits)
   </div>
 
   <div
-    v-if="canEdit"
     @click="() => showAccountModal = false"
     class="modal"
     :class="{'modal--hidden': !showAccountModal}"
   >
-    <AccountModal
-      v-on:click.stop
-      @logout="logout"
-      @close="() => showAccountModal = false"
-      :currentUser="currentUser"
-    />
+    <AccountModal v-on:click.stop @close="() => showAccountModal = false" />
   </div>
 </template>
 
