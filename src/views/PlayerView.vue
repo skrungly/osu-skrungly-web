@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, watch } from "vue"
+import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
@@ -33,7 +33,7 @@ const unsavedBanner = ref(false)
 
 const showAccountModal = ref(false)
 
-const inputtedInfo = reactive({
+const inputtedInfo = ref({
   "name": null,
   "userpage_content": null,
 })
@@ -46,8 +46,8 @@ function resetInfoEdits() {
   if (playerInfo.value === null) return
 
   canEdit.value = auth.player !== null && auth.player.id == playerInfo.value.id
-  inputtedInfo.name = playerInfo.value.name
-  inputtedInfo.userpage_content = playerInfo.value.userpage_content
+  inputtedInfo.value.name = playerInfo.value.name
+  inputtedInfo.value.userpage_content = playerInfo.value.userpage_content
 
   // TODO: find a better solution to avoiding cache on banner changes
   bannerPath.value = `${AVATAR_URL}/banners/${playerInfo.value.id}.jpg?${new Date().getTime()}`
@@ -90,10 +90,10 @@ async function checkForEdits() {
   const editedInfo = {}
   unsavedChanges.value = false
 
-  for (const property in inputtedInfo) {
-    if (playerInfo.value[property] != inputtedInfo[property]) {
+  for (const property in inputtedInfo.value) {
+    if (playerInfo.value[property] != inputtedInfo.value[property]) {
       unsavedChanges.value = true
-      editedInfo[property] = inputtedInfo[property]
+      editedInfo[property] = inputtedInfo.value[property]
     }
   }
 
@@ -115,7 +115,7 @@ async function uploadEdits() {
   }
 
   const routePath = route.path.substring(0, route.path.lastIndexOf("/"))
-  window.location.replace(`${routePath}/${inputtedInfo.name}`)
+  window.location.replace(`${routePath}/${inputtedInfo.value.name}`)
 }
 
 async function onBannerChange(event) {
@@ -136,14 +136,8 @@ async function onBannerChange(event) {
   reader.readAsDataURL(file)
 }
 
-async function logout() {
-  await api.logout()
-  auth.player = null
-  window.location.reload()
-}
-
 watch(() => route.params.id, fetchPlayerInfo, { immediate: true })
-watch(inputtedInfo, checkForEdits)
+watch(inputtedInfo, checkForEdits, { deep: true })
 watch(() => auth.player, resetInfoEdits)
 </script>
 

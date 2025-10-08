@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
@@ -39,8 +39,6 @@ async function fetchPlayers() {
   if (playerList) players.value = playerList
 }
 
-const loadingStyle = reactive({ "loading": loading })
-
 watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 </script>
 
@@ -61,7 +59,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         />
       </div>
     </div>
-    <div class="player-list" :class="loadingStyle">
+    <div class="player-list" :class="{'loading': loading}">
       <div class="player-info">
         <!-- this is just the table header of sorts -->
         <div class="player-info__rank"></div>
