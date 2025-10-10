@@ -11,16 +11,16 @@ const GLOBAL_STATS = {
   tscore: "total score",
 }
 
-const error = ref(null)
+const errorMessage = ref(null)
 const stats = ref(null)
 
 onMounted(async () => {
-  error.value = null;
+  errorMessage.value = null;
 
   var response = await api.get("/stats");
 
   if (!response.ok) {
-    error.value = response.statusText;
+    errorMessage.value = `failed to fetch global stats [${response.status}]`;
     return;
   }
 
@@ -29,11 +29,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="error" class="message message--error">
-    oops :( an error occurred while fetching global stats. <span class="error-text">[{{ error }}]</span>
-  </div>
-  <section v-if="stats" class="container">
-    <div v-for="[stat, name] in Object.entries(GLOBAL_STATS)" class="stats">
+  <section v-if="stats || errorMessage" class="container">
+    <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+
+    <div v-if="stats" v-for="[stat, name] in Object.entries(GLOBAL_STATS)" class="stats">
       <span class="stats__name">global {{ name }}</span>
       <span class="stats__value">{{ stats[stat].toLocaleString() }}</span>
     </div>

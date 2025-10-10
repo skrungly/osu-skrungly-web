@@ -10,6 +10,8 @@ const props = defineProps(["player", "mode", "sort"])
 const player = toRef(props, "player")
 const mode = toRef(props, "mode")
 
+const errorMessage = ref("");
+
 const LOAD_PER_CHUNK = 10
 
 const scores = ref([])
@@ -34,13 +36,14 @@ async function fetchScores(refresh=false) {
     page: page.value,
   }
 
-  if (props.sort == "pp") {
-    params["status"] = "best"
-  }
+  if (props.sort == "pp") params.status = "best"
 
   const response = await api.get("/scores", params)
 
-  if (!response.ok) return  // TODO: !!!
+  if (!response.ok) {
+    errorMessage.value = `failed to fetch scores [${response.status}]`
+    return
+  }
 
   const scoreData = await response.json()
 
@@ -52,6 +55,7 @@ async function fetchScores(refresh=false) {
 
   if (refresh) scores.value.length = 0
 
+  errorMessage.value = null
   scores.value.push(...scoreData)
   loading.value = false
 }
@@ -70,7 +74,9 @@ watch([player, mode], () => fetchScores(true), { immediate: true })
       :rank="props.sort == 'pp' ? index + 1 : null"
     />
 
-    <button v-if="loadMore" @click="() => fetchScores(false)" class="show-more-button">
+    <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+
+    <button v-else-if="loadMore" @click="() => fetchScores(false)" class="show-more-button">
       <FontAwesomeIcon icon="caret-down" /> show more <FontAwesomeIcon icon="caret-down" />
     </button>
   </div>
@@ -87,6 +93,10 @@ watch([player, mode], () => fetchScores(true), { immediate: true })
 .show-more-button {
   padding: 0.25rem;
   margin: auto;
+}
+
+.error-text {
+  text-align: center;
 }
 
 </style>

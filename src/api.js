@@ -37,6 +37,7 @@ async function request(method, endpoint, data, csrf) {
 
     if (identity) {
       // attempt the original request again
+      options.headers["X-CSRF-TOKEN"] = getCookie(`csrf_${csrf}_token`);
       response = await fetch(url, options);
     }
   }
@@ -49,9 +50,13 @@ export async function refresh() {
   if (getCookie("csrf_refresh_token")) {
     const response = await request("POST", "/auth/refresh", null, "refresh");
 
-    if (response.ok) {
-      return (await response.json()).identity;
+    if (response.status == 401) {
+      throw new Error("login session expired. please login again!")
+    } else if (!response.ok) {
+      throw new Error(`failed to reauthenticate [${response.status}]`)
     }
+
+    return (await response.json()).identity;
   }
 
   return null;

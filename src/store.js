@@ -21,7 +21,9 @@ export const auth = reactive({
 
         const response = await api.get(`/players/${identity}`);
 
-        if (!response.ok) throw new Error(response.statusText);
+        if (!response.ok) {
+            throw new Error(`failed to fetch info for authorized player [${response.status}]`);
+        }
 
         this.player = await response.json();
         localStorage.player = JSON.stringify(this.player);
@@ -30,16 +32,19 @@ export const auth = reactive({
     async login(name, password) {
         // TODO: if api.login is changed to provide full player info,
         // we should assign to `this.player` from here.
-        const loginResponse = await api.login(name, password);
-
-        if (!loginResponse.ok) return null;
-
+        const response = await api.login(name, password);
         await this.update();
+        return response;
     },
 
     async logout() {
         const response = await api.logout();
-        if (!response.ok) throw new Error(response.statusText);
-        this.clear()
+
+        if (!response.ok) {
+            throw new Error(`unable to logout [${response.status}]`)
+        }
+
+        this.clear();
+        return response;
     }
 })

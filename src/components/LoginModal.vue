@@ -2,42 +2,43 @@
 import { ref, watch } from "vue"
 
 import * as api from "@/api"
+import { inputStateFactory } from "@/utils"
 import { auth } from "@/store"
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 
+const username = inputStateFactory("")
+const password = inputStateFactory("")
+
 const chosenPlayer = ref(null)
 const hideAvatar = ref(true)
 
-const username = ref("")
-const password = ref("")
-
-const usernameStyle = ref({})
-const passwordStyle = ref({})
-
 function resetForm() {
-  username.value = ""
-  password.value = ""
+  username.reset()
+  password.reset()
 
   chosenPlayer.value = null
   hideAvatar.value = true
-
-  usernameStyle.value = {}
-  passwordStyle.value = {}
 }
 
 async function checkUsername() {
+  password.clearStyle()
+  username.clearStyle()
+
   if (!username.value) {
-    usernameStyle.value = {}
     hideAvatar.value = true
     return
   }
 
   var response = await api.get(`/players/${username.value}`)
 
-  if (!response.ok) {
-    usernameStyle.value = {}
+  if (response.status == 404) {
     hideAvatar.value = true
+    return
+
+  // anything else is unexpected behaviour
+  } else if (!response.ok) {
+    username.showError(`failed to fetch player info [${response.status}]`)
     return
   }
 
@@ -50,26 +51,35 @@ async function checkUsername() {
 
   // update player and start loading the avatar element
   chosenPlayer.value = currentPlayer
-  usernameStyle.value = { confirm: true }
+  username.confirm()
 }
 
 async function attemptLogin() {
   // indicate whether a user has been selected
   if (hideAvatar.value) {
-    usernameStyle.value = { error: true }
+    username.showError(username.value ? "username not registered" : "username is required")
     return
   }
 
-  await auth.login(username.value, password.value)
+  try {
+    var response = await auth.login(username.value, password.value)
+  } catch (e) {
+    password.showError(e.message)
+    return
+  }
 
   if (auth.player) {
     resetForm()
+
+  } else if (response.status == 401) {
+    password.showError(password.value ? "incorrect password" : "password is required")
+
   } else {
-    passwordStyle.value = { error: true }
+    password.showError(`failed to attempt login [${response.status}]`)
   }
 }
 
-watch(username, checkUsername)
+watch(() => username.value, checkUsername)
 </script>
 
 <template>
@@ -95,10 +105,12 @@ watch(username, checkUsername)
 
     <form @submit.prevent="attemptLogin">
       <label for="username">username</label>
-      <input v-model="username" id="username" type="text" :class="usernameStyle">
+      <input v-model="username.value" id="username" type="text" :class="username.style">
+      <span class="error-text" :class="{'error-text--hidden': !username.style.error}">{{ username.errorMessage }}</span>
 
       <label for="password">password</label>
-      <input v-model="password" id="password" type="password" :class="passwordStyle">
+      <input v-model="password.value" id="password" type="password" :class="password.style">
+      <span class="error-text" :class="{'error-text--hidden': !password.style.error}">{{ password.errorMessage }}</span>
 
       <button class="highlight-button" type="submit">login</button>
     </form>

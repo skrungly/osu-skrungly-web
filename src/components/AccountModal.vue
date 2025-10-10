@@ -1,37 +1,41 @@
 <script setup>
-import { ref } from "vue";
-
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 import * as api from "@/api";
+import { inputStateFactory } from '@/utils';
 import { auth } from "@/store";
 
-const password = ref("");
-const repeatPassword = ref("");
-
-const passwordStyle = ref({});
-const repeatStyle = ref({});
+const password = inputStateFactory("");
+const repeatPassword = inputStateFactory("");
 
 async function changePassword() {
   if (password.value != repeatPassword.value) {
-    passwordStyle.value = {};
-    repeatStyle.value = { error: true };
+    repeatPassword.showError("passwords don't match");
+    password.clearStyle();
     return;
   }
 
-  repeatStyle.value = {}
+  repeatPassword.clearStyle();
+  password.clearStyle();
 
-  const response = await api.put(
-    `/players/${auth.player.id}`, {
-      "password": password.value
-    }
+  var response = await api.put(
+    `/players/${auth.player.id}`, { "password": password.value }
   );
 
   if (response.ok) {
-    passwordStyle.value = { confirm: true };
-    repeatStyle.value = { confirm: true };
+    password.reset()
+    repeatPassword.reset()
+    password.confirm()
+    repeatPassword.confirm()
+
+  // provide reasons if the password was rejected
+  } else if (response.status == 422) {
+    let reasons = (await response.json()).password;
+    password.showError(reasons.join("\r\n"));
+
+  // anything else is unexpected behaviour
   } else {
-    passwordStyle.value = { error: true };
+    password.showError(`failed to change password [${response.status}]`);
   }
 }
 </script>
@@ -41,10 +45,12 @@ async function changePassword() {
     <h2><FontAwesomeIcon icon="user-gear" />account settings</h2>
     <form @submit.prevent="changePassword">
       <label for="change-password">change password</label>
-      <input v-model="password" id="change-password" type="password" :class="passwordStyle">
+      <input v-model="password.value" id="change-password" type="password" :class="password.style">
+      <span class="error-text" :class="{'error-text--hidden': !password.style.error}">{{ password.errorMessage }}</span>
 
       <label for="repeat-password">repeat password</label>
-      <input v-model="repeatPassword" id="repeat-password" type="password" :class="repeatStyle">
+      <input v-model="repeatPassword.value" id="repeat-password" type="password" :class="repeatPassword.style">
+      <span class="error-text" :class="{'error-text--hidden': !repeatPassword.style.error}">{{ repeatPassword.errorMessage }}</span>
     </form>
 
     <div class="account-buttons">

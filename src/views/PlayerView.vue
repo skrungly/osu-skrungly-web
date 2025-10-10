@@ -9,6 +9,7 @@ import { auth } from "@/store";
 import AccountModal from "@/components/AccountModal.vue"
 import RadioButton from "@/components/RadioButton.vue"
 import ScoreList from "@/components/ScoreList.vue"
+import { inputStateFactory } from "@/utils";
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
@@ -20,7 +21,8 @@ const SHOW_STATS = {
 }
 
 const route = useRoute()
-const error = ref(null)
+const pageError = ref(null)
+const showAccountModal = ref(false)
 
 const playerInfo = ref(null)
 const playerModes = ref([])
@@ -28,18 +30,17 @@ const currentMode = ref(0)
 
 const canEdit = ref(false)
 const currentlyEditing = ref(false)
+
 const unsavedChanges = ref(false)
-const unsavedBanner = ref(false)
+const savePromptStyle = ref({})
 
-const showAccountModal = ref(false)
+const inputName = inputStateFactory("")
+const inputUserpage = inputStateFactory("")
 
-const inputtedInfo = ref({
-  "name": null,
-  "userpage_content": null,
+const banner = ref({
+  path: null,
+  file: null,
 })
-
-const bannerPath = ref(null)
-const bannerFile = ref(null)
 
 function resetInfoEdits() {
   showAccountModal.value = false
@@ -48,18 +49,22 @@ function resetInfoEdits() {
   canEdit.value = auth.player !== null && auth.player.id == playerInfo.value.id
   currentlyEditing.value = false;
 
-  inputtedInfo.value.name = playerInfo.value.name
-  inputtedInfo.value.userpage_content = playerInfo.value.userpage_content
+  inputName.reset()
+  inputUserpage.reset()
+
+  inputName.value = playerInfo.value.name
+  inputUserpage.value = playerInfo.value.userpage_content
 
   // TODO: find a better solution to avoiding cache on banner changes
-  bannerPath.value = `${AVATAR_URL}/banners/${playerInfo.value.id}.jpg?${new Date().getTime()}`
+  banner.value.path = `${AVATAR_URL}/banners/${playerInfo.value.id}.jpg?${new Date().getTime()}`
+  banner.value.file = null
 
   unsavedChanges.value = false
-  unsavedBanner.value = false
+  savePromptStyle.value = { warning: true }
 }
 
 async function fetchPlayerInfo() {
-  error.value = null
+  pageError.value = null
   playerModes.value = []
   canEdit.value = false
   unsavedChanges.value = false
@@ -67,7 +72,7 @@ async function fetchPlayerInfo() {
   var response = await api.get(`/players/${route.params.id}`)
 
   if (!response.ok) {
-    error.value = response.statusText
+    pageError.value = `unable to fetch player '${route.params.id}' [${response.status}]`
     return
   }
 
@@ -88,36 +93,90 @@ async function fetchPlayerInfo() {
   resetInfoEdits()
 }
 
-async function checkForEdits() {
-  const editedInfo = {}
+function checkForEdits() {
+  const edits = {}
   unsavedChanges.value = false
 
-  for (const property in inputtedInfo.value) {
-    if (playerInfo.value[property] != inputtedInfo.value[property]) {
-      unsavedChanges.value = true
-      editedInfo[property] = inputtedInfo.value[property]
-    }
+  if (inputName.value != playerInfo.value.name) {
+    edits.name = inputName.value
   }
 
-  return editedInfo
+  if (inputUserpage.value != playerInfo.value.userpage_content) {
+    edits.userpage_content = inputUserpage.value
+  }
+
+  unsavedChanges.value = Object.keys(edits).length > 0 || banner.value.file
+  return edits
 }
 
 async function uploadEdits() {
-  const edits = await checkForEdits()
+  const edits = checkForEdits()
 
-  if (unsavedChanges.value) {
-    await api.put(`/players/${auth.player.id}`, edits);
+  inputName.clearStyle()
+  inputUserpage.clearStyle()
+  savePromptStyle.value = {
+    warning: true,
+    loading: true,
   }
 
-  if (unsavedBanner.value) {
-    await api.uploadFile(
-      `/players/${auth.player.id}/banner`,
-      bannerFile.value
-    );
+  if (unsavedChanges.value) {
+    try {
+      var infoResponse = await api.put(`/players/${auth.player.id}`, edits)
+    } catch (e) {
+      pageError.value = e.message
+      savePromptStyle.value = { error: true }
+      return
+    }
+
+    if (infoResponse.status == 422) {
+      const reasons = await infoResponse.json()
+      if (reasons.name) inputName.showError(reasons.name.join("\r\n"))
+      if (reasons.userpage_content) inputUserpage.showError(reasons.userpage_content.join("\r\n"))
+      savePromptStyle.value = { error: true }
+      return
+
+    // anything else is unexpected behaviour!
+    } else if (!infoResponse.ok) {
+      pageError.value = `failed to update user info [${infoResponse.status}]`
+      savePromptStyle.value = { error: true }
+      return
+    }
+
+    // in case we can't refresh the page due to a banner upload issue,
+    // the current player info should be updated to reflect changes
+    if (edits.name) {
+      playerInfo.value.name = edits.name
+      inputName.confirm()
+    }
+
+    if (edits.userpage_content) {
+      playerInfo.value.userpage_content = edits.userpage_content
+      inputUserpage.confirm()
+    }
+  }
+
+  if (banner.value.file) {
+    try {
+      var bannerResponse = await api.uploadFile(`/players/${auth.player.id}/banner`, banner.value.file)
+    } catch (e) {
+      pageError.value = e.message
+      savePromptStyle.value = { error: true }
+      return
+    }
+
+    if (bannerResponse.status == 413) {
+      pageError.value = "file upload too large (max 50MB)"
+      savePromptStyle.value = { error: true }
+      return
+    } else if (!bannerResponse.ok) {
+      pageError.value = `failed to update banner image [${bannerResponse.status}]`
+      savePromptStyle.value = { error: true }
+      return
+    }
   }
 
   const routePath = route.path.substring(0, route.path.lastIndexOf("/"))
-  window.location.replace(`${routePath}/${inputtedInfo.value.name}`)
+  window.location.replace(`${routePath}/${inputName.value}`)
 }
 
 async function onBannerChange(event) {
@@ -129,30 +188,30 @@ async function onBannerChange(event) {
 
   const reader = new FileReader()
   reader.onload = function (e) {
-    bannerPath.value = e.target.result
-    bannerFile.value = event.target.files[0]
+    banner.value.path = e.target.result
+    banner.value.file = event.target.files[0]
     unsavedChanges.value = true
-    unsavedBanner.value = true
   }
 
   reader.readAsDataURL(file)
 }
 
 watch(() => route.params.id, fetchPlayerInfo, { immediate: true })
-watch(inputtedInfo, checkForEdits, { deep: true })
+watch(inputName, checkForEdits)
+watch(inputUserpage, checkForEdits)
 watch(() => auth.player, resetInfoEdits)
 </script>
 
 <template>
-  <div v-if="error" class="message message--error">
-    oops :( an error occurred while fetching player info. <span class="error-text">[{{ error }}]</span>
-  </div>
+  <section class="container" v-if="pageError">
+    <span class="error-text">{{ pageError }}</span>
+  </section>
 
   <section v-if="playerInfo">
     <div class="section__banner">
-      <img class="banner-image" :src="bannerPath" />
+      <img class="banner-image" :src="banner.path" />
 
-      <div v-if="currentlyEditing" class="banner-input" :class="{'banner-input--hidden': unsavedBanner}">
+      <div v-if="currentlyEditing" class="banner-input" :class="{'banner-input--hidden': banner.file}">
         <div class="banner-input__prompt">
           <span>
             <FontAwesomeIcon icon="file-arrow-up" /> choose a banner image!
@@ -193,17 +252,20 @@ watch(() => auth.player, resetInfoEdits)
     <div class="userpage-header">
       <div class="userpage-identity">
         <img :src="`${AVATAR_URL}/${playerInfo.id}`" />
-        <input v-if="currentlyEditing" type="text" maxlength="15" v-model="inputtedInfo.name" />
-        <span v-else>{{ playerInfo.name }}</span>
+        <input v-if="currentlyEditing" type="text" :class="inputName.style" maxlength="15" v-model="inputName.value" />
+        <span v-else class="userpage-name">{{ playerInfo.name }}</span>
+        <span class="error-text" :class="{'error-text--hidden': !inputName.style.error}">{{ inputName.errorMessage }}</span>
       </div>
 
       <textarea v-if="currentlyEditing"
         class="userpage-content"
+        :class="inputUserpage.style"
         type="text"
         maxlength="2048"
-        v-model="inputtedInfo.userpage_content"
+        v-model="inputUserpage.value"
       ></textarea>
       <span v-else class="userpage-content">{{ playerInfo.userpage_content }}</span>
+      <span class="error-text" :class="{'error-text--hidden': !inputUserpage.style.error}">{{ inputUserpage.errorMessage }}</span>
 
       <div class="mode-buttons">
         <RadioButton
@@ -233,8 +295,10 @@ watch(() => auth.player, resetInfoEdits)
   </section>
 
   <div class="edit-controls" :class="{'edit-controls--hidden': !unsavedChanges}">
-    <section class="warning">
-      <p>your profile has unsaved changes!</p>
+    <section :class="savePromptStyle">
+      <p v-if="savePromptStyle.loading">uploading changes...</p>
+      <p v-else-if="savePromptStyle.warning">your profile has unsaved changes!</p>
+      <p v-else>failed to save changes!</p>
       <div class="container">
         <button @click="uploadEdits"><FontAwesomeIcon icon="floppy-disk" /> save!</button>
         <button @click="resetInfoEdits"><FontAwesomeIcon icon="rotate-left" /> restore!</button>
@@ -348,7 +412,7 @@ watch(() => auth.player, resetInfoEdits)
     box-shadow: 0 2px 16px #00000080;
   }
 
-  span, input {
+  .userpage-name, input {
     font-size: 1.5rem;
     width: 20rem;
     max-width: calc(100% - 0.25rem);

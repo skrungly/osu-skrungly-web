@@ -42,6 +42,11 @@ input, select, textarea, button {
   color: inherit;
   background: #1b1b1b;
   border: 1px solid #ffffff20;
+  outline: none;
+}
+
+input:focus, textarea:focus {
+  border: 1px solid #ffffff40;
 }
 
 button {
@@ -137,6 +142,7 @@ section {
   transition: opacity 0.5s;
 }
 
+/*
 .message {
   padding: var(--section-padding);
   border-radius: var(--border-radius);
@@ -145,13 +151,14 @@ section {
 
 .message--error {
   background-color: #ff4848c0;
-}
+} */
 
+/*
 .error-text {
   font-family: monospace;
   font-size: 1rem;
   margin: 0.5rem;
-}
+} */
 
 .modal {
   position: fixed;
@@ -186,12 +193,13 @@ section {
   text-align: center;
   gap: 0.5rem;
 
-  input[type="text"], input[type="password"] {
-    margin-bottom: 0.5rem;
+  label {
+    margin-top: 0.5rem;
   }
 
   button {
     align-self: center;
+    margin-top: 0.5rem;
   }
 
   .inline-button {
@@ -215,17 +223,17 @@ section {
   transition: margin-top 0.25s ease 0.25s;
 }
 
-.error {
+.error, input:focus.error, textarea:focus.error {
   border: 0.0625rem solid #ff5454;
   transition: border 0.25s;
 }
 
-.warning {
+.warning, input:focus.warning, textarea:focus.warning {
   border: 0.0625rem solid #ffb254;
   transition: border 0.25s;
 }
 
-.confirm {
+.confirm, input:focus.confirm, textarea:focus.confirm {
   border: 0.0625rem solid #80ff54;
   transition: border 0.25s;
 }
@@ -255,4 +263,23 @@ section {
   -moz-background-clip: text;
   -webkit-text-fill-color: transparent;
   -moz-text-fill-color: transparent;
+}
+
+.error-text {
+  color: #ff5454;
+  font-size: 0.9rem;
+  white-space: pre;
+
+  transition:
+    font-size 0.1s,
+    opacity 0.1s 0.1s;
+}
+
+.error-text--hidden {
+  font-size: 0;
+  opacity: 0;
+
+  transition:
+    font-size 0.1s 0.1s,
+    opacity 0.1s;
 }

@@ -15,11 +15,10 @@ const chosenSort = ref("pp")
 
 const players = ref(null)
 const loading = ref(false)
-const error = ref(null)
+const errorMessage = ref(null)
 
 async function fetchPlayers() {
   loading.value = true
-  error.value = null
 
   const params = {
     "mode": chosenMode.value,
@@ -30,12 +29,14 @@ async function fetchPlayers() {
   var response = await api.get("/players", params)
 
   if (!response.ok) {
-    error.value = response.statusText;
+    errorMessage.value = `failed to fetch players [${response.status}]`;
+    return
   }
 
   var playerList = await response.json()
 
   loading.value = false
+  errorMessage.value = null
   if (playerList) players.value = playerList
 }
 
@@ -43,9 +44,6 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 </script>
 
 <template>
-  <div v-if="error" class="message message--error">
-    oops :( an error occurred while fetching player list. <span class="error-text">[{{ error }}]</span>
-  </div>
   <section>
     <div class="player-page__title">
       <h2><FontAwesomeIcon icon="users" />players!</h2>
@@ -59,6 +57,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         />
       </div>
     </div>
+
     <div class="player-list" :class="{'loading': loading}">
       <div class="player-info">
         <!-- this is just the table header of sorts -->
@@ -73,6 +72,9 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
           @click="() => chosenSort = sort"
         />
       </div>
+
+      <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+
       <div class="player-info" v-if="players" v-for="(player, index) of players">
         <div class="player-info__rank">#{{ index + 1 }}</div>
         <div class="player-info__avatar">
@@ -172,5 +174,10 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 
 .player-info:first-of-type:hover {
   background-color: inherit;
+}
+
+.error-text {
+  text-align: center;
+  width: 100%;
 }
 </style>
