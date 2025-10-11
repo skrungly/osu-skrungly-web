@@ -90,7 +90,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   </section>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .player-page__title {
   display: flex;
   align-items: center;

@@ -82,7 +82,7 @@ watch([player, mode], () => fetchScores(true), { immediate: true })
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .score-list {
   display: flex;
   flex-flow: column;

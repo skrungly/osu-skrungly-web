@@ -52,7 +52,7 @@ onMounted(async () => {
   </section>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .dev-avatar {
   margin: 0 1rem 1rem 0;
   float: left;

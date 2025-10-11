@@ -86,7 +86,7 @@ function getModString() {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
 .score {
   display: flex;
   gap: 0.5rem;

@@ -16,7 +16,7 @@ const buttonStyle = computed(() => ({
   </button>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 .radio-button {
   opacity: 50%;
   border: none;
