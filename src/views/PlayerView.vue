@@ -264,7 +264,7 @@ watch(() => auth.player, resetInfoEdits)
         maxlength="2048"
         v-model="inputUserpage.value"
       ></textarea>
-      <span v-else class="userpage-content">{{ playerInfo.userpage_content }}</span>
+      <span v-else-if="auth.player" class="userpage-content">{{ playerInfo.userpage_content }}</span>
       <span class="error-text" :class="{'error-text--hidden': !inputUserpage.style.error}">{{ inputUserpage.errorMessage }}</span>
 
       <div class="mode-buttons">
