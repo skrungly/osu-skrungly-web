@@ -1,9 +1,10 @@
 <script setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { onMounted, ref } from "vue"
 
 import * as api from "@/api"
+import MapInfo from "@/components/MapInfo.vue"
 
-const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GLOBAL_STATS = {
   pp: "pp",
   plays: "plays",
@@ -12,51 +13,110 @@ const GLOBAL_STATS = {
 }
 
 const errorMessage = ref(null)
+
 const stats = ref(null)
+const popularMaps = ref([])
+const recentScores = ref([])
 
 onMounted(async () => {
   errorMessage.value = null;
 
-  var response = await api.get("/stats");
+  const statsResponse = await api.get("/stats");
 
-  if (!response.ok) {
-    errorMessage.value = `failed to fetch global stats [${response.status}]`;
+  if (!statsResponse.ok) {
+    errorMessage.value = `failed to fetch global stats [${statsResponse.status}]`;
     return;
   }
 
-  stats.value = await response.json();
+  stats.value = await statsResponse.json();
+
+  const popularMapsResponse = await api.get("/maps", {
+    sort: "popular",
+    limit: 5,
+  });
+
+  if (!popularMapsResponse.ok) {
+    errorMessage.value = `failed to fetch popular maps [${popularMapsResponse.status}]`;
+    return;
+  }
+
+  popularMaps.value = await popularMapsResponse.json();
+
+  const recentScoresResponse = await api.get("/scores", {
+    sort: "frontpage",
+    limit: 5,
+  });
+
+  if (!recentScoresResponse.ok) {
+    errorMessage.value = `failed to fetch recent scores [${recentScoresResponse.status}]`;
+  }
+
+  recentScores.value = await recentScoresResponse.json();
 })
 </script>
 
 <template>
-  <section v-if="stats || errorMessage" class="container">
-    <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
+  <section v-if="errorMessage">
+    <span class="error-text">{{ errorMessage }}</span>
+  </section>
 
+  <section v-if="stats" class="container">
     <div v-if="stats" v-for="[stat, name] in Object.entries(GLOBAL_STATS)" class="stats">
       <span class="stats__name">global {{ name }}</span>
       <span class="stats__value">{{ stats[stat].toLocaleString() }}</span>
     </div>
   </section>
-  <section>
-    <h2>welcome!</h2>
-    <p>
-      <img class="dev-avatar" :src="`${AVATAR_URL}/3`" />
-      hey :D this is the brand new website for our private skrungly osu! server.
-      you can look around to see a number of planned features that haven't been
-      implemented yet, but i've decided to release this site for early feedback
-      and testing now that it has <i>almost</i> enough functionality to replace
-      the old one. changing your user details will be introduced alongside a
-      login system, but if you want anything changed in the meantime then just
-      let me know! ­-&nbsp;kingsley
-    </p>
-  </section>
+
+  <div class="page-split">
+    <section v-if="recentScores">
+      <h2><FontAwesomeIcon icon="clock-rotate-left" />recent pb scores</h2>
+      <div class="info-list">
+        <MapInfo
+          v-for="score in recentScores"
+          :map="score.beatmap"
+          :score="score"
+          :show-player="true"
+        />
+      </div>
+    </section>
+
+    <section v-if="popularMaps">
+      <h2><FontAwesomeIcon icon="music" />most popular maps</h2>
+      <div class="info-list">
+        <MapInfo
+          v-for="map in popularMaps"
+          :map="map"
+        />
+      </div>
+    </section>
+  </div>
 </template>
 
 <style lang="scss" scoped>
-.dev-avatar {
-  margin: 0 1rem 1rem 0;
-  float: left;
-  width: 4rem;
-  border-radius: var(--border-radius);
+.page-split {
+  display: flex;
+  flex-flow: row;
+  gap: var(--section-margin);
+
+  section {
+    width: calc(50% - 2.5 * var(--section-margin));
+  }
+}
+
+.info-list {
+  display: flex;
+  flex-flow: column;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+@media screen and (max-width: 65em) {
+  .page-split {
+    flex-flow: column;
+
+    section {
+      width: inherit;
+    }
+  }
 }
 </style>

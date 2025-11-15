@@ -4,7 +4,7 @@ import { ref, toRef, watch } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 
 import * as api from "@/api"
-import Score from "@/components/Score.vue"
+import MapInfo from "@/components/MapInfo.vue"
 
 const props = defineProps(["player", "mode", "sort"])
 const player = toRef(props, "player")
@@ -67,9 +67,10 @@ watch([player, mode], () => fetchScores(true), { immediate: true })
   <h2 v-if="props.sort == 'pp'"><FontAwesomeIcon icon="trophy" />top plays</h2>
   <h2 v-if="props.sort == 'recent'"><FontAwesomeIcon icon="clock-rotate-left" />recent plays</h2>
   <div class="score-list" :class="{'loading': loading}">
-    <Score
+    <MapInfo
       v-if="scores.length"
       v-for="(score, index) in scores"
+      :map="score.beatmap"
       :score="score"
       :rank="props.sort == 'pp' ? index + 1 : null"
     />

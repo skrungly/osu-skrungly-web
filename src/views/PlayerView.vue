@@ -8,7 +8,7 @@ import * as api from "@/api";
 import { auth } from "@/store";
 import AccountModal from "@/components/AccountModal.vue"
 import RadioButton from "@/components/RadioButton.vue"
-import ScoreList from "@/components/ScoreList.vue"
+import PlayerScoreList from "@/components/PlayerScoreList.vue"
 import { inputStateFactory } from "@/utils";
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
@@ -287,11 +287,11 @@ watch(() => auth.player, resetInfoEdits)
   </section>
 
   <section v-if="playerInfo">
-    <ScoreList :player="playerInfo.id" :mode="currentMode" sort="pp" />
+    <PlayerScoreList :player="playerInfo.id" :mode="currentMode" sort="pp" />
   </section>
 
   <section v-if="playerInfo">
-    <ScoreList :player="playerInfo.id" :mode="currentMode" sort="recent" />
+    <PlayerScoreList :player="playerInfo.id" :mode="currentMode" sort="recent" />
   </section>
 
   <div class="edit-controls" :class="{'edit-controls--hidden': !unsavedChanges}">
