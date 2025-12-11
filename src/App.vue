@@ -19,18 +19,24 @@ watch(() => auth.player, () => showLoginModal.value = false);
     <header>
       <nav>
         <h1 class="highlight-text"><RouterLink to="/">osu!skrungly</RouterLink></h1>
+
         <div class="nav__links">
-          <RouterLink to="/players">
+          <RouterLink to="/" active-class="nav__link--active" exact>
+            <FontAwesomeIcon icon="chart-simple" />
+            <span>stats!</span>
+          </RouterLink>
+
+          <RouterLink to="/players" active-class="nav__link--active">
             <FontAwesomeIcon icon="users" />
             <span>players!</span>
           </RouterLink>
 
-          <RouterLink class="nav__link--disabled" to="">
+          <RouterLink to="" class="nav__link--disabled" title="coming soon!">
             <FontAwesomeIcon icon="music" />
             <span>beatmaps!</span>
           </RouterLink>
 
-          <RouterLink v-if="auth.player" :to="'/u/' + auth.player.name" class="profile nav__link--split" >
+          <RouterLink v-if="auth.player" :to="`/u/${auth.player.name}`" class="profile nav__link--split nav__link--active" >
             <img :src="`${AVATAR_URL}/${auth.player.id}`" />
             <span>{{ auth.player.name }}</span>
           </RouterLink>
@@ -104,17 +110,22 @@ nav {
   align-items: center;
 
   a {
-    cursor: pointer;
+    opacity: 45%;
   }
 
   .nav__link--split {
     margin-left: auto;
   }
-}
 
-.nav__link--disabled {
-  color: #ffffff40;
-  cursor: not-allowed;
+  .nav__link--active, a:hover {
+    opacity: 100%;
+    transition: 0.1s;
+  }
+
+  .nav__link--disabled, a.nav__link--disabled:hover {
+    opacity: 10%;
+    cursor: not-allowed;
+  }
 }
 
 @media screen and (max-width: 50em) {
