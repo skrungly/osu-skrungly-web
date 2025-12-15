@@ -63,7 +63,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         <!-- this is just the table header of sorts -->
         <div class="player-info__rank"></div>
         <div class="player-info__avatar"></div>
-        <div class="player-info__name"></div>
+        <div class="player-info__text"></div>
         <RadioButton
           v-for="sort of SORT_MODES"
           :state="chosenSort"
@@ -80,8 +80,13 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         <div class="player-info__avatar">
           <img :src="`${AVATAR_URL}/${player.id}`" />
         </div>
-        <div class="player-info__name">
-          <RouterLink :to="'/u/' + player.name">{{ player.name }}</RouterLink>
+        <div class="player-info__text">
+          <div class="player-info__name">
+            <RouterLink :to="'/u/' + player.name">{{ player.name }}</RouterLink>
+          </div>
+          <span class="player-info__secondary">
+            last seen {{ new Date(player.latest_activity * 1000).toLocaleDateString() }}
+          </span>
         </div>
         <div class="player-info__stat">{{ player.pp.toLocaleString() }}pp</div>
         <div class="player-info__stat">{{ player.plays.toLocaleString() }}</div>
@@ -124,11 +129,22 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
     text-align: center;
   }
 
-  .player-info__name {
-    min-width: 0rem;
+  .player-info__text {
+    display: flex;
+    flex-flow: column;
     flex-grow: 1;
+    min-width: 0rem;
     text-align: left;
     white-space: nowrap;
+  }
+
+  .player-info__name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .player-info__secondary {
+    opacity: 45%;
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -153,7 +169,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   .player-info {
     padding: 0.25rem;
 
-    .player-info__stat:last-of-type, button:last-of-type {
+    .player-info__stat:last-of-type, button:last-of-type, .player-info__secondary {
       display: none;
     }
 
