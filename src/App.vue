@@ -7,6 +7,8 @@ import { auth } from "@/store"
 import LoginModal from '@/components/LoginModal.vue'
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL;
+const GITHUB_URL = import.meta.env.VITE_GITHUB_URL;
+const STATUS_URL = import.meta.env.VITE_STATUS_URL;
 
 const showLoginModal = ref(false);
 
@@ -54,9 +56,9 @@ watch(() => auth.player, () => showLoginModal.value = false);
       </RouterView>
     </main>
     <footer>
-      <a href="https://github.com/skrungly/osu-skrungly"><FontAwesomeIcon icon="code" />source</a>
+      <a :href="GITHUB_URL"><FontAwesomeIcon icon="code" />source</a>
       |
-      <img src="https://cronitor.io/badges/1VWGlD/production/oFMDB4n4aHcqPp9uaJWugntGQ5I.svg"></img>
+      <img :src="STATUS_URL"></img>
     </footer>
 
     <!-- TODO: move <div class="modal"> into the modal components? -->
