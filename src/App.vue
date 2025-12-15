@@ -128,7 +128,7 @@ nav {
   }
 }
 
-@media screen and (max-width: 50em) {
+@media screen and (max-width: 65em) {
   .nav__links {
     justify-content: space-around;
     gap: 1.5rem;
@@ -143,7 +143,7 @@ nav {
   }
 }
 
-@media screen and (max-width: 35em) {
+@media screen and (max-width: 45em) {
   header {
     padding: var(--section-padding);
   }
