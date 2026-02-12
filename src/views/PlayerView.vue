@@ -120,15 +120,14 @@ async function uploadEdits() {
   }
 
   if (unsavedChanges.value) {
-    try {
-      var infoResponse = await api.put(`/players/${auth.player.id}`, edits)
-    } catch (e) {
-      pageError.value = e.message
-      savePromptStyle.value = { error: true }
-      return
-    }
+    var infoResponse = await api.put(`/players/${auth.player.id}`, edits)
 
-    if (infoResponse.status == 422) {
+    if (infoResponse.status == 401) {
+      auth.expired = true
+      auth.logout()
+      return
+
+    } else if (infoResponse.status == 422) {
       const reasons = await infoResponse.json()
       if (reasons.name) inputName.showError(reasons.name.join("\r\n"))
       if (reasons.userpage_content) inputUserpage.showError(reasons.userpage_content.join("\r\n"))
@@ -156,18 +155,18 @@ async function uploadEdits() {
   }
 
   if (banner.value.file) {
-    try {
-      var bannerResponse = await api.uploadFile(`/players/${auth.player.id}/banner`, banner.value.file)
-    } catch (e) {
-      pageError.value = e.message
-      savePromptStyle.value = { error: true }
-      return
-    }
+    var bannerResponse = await api.uploadFile(`/players/${auth.player.id}/banner`, banner.value.file)
 
-    if (bannerResponse.status == 413) {
+    if (bannerResponse.status == 401) {
+      auth.expired = true
+      auth.logout()
+      return
+
+    } else if (bannerResponse.status == 413) {
       pageError.value = "file upload too large (max 50MB)"
       savePromptStyle.value = { error: true }
       return
+
     } else if (!bannerResponse.ok) {
       pageError.value = `failed to update banner image [${bannerResponse.status}]`
       savePromptStyle.value = { error: true }

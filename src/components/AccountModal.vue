@@ -33,6 +33,10 @@ async function changePassword() {
     let reasons = (await response.json()).password;
     password.showError(reasons.join("\r\n"));
 
+  } else if (response.status == 401) {
+    auth.expired = true;
+    auth.logout();
+
   // anything else is unexpected behaviour
   } else {
     password.showError(`failed to change password [${response.status}]`);

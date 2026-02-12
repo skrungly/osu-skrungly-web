@@ -33,10 +33,9 @@ async function request(method, endpoint, data, csrf) {
 
   // send a refresh request if we're unauthorized due to expired tokens
   if (response.status == 401 && csrf == "access") {
-    let identity = await refresh();
+    response = await refresh();
 
-    if (identity) {
-      // attempt the original request again
+    if (response.ok) {
       options.headers["X-CSRF-TOKEN"] = getCookie(`csrf_${csrf}_token`);
       response = await fetch(url, options);
     }
@@ -46,20 +45,7 @@ async function request(method, endpoint, data, csrf) {
 }
 
 export async function refresh() {
-  // only bother refreshing if we have a token
-  if (getCookie("csrf_refresh_token")) {
-    const response = await request("POST", "/auth/refresh", null, "refresh");
-
-    if (response.status == 401) {
-      throw new Error("login session expired. please login again!")
-    } else if (!response.ok) {
-      throw new Error(`failed to reauthenticate [${response.status}]`)
-    }
-
-    return (await response.json()).identity;
-  }
-
-  return null;
+  return await request("POST", "/auth/refresh", null, "refresh");
 }
 
 export async function get(endpoint, params, csrf) {
@@ -93,14 +79,20 @@ export async function logout() {
   return await delete_("/auth/logout");
 }
 
-export async function identity() {
-  const response = await get("/auth/identity", null);
+export async function getIdentity() {
+  var response = await get("/auth/identity", null);
 
   if (response.ok) {
     return (await response.json()).identity;
-  } else {
-    return await refresh();
   }
+
+  response = await refresh();
+
+  if (response.ok) {
+    return (await response.json()).identity;
+  }
+
+  return null;
 }
 
 export async function uploadFile(endpoint, file) {

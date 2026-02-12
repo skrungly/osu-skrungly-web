@@ -51,6 +51,9 @@ watch(() => auth.player, () => showLoginModal.value = false);
       </nav>
     </header>
     <main>
+      <section class="container" v-if="auth.expired">
+        <span class="error-text">login session went mouldy :( sorry</span>
+      </section>
       <RouterView v-slot="{ Component }">
         <component :is="Component"/>
       </RouterView>
