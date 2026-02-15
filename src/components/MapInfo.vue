@@ -1,4 +1,6 @@
 <script setup>
+import * as vagueTime from "vague-time"
+
 const props = defineProps(["map", "score", "rank", "showPlayer"])
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
@@ -50,6 +52,10 @@ const DIFFICULTY_HUES = [
   [6.7, -79],
   [7.7, -109],
 ]
+
+function getPlayTime(score) {
+  return new Date(Date.parse(score.play_time));
+}
 
 function mapDifficultyStyle(diffValue) {
   var firstColour = "hsl(0, 0%, 0%)";
@@ -129,8 +135,8 @@ function getModString(mods_value) {
         <span v-if="score" class="map__info--secondary">{{ getModString(score.mods) }}</span>
       </div>
 
-      <div v-if="score" class="map__info--secondary map__info--truncate">
-        played {{ new Date(Date.parse(score.play_time)).toLocaleDateString() }}
+      <div v-if="score" :title="getPlayTime(score).toLocaleString()" class="map__info--secondary map__info--truncate">
+        played {{ vagueTime.get({to: getPlayTime(score)}) }}
       </div>
 
       <div v-else class="map__info--secondary map__info--truncate">

@@ -1,4 +1,5 @@
 <script setup>
+import * as vague_time from "vague-time"
 import { ref, watch } from 'vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -16,6 +17,10 @@ const chosenSort = ref("pp")
 const players = ref(null)
 const loading = ref(false)
 const errorMessage = ref(null)
+
+function getLastSeen(player) {
+  return new Date(player.latest_activity * 1000);
+}
 
 async function fetchPlayers() {
   loading.value = true
@@ -84,8 +89,8 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
           <div class="player-info__name">
             <RouterLink :to="'/u/' + player.name">{{ player.name }}</RouterLink>
           </div>
-          <span class="player-info__secondary">
-            last seen {{ new Date(player.latest_activity * 1000).toLocaleDateString() }}
+          <span :title="getLastSeen(player).toLocaleString()" class="player-info__secondary">
+            last seen {{ vague_time.get({to: getLastSeen(player)}) }}
           </span>
         </div>
         <div class="player-info__stat">{{ player.pp.toLocaleString() }}pp</div>
