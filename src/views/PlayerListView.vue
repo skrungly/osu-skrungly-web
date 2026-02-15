@@ -1,10 +1,10 @@
 <script setup>
-import * as vague_time from "vague-time"
 import { ref, watch } from 'vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import * as api from '../api'
+import { timeAgo } from '../utils'
 import RadioButton from '@/components/RadioButton.vue'
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
@@ -90,7 +90,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
             <RouterLink :to="'/u/' + player.name">{{ player.name }}</RouterLink>
           </div>
           <span :title="getLastSeen(player).toLocaleString()" class="player-info__secondary">
-            last seen {{ vague_time.get({to: getLastSeen(player)}) }}
+            last seen {{ timeAgo.format(getLastSeen(player)) }}
           </span>
         </div>
         <div class="player-info__stat">{{ player.pp.toLocaleString() }}pp</div>

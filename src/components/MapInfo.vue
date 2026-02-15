@@ -1,5 +1,5 @@
 <script setup>
-import * as vagueTime from "vague-time"
+import { timeAgo } from "../utils"
 
 const props = defineProps(["map", "score", "rank", "showPlayer"])
 
@@ -136,7 +136,7 @@ function getModString(mods_value) {
       </div>
 
       <div v-if="score" :title="getPlayTime(score).toLocaleString()" class="map__info--secondary map__info--truncate">
-        played {{ vagueTime.get({to: getPlayTime(score)}) }}
+        played {{ timeAgo.format(getPlayTime(score)) }}
       </div>
 
       <div v-else class="map__info--secondary map__info--truncate">
