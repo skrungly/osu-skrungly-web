@@ -5,7 +5,6 @@ const props = defineProps(["state", "option", "content"])
 const state = toRef(props, "state")
 
 const buttonStyle = computed(() => ({
-  "radio-button--chosen": state.value == props.option,
   "highlight-text": state.value == props.option,
 }))
 </script>
@@ -18,16 +17,12 @@ const buttonStyle = computed(() => ({
 
 <style lang="scss" scoped>
 .radio-button {
-  opacity: 50%;
+  color: var(--text-colour-tertiary);
   border: none;
   padding: 0.5rem;
 }
 
 .radio-button:hover {
-  opacity: 70%;
-}
-
-.radio-button--chosen, .radio-button--chosen:hover {
-  opacity: 100%;
+  color: var(--text-colour-secondary);
 }
 </style>

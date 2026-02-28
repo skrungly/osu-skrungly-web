@@ -1,5 +1,6 @@
 :root {
-  --content-width: 85rem;
+  --nav-width: 80rem;
+  --content-width: 70rem;
   --border-radius: 0.5rem;
 
   --section-margin: 1rem;
@@ -7,8 +8,23 @@
   --button-padding: 0.5rem 1rem;
   --header-height: 5rem;
   --section-banner-aspect: 6 / 1;
+  --section-border-width: 1px;
+  --section-border: var(--section-border-width) solid hsl(0, 0%, 15%);
 
-  --block-bg-colour: #1b1b1b;
+  --block-bg-colour: hsl(0, 0%, 11%);
+  --main-bg-colour: hsl(0, 0%, 14%);
+
+  --text-colour-primary: hsl(0, 0%, 100%);
+  --text-colour-secondary: hsl(0, 0%, 65%);
+  --text-colour-tertiary: hsl(0, 0%, 45%);
+
+  --shadow-colour: hsla(0, 0%, 0%, 0.2);
+  --shadow-small: 0 1px 3px var(--shadow-colour);
+  --shadow-medium: 0 3px 9px var(--shadow-colour);
+  --shadow-large: 0 9px 27px var(--shadow-colour);
+  --shadow-text:
+    0px 0px 2px var(--shadow-colour),
+    0px 1px 4px var(--shadow-colour);
 }
 
 @font-face {
@@ -27,8 +43,8 @@ body {
   margin: 0;
   min-height: 100vh;
 
-  color: #ffffff;
-  background: #242424;
+  color: var(--text-colour-primary);
+  background: var(--main-bg-colour);
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -50,10 +66,7 @@ input:focus, textarea:focus {
 }
 
 button {
-  font-family: inherit;
-  font-size: inherit;
   padding: var(--button-padding);
-  color: inherit;
   background: none;
   border: none;
   border-radius: var(--border-radius);
@@ -70,9 +83,12 @@ a {
 }
 
 section {
-  padding: var(--section-padding);
-  background-color: var(--block-bg-colour);
+  padding: calc(var(--section-padding) - var(--section-border-width));
   border-radius: var(--border-radius);
+  border: var(--section-border);
+
+  background-color: var(--block-bg-colour);
+  box-shadow: var(--shadow-medium);
 }
 
 .section__banner {
@@ -110,10 +126,14 @@ section {
   flex-basis: 0;
   flex-grow: 1;
   padding: 0.5rem;
-  gap: 0.25rem;
+  gap: 0.125rem;
 
   .stats__value {
     font-size: 1.5rem;
+  }
+
+  .stats__name {
+    color: var(--text-colour-secondary);
   }
 }
 
@@ -166,6 +186,7 @@ section {
 .modal section {
   margin: 7rem var(--section-margin);
   transition: margin-top 0.25s ease;
+  box-shadow: var(--shadow-medium), var(--shadow-large);
 }
 
 .modal section form {

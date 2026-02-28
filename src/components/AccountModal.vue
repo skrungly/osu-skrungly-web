@@ -67,7 +67,6 @@ async function changePassword() {
 <style lang="scss" scoped>
 section {
   width: 18rem;
-  box-shadow: 0 2px 16px #00000020;
   text-align: center;
 
   display: flex;

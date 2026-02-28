@@ -4,6 +4,9 @@ import { timeAgo } from "../utils"
 const props = defineProps(["map", "score", "rank", "showPlayer"])
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
+const MAP_COVER_STYLE = {
+  "background-image": `url('https://assets.ppy.sh/beatmaps/${props.map.set_id}/covers/cover@2x.jpg')`
+}
 
 const MOD_FLAGS = {
   // NOMOD: 0,
@@ -103,12 +106,12 @@ function getModString(mods_value) {
 </script>
 
 <template>
-  <div class="map">
+  <div class="map" :style="MAP_COVER_STYLE">
     <a v-if="showPlayer" :href="`/u/${score.player.name}`" class="player-avatar">
       <img :title="score.player.name" :src="`${AVATAR_URL}/${score.player.id}`">
     </a>
 
-    <div class="map__thumbnail">
+    <div v-else class="map__thumbnail">
       <img :src="`https://b.ppy.sh/thumb/${map.set_id}l.jpg`" />
 
       <div v-if="rank" class="score__rank">#{{ rank }}</div>
@@ -161,7 +164,9 @@ function getModString(mods_value) {
 
     <div class="map__extra-info">
       <div v-if="score">
-        {{ score.pp.toFixed(0).toLocaleString() }}pp
+        <div :class="{'map__extra-info--unranked': map.status != 2 && map.status != 3}">
+          {{ score.pp.toFixed(0).toLocaleString() }}pp
+        </div>
         <div v-if="rank" class="map__info--secondary">
           weighted {{ (score.pp * 0.95 ** (rank - 1)).toFixed(0) }}pp
         </div>
@@ -182,7 +187,15 @@ function getModString(mods_value) {
   display: flex;
   gap: 0.5rem;
   white-space: nowrap;
+  padding: 0.5rem;
   height: 4rem;
+
+  background-color: #000a;
+  background-size: cover;
+  background-blend-mode: darken;
+  border-radius: var(--border-radius);
+  text-shadow: var(--shadow-text);
+  box-shadow: var(--shadow-small);
 }
 
 .player-avatar {
@@ -192,6 +205,7 @@ function getModString(mods_value) {
   img {
     max-height: 100%;
     border-radius: var(--border-radius);
+    box-shadow: var(--shadow-small);
   }
 }
 
@@ -200,6 +214,8 @@ function getModString(mods_value) {
   flex-shrink: 0;
   display: block;
   height: 100%;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-small);
 
   img {
     height: 75%;
@@ -222,7 +238,7 @@ function getModString(mods_value) {
 
     font-size: 1.25rem;
     font-weight: bold;
-    text-shadow: 0 0 4px #000000;
+    text-shadow: var(--shadow-text);
 
     opacity: 0;
   }
@@ -236,7 +252,7 @@ function getModString(mods_value) {
     border-radius: 0 0 var(--border-radius) var(--border-radius);
     border-top: 1px solid #000000;
     font-size: 0.75rem;
-    text-shadow: 0 0 4px #000000;
+    text-shadow: var(--shadow-text);
   }
 
   .map__thumbnail-text[data-grade="SH"], .map__thumbnail-text[data-grade="XH"] {
@@ -306,13 +322,18 @@ function getModString(mods_value) {
 
 .map__info--secondary {
   font-size: 0.9rem;
-  opacity: 60%;
+  color: var(--text-colour-secondary);
 }
 
 .map__extra-info {
   text-align: right;
   align-self: center;
   font-size: 1.25rem;
+  margin-right: 1rem;
+}
+
+.map__extra-info--unranked {
+  color: var(--text-colour-secondary);
 }
 
 .player-info {

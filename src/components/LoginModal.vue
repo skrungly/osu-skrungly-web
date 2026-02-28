@@ -120,7 +120,6 @@ watch(() => username.value, checkUsername)
 <style lang="scss" scoped>
 section {
   width: 18rem;
-  box-shadow: 0 2px 16px #00000020;
 }
 
 .section__banner {
@@ -145,7 +144,7 @@ section {
 
     img {
       border-radius: var(--border-radius);
-      box-shadow: 0 2px 16px #00000080;
+      box-shadow: var(--shadow-medium), var(--shadow-small);
       width: 100%;
     }
   }

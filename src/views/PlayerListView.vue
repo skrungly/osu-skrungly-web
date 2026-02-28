@@ -116,7 +116,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   display: flex;
   align-items: center;
   gap: 1rem;
-  border-radius: 0.5rem;
+  border-radius: var(--border-radius);
   padding: 0.5rem;
 
   a {
@@ -149,7 +149,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   }
 
   .player-info__secondary {
-    opacity: 45%;
+    color: var(--text-colour-tertiary);
     overflow: hidden;
     text-overflow: ellipsis;
   }

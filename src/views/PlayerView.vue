@@ -14,8 +14,8 @@ import { inputStateFactory } from "@/utils";
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
 const SHOW_STATS = {
-  pp: "pp",
-  plays: "plays",
+  pp: "pp earned",
+  plays: "plays uploaded",
   total_hits: "notes hit",
   rscore: "ranked score",
 }
@@ -279,8 +279,8 @@ watch(() => auth.player, resetInfoEdits)
 
   <section v-if="playerInfo" class="container">
     <div v-for="[stat, name] in Object.entries(SHOW_STATS)" class="stats">
-      <span class="stats__name">{{ name }}</span>
       <span class="stats__value">{{ playerInfo.stats[currentMode][stat].toLocaleString() }}</span>
+      <span class="stats__name">{{ name }}</span>
     </div>
   </section>
 
@@ -316,18 +316,22 @@ watch(() => auth.player, resetInfoEdits)
 <style lang="scss" scoped>
 .section__banner {
   button {
+    min-width: 10rem;
     position: absolute;
-    top: 1rem;
     background-color: var(--block-bg-colour);
     transition: opacity 0.5s;
   }
 
   .settings-button {
+    top: 1rem;
     left: 1rem;
+    padding-right: 1.5rem;
   }
 
   .edit-button {
+    top: 1rem;
     right: 1rem;
+    padding-left: 1.5rem;
   }
 
   .edit-button:disabled {
@@ -346,7 +350,7 @@ watch(() => auth.player, resetInfoEdits)
 
   background-color: #000000;
   border-radius: var(--border-radius) var(--border-radius) 0 0;
-  opacity: 20%;
+  opacity: 40%;
   transition: opacity 0.5s;
 
   input {
@@ -381,7 +385,7 @@ watch(() => auth.player, resetInfoEdits)
 }
 
 .banner-input:hover {
-  opacity: 40%
+  opacity: 60%
 }
 
 .userpage-header {
@@ -407,7 +411,7 @@ watch(() => auth.player, resetInfoEdits)
     max-height: 8rem;
     margin-top: -3rem;
     border-radius: var(--border-radius);
-    box-shadow: 0 2px 16px #00000080;
+    box-shadow: var(--shadow-medium), var(--shadow-small);
   }
 
   .userpage-name, input {
@@ -480,7 +484,6 @@ watch(() => auth.player, resetInfoEdits)
 
     img {
       --adjusted-height: calc(100vw / 5);
-
       height: var(--adjusted-height);
       margin-top: calc(var(--adjusted-height) * -3 / 8);
     }
@@ -500,16 +503,18 @@ watch(() => auth.player, resetInfoEdits)
 @media screen and (max-width: 35em) {
   .section__banner {
     button {
+      min-width: 0rem;
       top: 0.75rem;
-      padding: 0.5rem 0.25rem;
     }
 
     .settings-button {
       left: 0.75rem;
+      padding: 0.5rem 0.25rem;
     }
 
     .edit-button {
       right: 0.75rem;
+      padding: 0.5rem 0.25rem;
     }
 
     .button-text {

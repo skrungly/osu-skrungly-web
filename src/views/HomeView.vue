@@ -6,8 +6,8 @@ import * as api from "@/api"
 import MapInfo from "@/components/MapInfo.vue"
 
 const GLOBAL_STATS = {
-  pp: "pp",
-  plays: "plays",
+  pp: "pp earned",
+  plays: "plays uploaded",
   total_hits: "notes hit",
   tscore: "total score",
 }
@@ -62,8 +62,8 @@ onMounted(async () => {
 
   <section v-if="stats" class="container">
     <div v-if="stats" v-for="[stat, name] in Object.entries(GLOBAL_STATS)" class="stats">
-      <span class="stats__name">global {{ name }}</span>
       <span class="stats__value">{{ stats[stat].toLocaleString() }}</span>
+      <span class="stats__name">{{ name }}</span>
     </div>
   </section>
 

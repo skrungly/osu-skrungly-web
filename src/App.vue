@@ -82,6 +82,8 @@ header {
   min-height: var(--header-height);
   font-size: 1.25rem;
   background-color: var(--block-bg-colour);
+  box-shadow: var(--shadow-medium);
+  border-bottom: var(--section-border);
 
   a {
     padding: var(--button-padding);
@@ -95,7 +97,7 @@ header {
 }
 
 nav {
-  width: var(--content-width);
+  width: var(--nav-width);
   max-width: calc(100vw - 2 * var(--section-padding));
   min-height: var(--header-height);
   margin: 0 auto;
@@ -180,7 +182,9 @@ footer {
   justify-content: center;
   align-items: center;
   gap: 1rem;
-  color: #ffffff80;
+  color: var(--text-colour-secondary);
+  box-shadow: var(--shadow-medium);
+  border-top: var(--section-border);
 
   min-height: var(--header-height);
   background-color: var(--block-bg-colour);
