@@ -47,7 +47,6 @@ function resetInfoEdits() {
   if (playerInfo.value === null) return
 
   canEdit.value = auth.player !== null && auth.player.id == playerInfo.value.id
-  currentlyEditing.value = false;
 
   inputName.reset()
   inputUserpage.reset()
