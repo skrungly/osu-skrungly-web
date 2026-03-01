@@ -1,9 +1,15 @@
 <script setup>
-import { timeAgo } from "../utils"
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
+import { timeAgo } from "@/utils"
+
+import { auth } from "@/store"
 
 const props = defineProps(["map", "score", "rank", "showPlayer"])
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
+const BANCHOPY_API_URL = import.meta.env.VITE_BANCHOPY_API_URL
+const SKRUNGLY_API_URL = import.meta.env.VITE_SKRUNGLY_API_URL
+
 const MAP_COVER_STYLE = {
   "background-image": `url('https://assets.ppy.sh/beatmaps/${props.map.set_id}/covers/cover@2x.jpg')`
 }
@@ -179,6 +185,21 @@ function getModString(mods_value) {
         </div>
       </div>
     </div>
+
+    <div v-if="score" class="map__options">
+      <a title="download screenshot" :href="`${SKRUNGLY_API_URL}/scores/${score.id}/screen`">
+        <FontAwesomeIcon icon="camera"/>
+      </a>
+      <a title="download replay" :href="`${BANCHOPY_API_URL}/v1/get_replay?id=${score.id}`">
+        <FontAwesomeIcon icon="file-contract"/>
+      </a>
+    </div>
+
+    <div v-else-if="auth.player" class="map__options">
+      <a title="download mapset" :href="`${SKRUNGLY_API_URL}/mapsets/${map.set_id}/download`">
+        <FontAwesomeIcon icon="download"/>
+      </a>
+    </div>
   </div>
 </template>
 
@@ -329,11 +350,32 @@ function getModString(mods_value) {
   text-align: right;
   align-self: center;
   font-size: 1.25rem;
+}
+
+// add extra space if there are no icons after the extra info
+.map :last-child.map__extra-info {
   margin-right: 1rem;
 }
 
 .map__extra-info--unranked {
   color: var(--text-colour-secondary);
+}
+
+.map__options {
+  display: flex;
+  flex-flow: column;
+  justify-content: space-evenly;
+  align-items: center;
+  font-size: 1.125rem;
+
+  a {
+    color: var(--text-colour-secondary);
+  }
+
+  a:hover {
+    color: var(--text-colour-primary);
+    transition: color 0.25s;
+  }
 }
 
 .player-info {

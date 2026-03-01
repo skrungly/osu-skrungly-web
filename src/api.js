@@ -4,7 +4,7 @@ function getCookie(name) {
 }
 
 async function request(method, endpoint, data, csrf) {
-  var url = `${import.meta.env.VITE_API_URL}/${endpoint}`;
+  var url = `${import.meta.env.VITE_SKRUNGLY_API_URL}/${endpoint}`;
   const options = {
     credentials: "same-origin",
     method: method,
