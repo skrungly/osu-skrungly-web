@@ -1,18 +1,20 @@
 <script setup>
+import { computed, toRef } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { timeAgo } from "@/utils"
 
 import { auth } from "@/store"
 
 const props = defineProps(["map", "score", "rank", "showPlayer"])
+const map = toRef(props, "map")
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const BANCHOPY_API_URL = import.meta.env.VITE_BANCHOPY_API_URL
 const SKRUNGLY_API_URL = import.meta.env.VITE_SKRUNGLY_API_URL
 
-const MAP_COVER_STYLE = {
-  "background-image": `url('https://assets.ppy.sh/beatmaps/${props.map.set_id}/covers/cover@2x.jpg')`
-}
+const MAP_COVER_STYLE = computed(() => ({
+  "background-image": `url('https://assets.ppy.sh/beatmaps/${map.value.set_id}/covers/cover@2x.jpg')`
+}))
 
 const MOD_FLAGS = {
   // NOMOD: 0,
