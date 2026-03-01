@@ -177,6 +177,7 @@ section {
   display: flex;
   justify-content: center;
   align-items: start;
+  overflow: scroll;
 
   transition:
     visibility 0.25s,
@@ -184,7 +185,9 @@ section {
 }
 
 .modal section {
-  margin: 7rem var(--section-margin);
+  margin: max(10vh, var(--section-margin));
+  max-height: calc(100vw - 2 * var(--section-margin));
+
   transition: margin-top 0.25s ease;
   box-shadow: var(--shadow-medium), var(--shadow-large);
 }

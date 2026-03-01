@@ -78,5 +78,10 @@ section {
   display: flex;
   gap: 0.5rem;
   justify-content: center;
+
+  button {
+    flex-basis: 0;
+    flex-grow: 1;
+  }
 }
 </style>
