@@ -157,12 +157,12 @@ function getModString(mods_value) {
         </span>
 
         <!-- taiko map info -->
-        <span v-else="map.mode == 1">
+        <span v-else-if="map.mode == 1">
           OD{{ map.od }} HP{{ map.hp }}
         </span>
 
         <!-- mania map info -->
-        <span v-else="map.mode == 3">
+        <span v-else>
           {{ map.cs }}K OD{{ map.od }} HP{{ map.hp }}
         </span>
 
@@ -194,12 +194,6 @@ function getModString(mods_value) {
       </a>
       <a title="download replay" :href="`${BANCHOPY_API_URL}/v1/get_replay?id=${score.id}`">
         <FontAwesomeIcon icon="file-contract"/>
-      </a>
-    </div>
-
-    <div v-else-if="auth.player" class="map__options">
-      <a title="download mapset" :href="`${SKRUNGLY_API_URL}/mapsets/${map.set_id}/download`">
-        <FontAwesomeIcon icon="download"/>
       </a>
     </div>
   </div>
