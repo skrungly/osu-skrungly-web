@@ -25,6 +25,7 @@ async function updateTaskState() {
   if (taskState.value.state == "SUCCESS") {
     taskStyle.value = { confirm: true }
     taskState.value.status += "!"
+    document.getElementById("download").click()
     clearInterval(intervalId)
 
   } else if (taskState.value.state == "FAILURE") {
@@ -54,9 +55,11 @@ onUnmounted(() => clearInterval(intervalId))
       :max="taskState ? taskState.total : 1"
       :value="taskState ? taskState.current : 0"
     />
+
+    <span class="task__info">your download will start automatically</span>
   </section>
 
-  <a v-if="taskState.result" :href="taskState.result">
+  <a id="download" v-if="taskState.result" :href="taskState.result">
     <button class="highlight-button">download</button>
   </a>
 </template>
@@ -69,7 +72,14 @@ onUnmounted(() => clearInterval(intervalId))
   width: 25rem;
 }
 
+.task__info {
+  color: var(--text-colour-tertiary);
+  font-size: 0.75rem;
+}
+
 progress {
+  margin: 0.5rem;
   width: 100%;
 }
+
 </style>
