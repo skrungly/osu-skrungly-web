@@ -56,7 +56,9 @@ onUnmounted(() => clearInterval(intervalId))
       :value="taskState ? taskState.current : 0"
     />
 
-    <span class="task__info">your download will start automatically</span>
+    <span v-if="!taskStyle.error" class="task__info">
+      your download will start automatically
+    </span>
   </section>
 
   <a id="download" v-if="taskState.result" :href="taskState.result">
