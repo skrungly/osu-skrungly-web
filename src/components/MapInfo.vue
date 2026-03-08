@@ -115,7 +115,7 @@ function getModString(mods_value) {
 
 <template>
   <div class="map" :style="MAP_COVER_STYLE">
-    <a v-if="showPlayer" :href="`/u/${score.player.name}`" class="player-avatar">
+    <a v-if="showPlayer" :href="`/players/${score.player.name}`" class="player-avatar">
       <img :title="score.player.name" :src="`${AVATAR_URL}/${score.player.id}`">
     </a>
 

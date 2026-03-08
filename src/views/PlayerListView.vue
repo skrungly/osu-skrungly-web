@@ -87,7 +87,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         </div>
         <div class="player-info__text">
           <div class="player-info__name">
-            <RouterLink :to="'/u/' + player.name">{{ player.name }}</RouterLink>
+            <RouterLink :to="`/players/${player.name}`">{{ player.name }}</RouterLink>
           </div>
           <span :title="getLastSeen(player).toLocaleString()" class="player-info__secondary">
             last seen {{ timeAgo.format(getLastSeen(player)) }}

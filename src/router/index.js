@@ -18,10 +18,15 @@ const router = createRouter({
           component: () => import("../views/PlayerListView.vue"),
         },
         {
-          path: "u/:id",
+          path: "players/:id",
           name: "player",
           component: () => import("../views/PlayerView.vue"),
         },
+        {
+          // osu client sends players to /u/:id
+          path: "u/:id",
+          redirect: { name: "player" }
+        }
       ]
     },
     {

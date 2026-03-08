@@ -34,11 +34,6 @@ watch(() => auth.player, () => showLoginModal.value = false);
             <span>players!</span>
           </RouterLink>
 
-          <RouterLink to="" class="nav__link--disabled" title="coming soon!">
-            <FontAwesomeIcon icon="music" />
-            <span>beatmaps!</span>
-          </RouterLink>
-
           <RouterLink v-if="auth.player" :to="`/u/${auth.player.name}`" class="profile nav__link--split nav__link--active" >
             <img :src="`${AVATAR_URL}/${auth.player.id}`" />
             <span>{{ auth.player.name }}</span>
