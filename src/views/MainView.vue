@@ -24,7 +24,7 @@ watch(() => auth.player, () => showLoginModal.value = false);
         <h1 class="highlight-text"><RouterLink to="/">osu!skrungly</RouterLink></h1>
 
         <div class="nav__links">
-          <RouterLink to="/" active-class="nav__link--active" exact>
+          <RouterLink to="/" exact-active-class="nav__link--active" exact>
             <FontAwesomeIcon icon="chart-simple" />
             <span>stats!</span>
           </RouterLink>
