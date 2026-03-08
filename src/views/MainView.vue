@@ -170,6 +170,7 @@ main {
   flex-direction: column;
   gap: var(--section-margin);
   flex-grow: 1;
+  align-items: stretch;
 
   margin: var(--section-margin) auto;
   width: var(--content-width);

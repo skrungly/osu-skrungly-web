@@ -292,7 +292,7 @@ watch(() => auth.player, resetInfoEdits)
     <PlayerScoreList :player="playerInfo.id" :mode="currentMode" sort="recent" />
   </section>
 
-  <div class="edit-controls" :class="{'edit-controls--hidden': !unsavedChanges}">
+  <div v-if="currentlyEditing" class="edit-controls" :class="{'edit-controls--hidden': !unsavedChanges}">
     <section :class="savePromptStyle">
       <p v-if="savePromptStyle.loading">uploading changes...</p>
       <p v-else-if="savePromptStyle.warning">your profile has unsaved changes!</p>
@@ -430,29 +430,35 @@ watch(() => auth.player, resetInfoEdits)
 .edit-controls {
   position: sticky;
   bottom: var(--section-margin);
+  width: 18rem;
   opacity: 100%;
+  visibility: visible;
 
   transition:
     opacity 0.5s ease,
+    visibility 0s,
     bottom 0.5s ease;
 
   display: flex;
   justify-content: center;
+  align-self: center;
 
   text-align: center;
 
   section {
-    width: 18rem;
-    box-shadow: 0 0.125rem 1rem #00000020;
+    flex-grow: 1;
+    box-shadow: var(--shadow-large), var(--shadow-medium);
   }
 }
 
 .edit-controls--hidden {
+  visibility: hidden;
   opacity: 0%;
   bottom: -4rem;
 
   transition:
     opacity 0.5s ease,
+    visibility 0s ease 0.5s,
     bottom 0s ease 0.5s;
 }
 
