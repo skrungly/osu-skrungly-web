@@ -231,7 +231,7 @@ export async function get(endpoint: string, params?: QueryParameters, csrf?: Tok
 
   if (params) {
     for (let [key, value] of Object.entries(params)) {
-      if (value) {
+      if (value !== undefined) {
         data.set(key, value.toString())
       }
     }
