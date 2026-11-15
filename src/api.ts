@@ -160,10 +160,10 @@ export interface GlobalStats {
 }
 
 function getCookie(name: string): string | null {
-  const parts = `  ${document.cookie}`.split(`  ${name}=`)
+  const parts = `; ${document.cookie}`.split(`; ${name}=`)
 
   if (parts.length === 2) {
-    return parts.pop()?.split(' ').shift() ?? null
+    return parts.pop()?.split(';').shift() ?? null
   }
 
   return null
