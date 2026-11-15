@@ -55,7 +55,7 @@ export interface Player {
   preferred_mode: GameMode
   userpage_content: string
 
-  stats: Record<GameMode, PlayerStats>
+  stats: PlayerStats[]
   online: boolean
 }
 

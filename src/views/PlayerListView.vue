@@ -14,7 +14,7 @@ const SORT_MODES = ["pp", "plays"]
 const chosenMode = ref(0)
 const chosenSort = ref(0)
 
-const players = ref(null)
+const players = ref<api.Player[] | null>(null)
 const loading = ref(false)
 const errorMessage = ref<string | null>(null)
 
@@ -93,8 +93,8 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
             last seen {{ timeAgo.format(getLastSeen(player)) }}
           </span>
         </div>
-        <div class="player-info__stat">{{ player.pp.toLocaleString() }}pp</div>
-        <div class="player-info__stat">{{ player.plays.toLocaleString() }}</div>
+        <div class="player-info__stat">{{ player.stats[chosenMode].pp.toLocaleString() }}pp</div>
+        <div class="player-info__stat">{{ player.stats[chosenMode].plays.toLocaleString() }}</div>
       </div>
     </div>
   </section>
