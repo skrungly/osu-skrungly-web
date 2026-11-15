@@ -134,6 +134,7 @@ export type ScoreSortOption = "recent" | "score" | "pp" | "combo" | "length" | "
 
 export interface ScoreQuery extends PaginationOptions, QueryParameters {
   player?: number
+  beatmap?: number
   sort?: ScoreSortOption
   mode?: GameMode
   status?: ScoreStatus
@@ -266,7 +267,7 @@ export async function logout() {
   return await delete_("/auth/logout")
 }
 
-export async function getIdentity(): Promise<string | null> {
+export async function getIdentity(): Promise<Player | null> {
   var response = await get("/auth/identity")
 
   if (response.ok) {

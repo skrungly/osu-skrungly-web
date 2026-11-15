@@ -23,28 +23,26 @@ export const auth = reactive<AuthState>({
   },
 
   async update() {
-    const identity = this.player ? this.player.id : await api.getIdentity()
+    const player = this.player ? this.player : await api.getIdentity()
 
-    if (identity == null) {
+    if (player == null) {
       this.clear()
       return
     }
 
-    const response = await api.get(`/players/${identity}`)
-
-    if (!response.ok) {
-      throw new Error(`failed to fetch info for authorized player [${response.status}]`)
-    }
-
     this.expired = false
-    this.player = await response.json()
+    this.player = player
     localStorage.player = JSON.stringify(this.player)
   },
 
   async login(name: string, password: string) {
-    // TODO: if api.login is changed to provide full player info,
-    // we should assign to `this.player` from here.
     const response = await api.login(name, password)
+
+    if (!response.ok) {
+      throw new Error(`failed to log in [${response.status}]`)
+    }
+
+    this.player = (await response.json()).identity
     this.update()
     return response
   },
