@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useRoute } from "vue-router"
 
 import TaskMonitor from "@/components/TaskMonitor.vue"

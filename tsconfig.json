@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "types": ["vite/client"],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "strict": true,
+    "lib": ["DOM", "es2017"],
+  },
+  "exclude": ["node_modules", "dist"]
+}

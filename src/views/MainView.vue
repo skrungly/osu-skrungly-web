@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { RouterView, useRoute } from "vue-router"
 import { ref, watch } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
@@ -13,8 +13,8 @@ const STATUS_URL = import.meta.env.VITE_STATUS_URL
 const route = useRoute()
 
 const showLoginModal = ref(false)
-auth.update();
-watch(() => auth.player, () => showLoginModal.value = false);
+auth.update()
+watch(() => auth.player, () => showLoginModal.value = false)
 </script>
 
 <template>

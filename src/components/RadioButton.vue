@@ -1,7 +1,12 @@
-<script setup>
+<script setup lang="ts">
 import { computed, toRef } from "vue"
 
-const props = defineProps(["state", "option", "content"])
+const props = defineProps<{
+  state: number
+  option: number
+  content: string
+}>()
+
 const state = toRef(props, "state")
 
 const buttonStyle = computed(() => ({

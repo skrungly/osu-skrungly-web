@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
@@ -18,26 +18,41 @@ const SHOW_STATS = {
   plays: "plays uploaded",
   total_hits: "notes hit",
   rscore: "ranked score",
-}
+} as const
 
 const route = useRoute()
-const pageError = ref(null)
+const pageError = ref<string | null>(null)
 const showAccountModal = ref(false)
 
-const playerInfo = ref(null)
-const playerModes = ref([])
-const currentMode = ref(0)
+const playerInfo = ref<api.Player | null>(null)
+const playerModes = ref<api.GameMode[]>([])
+const currentMode = ref<api.GameMode>(0)
 
 const canEdit = ref(false)
 const currentlyEditing = ref(false)
 
 const unsavedChanges = ref(false)
-const savePromptStyle = ref({})
+const savePromptStyle = ref<{
+  error?: boolean
+  warning?: boolean
+  loading?: boolean
+}>({})
 
 const inputName = inputStateFactory("")
 const inputUserpage = inputStateFactory("")
 
-const banner = ref({
+type ValidFileInputEvent = Event & {
+  target: HTMLInputElement & {
+    files: FileList
+  }
+}
+
+interface Banner {
+  path: string | null
+  file: File | null
+}
+
+const banner = ref<Banner>({
   path: null,
   file: null,
 })
@@ -75,10 +90,10 @@ async function fetchPlayerInfo() {
     return
   }
 
-  const player = await response.json()
+  const player = await response.json() as api.Player
 
   var bestPerformance = 0
-  for (const stats of player.stats) {
+  for (const stats of Object.values(player.stats)) {
     if (stats.mode < GAME_MODES.length && stats.pp) {
       if (stats.pp > bestPerformance) {
         bestPerformance = stats.pp
@@ -93,22 +108,30 @@ async function fetchPlayerInfo() {
 }
 
 function checkForEdits() {
-  const edits = {}
+  if (!playerInfo.value) {
+    return {}
+  }
+
+  const edits: Partial<api.Player> = {}
   unsavedChanges.value = false
 
   if (inputName.value != playerInfo.value.name) {
-    edits.name = inputName.value
+    edits.name = inputName.value ?? undefined
   }
 
   if (inputUserpage.value != playerInfo.value.userpage_content) {
-    edits.userpage_content = inputUserpage.value
+    edits.userpage_content = inputUserpage.value ?? undefined
   }
 
-  unsavedChanges.value = Object.keys(edits).length > 0 || banner.value.file
+  unsavedChanges.value = Object.keys(edits).length > 0 || banner.value.file !== null
   return edits
 }
 
 async function uploadEdits() {
+  if (!auth.player || !playerInfo.value) {
+    return
+  }
+
   const edits = checkForEdits()
 
   inputName.clearStyle()
@@ -177,7 +200,25 @@ async function uploadEdits() {
   window.location.replace(`${routePath}/${inputName.value}`)
 }
 
-async function onBannerChange(event) {
+function inputEventHasFile(event: Event): event is ValidFileInputEvent {
+  if (!event.target) {
+    return false
+  }
+
+  let target = event.target as HTMLInputElement
+
+  if (target.hasOwnProperty("files") && target.files !== null) {
+    return true
+  }
+
+  return false
+}
+
+function onBannerChange(event: Event) {
+  if (!inputEventHasFile(event)) {
+    return
+  }
+
   const file = event.target.files[0]
 
   if (!file || !file.type.match("image.*")) {
@@ -186,7 +227,12 @@ async function onBannerChange(event) {
 
   const reader = new FileReader()
   reader.onload = function (e) {
-    banner.value.path = e.target.result
+    if (!e.target) {
+      pageError.value = "failed to read banner file"
+      return
+    }
+
+    banner.value.path = e.target.result as string
     banner.value.file = event.target.files[0]
     unsavedChanges.value = true
   }
@@ -207,7 +253,7 @@ watch(() => auth.player, resetInfoEdits)
 
   <section v-if="playerInfo">
     <div class="section__banner">
-      <img class="banner-image" :src="banner.path" />
+      <img class="banner-image" :src="banner.path ?? undefined" />
 
       <div v-if="currentlyEditing" class="banner-input" :class="{'banner-input--hidden': banner.file}">
         <div class="banner-input__prompt">
@@ -279,17 +325,17 @@ watch(() => auth.player, resetInfoEdits)
 
   <section v-if="playerInfo" class="container">
     <div v-for="[stat, name] in Object.entries(SHOW_STATS)" class="stats">
-      <span class="stats__value">{{ playerInfo.stats[currentMode][stat].toLocaleString() }}</span>
+      <span class="stats__value">{{ playerInfo.stats[currentMode][stat as keyof typeof SHOW_STATS].toLocaleString() }}</span>
       <span class="stats__name">{{ name }}</span>
     </div>
   </section>
 
   <section v-if="playerInfo">
-    <PlayerScoreList :player="playerInfo.id" :mode="currentMode" sort="pp" />
+    <PlayerScoreList :player="playerInfo" :mode="currentMode" sort="pp" />
   </section>
 
   <section v-if="playerInfo">
-    <PlayerScoreList :player="playerInfo.id" :mode="currentMode" sort="recent" />
+    <PlayerScoreList :player="playerInfo" :mode="currentMode" sort="recent" />
   </section>
 
   <div v-if="currentlyEditing" class="edit-controls" :class="{'edit-controls--hidden': !unsavedChanges}">

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from 'vue'
 
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -12,13 +12,13 @@ const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
 const SORT_MODES = ["pp", "plays"]
 
 const chosenMode = ref(0)
-const chosenSort = ref("pp")
+const chosenSort = ref(0)
 
 const players = ref(null)
 const loading = ref(false)
-const errorMessage = ref(null)
+const errorMessage = ref<string | null>(null)
 
-function getLastSeen(player) {
+function getLastSeen(player: api.Player) {
   return new Date(player.latest_activity * 1000);
 }
 
@@ -26,8 +26,8 @@ async function fetchPlayers() {
   loading.value = true
 
   const params = {
-    "mode": chosenMode.value,
-    "sort": chosenSort.value,
+    "mode": chosenMode.value.toString(),
+    "sort": SORT_MODES[chosenSort.value],
     "limit": 100,
   }
 
@@ -70,11 +70,11 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         <div class="player-info__avatar"></div>
         <div class="player-info__text"></div>
         <RadioButton
-          v-for="sort of SORT_MODES"
+          v-for="(sort, index) of SORT_MODES"
           :state="chosenSort"
-          :option="sort"
+          :option="index"
           :content="sort"
-          @click="() => chosenSort = sort"
+          @click="() => chosenSort = index"
         />
       </div>
 

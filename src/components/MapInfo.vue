@@ -1,11 +1,16 @@
-<script setup>
+<script setup lang="ts">
 import { computed, toRef } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { timeAgo } from "@/utils"
+import { Beatmap, Score } from "@/api"
 
-import { auth } from "@/store"
+const props = defineProps<{
+  map: Beatmap,
+  score: Score | null,
+  rank: number | null,
+  showPlayer: boolean,
+}>()
 
-const props = defineProps(["map", "score", "rank", "showPlayer"])
 const map = toRef(props, "map")
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
@@ -64,31 +69,31 @@ const DIFFICULTY_HUES = [
   [7.7, -109],
 ]
 
-function getPlayTime(score) {
-  return new Date(Date.parse(score.play_time));
+function getPlayTime(score: Score) {
+  return new Date(Date.parse(score.play_time))
 }
 
-function mapDifficultyStyle(diffValue) {
-  var firstColour = "hsl(0, 0%, 0%)";
-  var secondColour = firstColour;
+function mapDifficultyStyle(diffValue: number) {
+  var firstColour = "hsl(0, 0%, 0%)"
+  var secondColour = firstColour
 
   // keep note of the previous values for colour interpolation
-  var prevThreshold = 0;
-  var prevHue = 215;
+  var prevThreshold = 0
+  var prevHue = 215
   for (const [threshold, diffHue] of DIFFICULTY_HUES) {
     if (diffValue < threshold) {
-      const darkness = diffValue ** 2 / 2;
+      const darkness = diffValue ** 2 / 2
 
-      const interval = (diffValue - prevThreshold) / (threshold - prevThreshold);
-      const hue = prevHue + interval * (diffHue - prevHue);
+      const interval = (diffValue - prevThreshold) / (threshold - prevThreshold)
+      const hue = prevHue + interval * (diffHue - prevHue)
 
-      firstColour = `hsl(${hue}, 100%, ${35 - darkness}%)`;
-      secondColour = `hsl(${hue}, 100%, ${50 - darkness}%)`;
+      firstColour = `hsl(${hue}, 100%, ${35 - darkness}%)`
+      secondColour = `hsl(${hue}, 100%, ${50 - darkness}%)`
       break
     }
 
-    prevThreshold = threshold;
-    prevHue = diffHue;
+    prevThreshold = threshold
+    prevHue = diffHue
   }
 
   return {
@@ -96,7 +101,7 @@ function mapDifficultyStyle(diffValue) {
   }
 }
 
-function getModString(mods_value) {
+function getModString(mods_value: number) {
   const mods = []
 
   for (const [mod, flag] of Object.entries(MOD_FLAGS)) {
@@ -115,7 +120,7 @@ function getModString(mods_value) {
 
 <template>
   <div class="map" :style="MAP_COVER_STYLE">
-    <a v-if="showPlayer" :href="`/players/${score.player.name}`" class="player-avatar">
+    <a v-if="showPlayer && score" :href="`/players/${score.player.name}`" class="player-avatar">
       <img :title="score.player.name" :src="`${AVATAR_URL}/${score.player.id}`">
     </a>
 

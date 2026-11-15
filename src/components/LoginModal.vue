@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from "vue"
 
 import * as api from "@/api"
@@ -10,7 +10,7 @@ const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const username = inputStateFactory("")
 const password = inputStateFactory("")
 
-const chosenPlayer = ref(null)
+const chosenPlayer = ref<api.Player | null>(null)
 const hideAvatar = ref(true)
 
 function resetForm() {
@@ -62,9 +62,14 @@ async function attemptLogin() {
   }
 
   try {
-    var response = await auth.login(username.value, password.value)
+    var response = await auth.login(username.value ?? "", password.value ?? "")
   } catch (e) {
-    password.showError(e.message)
+    if (e instanceof Error) {
+      password.showError(e.message)
+    } else {
+      password.showError("failed to ")
+    }
+
     return
   }
 

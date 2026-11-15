@@ -1,26 +1,31 @@
-<script setup>
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+<script setup lang="ts">
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
-import * as api from "@/api";
-import { inputStateFactory } from '@/utils';
-import { auth } from "@/store";
+import * as api from "@/api"
+import { inputStateFactory } from '@/utils'
+import { auth } from "@/store"
 
-const password = inputStateFactory("");
-const repeatPassword = inputStateFactory("");
+const password = inputStateFactory("")
+const repeatPassword = inputStateFactory<string>("")
 
 async function changePassword() {
-  if (password.value != repeatPassword.value) {
-    repeatPassword.showError("passwords don't match");
-    password.clearStyle();
-    return;
+  if (!auth.player) {
+    auth.expired = true
+    return
   }
 
-  repeatPassword.clearStyle();
-  password.clearStyle();
+  if (password.value != repeatPassword.value) {
+    repeatPassword.showError("passwords don't match")
+    password.clearStyle()
+    return
+  }
+
+  repeatPassword.clearStyle()
+  password.clearStyle()
 
   var response = await api.put(
     `/players/${auth.player.id}`, { "password": password.value }
-  );
+  )
 
   if (response.ok) {
     password.reset()
@@ -30,16 +35,16 @@ async function changePassword() {
 
   // provide reasons if the password was rejected
   } else if (response.status == 422) {
-    let reasons = (await response.json()).password;
-    password.showError(reasons.join("\r\n"));
+    let reasons = (await response.json()).password
+    password.showError(reasons.join("\r\n"))
 
   } else if (response.status == 401) {
-    auth.expired = true;
-    auth.logout();
+    auth.expired = true
+    auth.logout()
 
   // anything else is unexpected behaviour
   } else {
-    password.showError(`failed to change password [${response.status}]`);
+    password.showError(`failed to change password [${response.status}]`)
   }
 }
 </script>

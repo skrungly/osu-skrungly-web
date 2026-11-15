@@ -1,22 +1,22 @@
-<script setup>
+<script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { onMounted, ref } from "vue"
 
 import * as api from "@/api"
 import MapInfo from "@/components/MapInfo.vue"
 
-const GLOBAL_STATS = {
+const GLOBAL_STATS_NAMES: { [K in keyof Partial<api.GlobalStats>]: string } = {
   pp: "pp earned",
   plays: "plays uploaded",
   total_hits: "notes hit",
   tscore: "total score",
-}
+} as const
 
-const errorMessage = ref(null)
+const errorMessage = ref<string | null>(null)
 
-const stats = ref(null)
-const popularMaps = ref([])
-const recentScores = ref([])
+const stats = ref<api.GlobalStats | null>(null)
+const popularMaps = ref<api.Beatmap[]>([])
+const recentScores = ref<api.Score[]>([])
 
 onMounted(async () => {
   errorMessage.value = null;
@@ -61,8 +61,8 @@ onMounted(async () => {
   </section>
 
   <section v-if="stats" class="container">
-    <div v-if="stats" v-for="[stat, name] in Object.entries(GLOBAL_STATS)" class="stats">
-      <span class="stats__value">{{ stats[stat].toLocaleString() }}</span>
+    <div v-if="stats" v-for="[stat, name] in Object.entries(GLOBAL_STATS_NAMES)" class="stats">
+      <span class="stats__value">{{ stats[stat as keyof typeof GLOBAL_STATS_NAMES].toLocaleString() }}</span>
       <span class="stats__name">{{ name }}</span>
     </div>
   </section>
@@ -76,6 +76,7 @@ onMounted(async () => {
           :map="score.beatmap"
           :score="score"
           :show-player="true"
+          :rank="null"
         />
       </div>
     </section>
@@ -86,6 +87,9 @@ onMounted(async () => {
         <MapInfo
           v-for="map in popularMaps"
           :map="map"
+          :score="null"
+          :show-player="true"
+          :rank="null"
         />
       </div>
     </section>

@@ -1,14 +1,18 @@
-<script setup>
+<script setup lang="ts">
 import { onMounted, onUnmounted, ref } from "vue"
 import * as api from "@/api"
+import { ValidationStyle } from "@/utils"
 
 const props = defineProps(["task"])
 
 const UPDATE_INTERVAL_MS = 500
-let intervalId = null
+let intervalId: number | undefined
 
-const taskState = ref({})
-const taskStyle = ref({})
+const taskState = ref<Partial<api.Task>>({})
+const taskStyle = ref<ValidationStyle>({
+  confirm: false,
+  error: false
+})
 
 async function updateTaskState() {
   const response = await api.get(`/tasks/${props.task}`)
@@ -25,7 +29,7 @@ async function updateTaskState() {
   if (taskState.value.state == "SUCCESS") {
     taskStyle.value = { confirm: true }
     taskState.value.status += "!"
-    document.getElementById("download").click()
+    document.getElementById("download")?.click()
     clearInterval(intervalId)
 
   } else if (taskState.value.state == "FAILURE") {
@@ -52,8 +56,8 @@ onUnmounted(() => clearInterval(intervalId))
     <progress
       v-if="!taskStyle.error"
       id="progress"
-      :max="taskState ? taskState.total : 1"
-      :value="taskState ? taskState.current : 0"
+      :max="taskState.total ? taskState.total : 1"
+      :value="taskState.current ? taskState.current : 0"
     />
 
     <span v-if="!taskStyle.error" class="task__info">
