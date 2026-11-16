@@ -10,6 +10,7 @@ import AccountModal from "@/components/AccountModal.vue"
 import RadioButton from "@/components/RadioButton.vue"
 import PlayerScoreList from "@/components/PlayerScoreList.vue"
 import { inputStateFactory } from "@/utils";
+import PlayerActivityIndicator from "@/components/PlayerActivityIndicator.vue";
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
@@ -297,7 +298,10 @@ watch(() => auth.player, resetInfoEdits)
       <div class="userpage-identity">
         <img :src="`${AVATAR_URL}/${playerInfo.id}`" />
         <input v-if="currentlyEditing" type="text" :class="inputName.style" maxlength="15" v-model="inputName.value" />
-        <span v-else class="userpage-name">{{ playerInfo.name }}</span>
+        <span v-else class="userpage-name">
+          {{ playerInfo.name }}
+          <PlayerActivityIndicator :player="playerInfo" minimal/>
+        </span>
         <span class="error-text" :class="{'error-text--hidden': !inputName.style.error}">{{ inputName.errorMessage }}</span>
       </div>
 
@@ -461,6 +465,10 @@ watch(() => auth.player, resetInfoEdits)
   }
 
   .userpage-name, input {
+    display: flex;
+    flex-flow: row;
+    gap: 0.5rem;
+
     font-size: 1.5rem;
     width: 20rem;
     max-width: calc(100% - 0.25rem);

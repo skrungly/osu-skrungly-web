@@ -4,8 +4,8 @@ import { ref, watch } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import * as api from '../api'
-import { timeAgo } from '../utils'
 import RadioButton from '@/components/RadioButton.vue'
+import PlayerActivityIndicator from '@/components/PlayerActivityIndicator.vue'
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
@@ -17,10 +17,6 @@ const chosenSort = ref(0)
 const players = ref<api.Player[] | null>(null)
 const loading = ref(false)
 const errorMessage = ref<string | null>(null)
-
-function getLastSeen(player: api.Player) {
-  return new Date(player.latest_activity * 1000);
-}
 
 async function fetchPlayers() {
   loading.value = true
@@ -88,9 +84,11 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         <div class="player-info__text">
           <div class="player-info__name">
             <RouterLink :to="`/players/${player.name}`">{{ player.name }}</RouterLink>
+            <PlayerActivityIndicator :player="player" minimal/>
           </div>
-          <span :title="getLastSeen(player).toLocaleString()" class="player-info__secondary">
-            last seen {{ timeAgo.format(getLastSeen(player)) }}
+
+          <span>
+            <PlayerActivityIndicator :player="player"/>
           </span>
         </div>
         <div class="player-info__stat">{{ player.stats[chosenMode].pp.toLocaleString() }}pp</div>
@@ -141,9 +139,14 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
     min-width: 0rem;
     text-align: left;
     white-space: nowrap;
+    gap: 0.25rem;
   }
 
   .player-info__name {
+    display: flex;
+    flex-flow: row;
+    gap: 0.35rem;
+
     overflow: hidden;
     text-overflow: ellipsis;
   }
