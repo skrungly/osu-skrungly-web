@@ -17,6 +17,9 @@
   --text-colour-primary: hsl(0, 0%, 100%);
   --text-colour-secondary: hsl(0, 0%, 65%);
   --text-colour-tertiary: hsl(0, 0%, 45%);
+  --text-colour-confirm: hsl(105, 60%, 55%);
+  --text-colour-warning: hsl(33, 100%, 66%);
+  --text-colour-error: hsl(0, 100%, 66%);
 
   --shadow-colour: hsla(0, 0%, 0%, 0.2);
   --shadow-small: 0 1px 3px var(--shadow-colour);
@@ -234,17 +237,17 @@ section {
 }
 
 .error, input:focus.error, textarea:focus.error {
-  border: 0.0625rem solid #ff5454;
+  border: 0.0625rem solid var(--text-colour-error);
   transition: border 0.25s;
 }
 
 .warning, input:focus.warning, textarea:focus.warning {
-  border: 0.0625rem solid #ffb254;
+  border: 0.0625rem solid var(--text-colour-warning);
   transition: border 0.25s;
 }
 
 .confirm, input:focus.confirm, textarea:focus.confirm {
-  border: 0.0625rem solid #80ff54;
+  border: 0.0625rem solid var(--text-colour-confirm);
   transition: border 0.25s;
 }
 
@@ -276,7 +279,7 @@ section {
 }
 
 .error-text {
-  color: #ff5454;
+  color: var(--text-colour-error);
   font-size: 0.9rem;
   white-space: pre;
 
