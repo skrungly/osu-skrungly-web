@@ -3,6 +3,7 @@ import { computed, toRef } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { timeAgo } from "@/utils"
 import { Beatmap, Score } from "@/api"
+import PlayerAvatar from "./PlayerAvatar.vue";
 
 const props = defineProps<{
   map: Beatmap,
@@ -13,7 +14,6 @@ const props = defineProps<{
 
 const map = toRef(props, "map")
 
-const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const BANCHOPY_API_URL = import.meta.env.VITE_BANCHOPY_API_URL
 const SKRUNGLY_API_URL = import.meta.env.VITE_SKRUNGLY_API_URL
 
@@ -120,9 +120,7 @@ function getModString(mods_value: number) {
 
 <template>
   <div class="map" :style="MAP_COVER_STYLE">
-    <a v-if="showPlayer && score" :href="`/players/${score.player.name}`" class="player-avatar">
-      <img :title="score.player.name" :src="`${AVATAR_URL}/${score.player.id}`">
-    </a>
+    <PlayerAvatar v-if="showPlayer && score" :player="score.player" class="player-avatar"/>
 
     <div v-else class="map__thumbnail">
       <img :src="`https://b.ppy.sh/thumb/${map.set_id}l.jpg`" />
@@ -223,12 +221,6 @@ function getModString(mods_value: number) {
 .player-avatar {
   height: 100%;
   max-width: 4rem;
-
-  img {
-    max-height: 100%;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow-small);
-  }
 }
 
 .map__thumbnail {

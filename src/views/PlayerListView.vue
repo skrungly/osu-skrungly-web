@@ -6,8 +6,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import * as api from '../api'
 import RadioButton from '@/components/RadioButton.vue'
 import PlayerActivityIndicator from '@/components/PlayerActivityIndicator.vue'
+import PlayerAvatar from '@/components/PlayerAvatar.vue'
 
-const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
 const SORT_MODES = ["pp", "plays"]
 
@@ -78,9 +78,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 
       <div class="player-info" v-if="players" v-for="(player, index) of players">
         <div class="player-info__rank">#{{ index + 1 }}</div>
-        <div class="player-info__avatar">
-          <img :src="`${AVATAR_URL}/${player.id}`" />
-        </div>
+        <PlayerAvatar :player="player" class="player-info__avatar"/>
         <div class="player-info__text">
           <div class="player-info__name">
             <RouterLink :to="`/players/${player.name}`">{{ player.name }}</RouterLink>
@@ -88,7 +86,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
           </div>
 
           <span>
-            <PlayerActivityIndicator :player="player"/>
+            <PlayerActivityIndicator class="player-info__secondary":player="player"/>
           </span>
         </div>
         <div class="player-info__stat">{{ player.stats[chosenMode].pp.toLocaleString() }}pp</div>
@@ -159,12 +157,6 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 
   .player-info__avatar {
     max-width: 4rem;
-
-    img {
-      width: 100%;
-      display: block;
-      border-radius: var(--border-radius);
-    }
   }
 }
 
