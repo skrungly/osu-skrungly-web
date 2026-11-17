@@ -535,6 +535,7 @@ watch(() => auth.player, resetInfoEdits)
 
     input, span, textarea {
       text-align: center;
+      justify-content: center;
     }
   }
 

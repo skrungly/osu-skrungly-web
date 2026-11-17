@@ -46,6 +46,7 @@ const activityStyle = computed(() => ({
 }
 
 .activity--minimal {
+  user-select: none;
   cursor: default;
 }
 </style>
