@@ -85,37 +85,6 @@ a {
   margin: 0 0.5rem;
 }
 
-section {
-  padding: calc(var(--section-padding) - var(--section-border-width));
-  border-radius: var(--border-radius);
-  border: var(--section-border);
-
-  background-color: var(--block-bg-colour);
-  box-shadow: var(--shadow-medium);
-}
-
-.section__banner {
-  position: relative;
-  margin: calc(-1 * var(--section-padding));
-  margin-bottom: 0;
-
-  width: calc(100% + 2 * var(--section-padding));
-  aspect-ratio: var(--section-banner-aspect);
-}
-
-.section__banner .banner-image {
-  position: absolute;
-  top: 0;
-  right: 0;
-
-  border-radius: var(--border-radius) var(--border-radius) 0 0;
-  width: 100%;
-  aspect-ratio: var(--section-banner-aspect);
-
-  object-fit: cover;
-  overflow: hidden;
-}
-
 .container {
   display: flex;
   flex-flow: row wrap;

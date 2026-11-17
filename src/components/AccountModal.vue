@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import * as api from "@/api"
 import { inputStateFactory } from '@/utils'
 import { auth } from "@/store"
+import Section from './Section.vue'
 
 const password = inputStateFactory("")
 const repeatPassword = inputStateFactory<string>("")
@@ -50,7 +51,7 @@ async function changePassword() {
 </script>
 
 <template>
-  <section>
+  <Section>
     <h2><FontAwesomeIcon icon="user-gear" />account settings</h2>
     <form @submit.prevent="changePassword">
       <label for="change-password">change password</label>
@@ -66,7 +67,7 @@ async function changePassword() {
       <button @click="auth.logout()" class="error">logout</button>
       <button @click="changePassword" class="confirm">save</button>
     </div>
-  </section>
+  </Section>
 </template>
 
 <style lang="scss" scoped>

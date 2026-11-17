@@ -1,0 +1,79 @@
+<script setup lang="ts">
+import { toRef } from 'vue'
+
+const props = defineProps<{
+  bannerSrc?: string
+  fallbackSrc?: string
+}>()
+
+const bannerSrc = toRef(props, "bannerSrc")
+</script>
+
+<template>
+  <section>
+    <div v-if="bannerSrc || fallbackSrc" class="banner">
+      <img v-if="fallbackSrc" :src="fallbackSrc" class="banner__image"/>
+
+      <Transition name="banner">
+        <img v-if="bannerSrc" key="bannerSrc" :src="bannerSrc" class="banner__image"/>
+      </Transition>
+
+      <div class="banner__content">
+        <slot name="banner"></slot>
+      </div>
+    </div>
+
+    <slot></slot>
+  </section>
+</template>
+
+<style lang="scss" scoped>
+section {
+  padding: calc(var(--section-padding) - var(--section-border-width));
+  border-radius: var(--border-radius);
+  border: var(--section-border);
+
+  background-color: var(--block-bg-colour);
+  box-shadow: var(--shadow-medium);
+}
+
+.banner {
+  position: relative;
+  margin: calc(-1 * var(--section-padding));
+  margin-bottom: 0;
+
+  width: calc(100% + 2 * var(--section-padding));
+  aspect-ratio: var(--section-banner-aspect);
+
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+}
+
+.banner__image {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  width: 100%;
+  aspect-ratio: var(--section-banner-aspect);
+
+  object-fit: cover;
+  overflow: hidden;
+}
+
+.banner__content {
+  padding: var(--section-padding);
+  height: calc(100% - 2 * var(--section-padding));
+}
+
+// define fade in/out transitions for overlay banner
+.banner-enter-active,
+.banner-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.banner-enter-from,
+.banner-leave-to {
+  opacity: 0;
+}
+</style>

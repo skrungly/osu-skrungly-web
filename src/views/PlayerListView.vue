@@ -7,6 +7,7 @@ import * as api from '../api'
 import RadioButton from '@/components/RadioButton.vue'
 import PlayerActivityIndicator from '@/components/PlayerActivityIndicator.vue'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
+import Section from '@/components/Section.vue'
 
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
 const SORT_MODES = ["pp", "plays"]
@@ -45,7 +46,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 </script>
 
 <template>
-  <section>
+  <Section>
     <div class="player-page__title">
       <h2><FontAwesomeIcon icon="users" />players!</h2>
       <div>
@@ -93,7 +94,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
         <div class="player-info__stat">{{ player.stats[chosenMode].plays.toLocaleString() }}</div>
       </div>
     </div>
-  </section>
+  </Section>
 </template>
 
 <style lang="scss" scoped>

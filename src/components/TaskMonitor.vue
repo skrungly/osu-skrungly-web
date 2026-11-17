@@ -2,6 +2,7 @@
 import { onMounted, onUnmounted, ref } from "vue"
 import * as api from "@/api"
 import { ValidationStyle } from "@/utils"
+import Section from "./Section.vue";
 
 const props = defineProps(["task"])
 
@@ -51,7 +52,7 @@ onUnmounted(() => clearInterval(intervalId))
 </script>
 
 <template>
-  <section class="task" :class="taskStyle">
+  <Section class="task" :class="taskStyle">
     <label for="progress">{{ taskState.status }}</label>
     <progress
       v-if="!taskStyle.error"
@@ -63,7 +64,7 @@ onUnmounted(() => clearInterval(intervalId))
     <span v-if="!taskStyle.error" class="task__info">
       your download will start automatically
     </span>
-  </section>
+  </Section>
 
   <a id="download" v-if="taskState.result" :href="taskState.result">
     <button class="highlight-button">download</button>

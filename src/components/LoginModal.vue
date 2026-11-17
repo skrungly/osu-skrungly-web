@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
 
 import * as api from "@/api"
 import { inputStateFactory } from "@/utils"
 import { auth } from "@/store"
+import Section from "./Section.vue"
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 
@@ -11,6 +12,12 @@ const username = inputStateFactory("")
 const password = inputStateFactory("")
 
 const chosenPlayer = ref<api.Player | null>(null)
+const chosenPlayerBannerSrc = computed(() => (
+  chosenPlayer.value && !hideAvatar.value
+  ? `${AVATAR_URL}/banners/${chosenPlayer.value.id}`
+  : undefined
+))
+
 const hideAvatar = ref(true)
 
 function resetForm() {
@@ -88,17 +95,8 @@ watch(() => username.value, checkUsername)
 </script>
 
 <template>
-  <section>
-    <div class="section__banner">
-      <!-- lay user banner on top of the default one -->
-      <img class="banner-image" :src="`${AVATAR_URL}/banners/default.jpg`" />
-      <img
-        v-if="chosenPlayer"
-        :src="`${AVATAR_URL}/banners/${chosenPlayer.id}`"
-        class="banner-image banner-preview"
-        :class="{'banner-preview--hidden': hideAvatar}"
-      />
-
+  <Section :banner-src="chosenPlayerBannerSrc" :fallback-src="`${AVATAR_URL}/banners/default.jpg`">
+    <template #banner class="section__banner">
       <div class="avatar-preview" :class="{'avatar-preview--hidden': hideAvatar}">
         <img
           v-if="chosenPlayer"
@@ -106,9 +104,9 @@ watch(() => username.value, checkUsername)
           :src="`${AVATAR_URL}/${chosenPlayer.id}`"
         />
       </div>
-    </div>
+    </template>
 
-    <form @submit.prevent="attemptLogin">
+    <form @submit.prevent="attemptLogin" class="login-form">
       <label for="username">username</label>
       <input v-model="username.value" id="username" type="text" :class="username.style">
       <span class="error-text" :class="{'error-text--hidden': !username.style.error}">{{ username.errorMessage }}</span>
@@ -119,7 +117,7 @@ watch(() => username.value, checkUsername)
 
       <button class="highlight-button" type="submit">login</button>
     </form>
-  </section>
+  </Section>
 </template>
 
 <style lang="scss" scoped>
@@ -127,47 +125,38 @@ section {
   width: 18rem;
 }
 
-.section__banner {
-  position: relative;
-  margin-bottom: 2rem;
+.login-form {
+  margin-top: 2rem;
+}
 
-  .avatar-preview {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
+.avatar-preview {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
 
-    top: 1rem;
-    opacity: 100%;
-    transition:
-      top 0.5s ease,
-      opacity 0.5s ease;
+  top: 1rem;
+  opacity: 100%;
+  transition:
+    top 0.5s ease,
+    opacity 0.5s ease;
 
-    width: 4rem;
-    height: 4rem;
+  width: 4rem;
+  height: 4rem;
+  border-radius: var(--border-radius);
+  z-index: 1;
+
+  img {
     border-radius: var(--border-radius);
-    z-index: 1;
-
-    img {
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow-medium), var(--shadow-small);
-      width: 100%;
-    }
+    box-shadow: var(--shadow-medium), var(--shadow-small);
+    width: 100%;
   }
+}
 
-  .avatar-preview--hidden {
-    opacity: 0%;
-    top: 1.5rem;
-    transition:
-      top 0s ease 0.6s,
-      opacity 0.5s ease 0.1s;
-  }
-
-  .banner-preview {
-    transition: opacity 0.5s ease;
-  }
-
-  .banner-preview--hidden {
-    opacity: 0%;
-  }
+.avatar-preview--hidden {
+  opacity: 0%;
+  top: 1.5rem;
+  transition:
+    top 0s ease 0.6s,
+    opacity 0.5s ease 0.1s;
 }
 </style>

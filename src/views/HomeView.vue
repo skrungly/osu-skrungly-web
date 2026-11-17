@@ -4,6 +4,7 @@ import { onMounted, ref } from "vue"
 
 import * as api from "@/api"
 import MapInfo from "@/components/MapInfo.vue"
+import Section from '@/components/Section.vue'
 
 const GLOBAL_STATS_NAMES: { [K in keyof Partial<api.GlobalStats>]: string } = {
   pp: "pp earned",
@@ -56,19 +57,19 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section v-if="errorMessage">
+  <Section v-if="errorMessage">
     <span class="error-text">{{ errorMessage }}</span>
-  </section>
+  </Section>
 
-  <section v-if="stats" class="container">
+  <Section v-if="stats" class="container">
     <div v-if="stats" v-for="[stat, name] in Object.entries(GLOBAL_STATS_NAMES)" class="stats">
       <span class="stats__value">{{ stats[stat as keyof typeof GLOBAL_STATS_NAMES].toLocaleString() }}</span>
       <span class="stats__name">{{ name }}</span>
     </div>
-  </section>
+  </Section>
 
   <div class="page-split">
-    <section v-if="recentScores">
+    <Section v-if="recentScores">
       <h2><FontAwesomeIcon icon="clock-rotate-left" />recent pb scores</h2>
       <div class="info-list">
         <MapInfo
@@ -79,9 +80,9 @@ onMounted(async () => {
           :rank="null"
         />
       </div>
-    </section>
+    </Section>
 
-    <section v-if="popularMaps">
+    <Section v-if="popularMaps">
       <h2><FontAwesomeIcon icon="music" />most popular maps</h2>
       <div class="info-list">
         <MapInfo
@@ -92,7 +93,7 @@ onMounted(async () => {
           :rank="null"
         />
       </div>
-    </section>
+    </Section>
   </div>
 </template>
 

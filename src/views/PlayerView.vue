@@ -11,6 +11,7 @@ import RadioButton from "@/components/RadioButton.vue"
 import PlayerScoreList from "@/components/PlayerScoreList.vue"
 import { inputStateFactory } from "@/utils";
 import PlayerActivityIndicator from "@/components/PlayerActivityIndicator.vue";
+import Section from "@/components/Section.vue";
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
@@ -248,14 +249,12 @@ watch(() => auth.player, resetInfoEdits)
 </script>
 
 <template>
-  <section class="container" v-if="pageError">
+  <Section class="container" v-if="pageError">
     <span class="error-text">{{ pageError }}</span>
-  </section>
+  </Section>
 
-  <section v-if="playerInfo">
-    <div class="section__banner">
-      <img class="banner-image" :src="banner.path ?? undefined" />
-
+  <Section v-if="playerInfo" :banner-src="banner.path ?? undefined">
+    <template #banner class="section__banner">
       <div v-if="currentlyEditing" class="banner-input" :class="{'banner-input--hidden': banner.file}">
         <div class="banner-input__prompt">
           <span>
@@ -268,31 +267,33 @@ watch(() => auth.player, resetInfoEdits)
         <input v-if="canEdit" type="file" @change="onBannerChange" accept="image/*">
       </div>
 
-      <button
-        v-if="canEdit"
-        class="settings-button"
-        @click="() => showAccountModal = true"
-      >
-        <FontAwesomeIcon icon="user-gear" />
-        <span class="button-text">settings</span>
-      </button>
+      <div class="banner-buttons">
+        <button
+          v-if="canEdit"
+          class="settings-button"
+          @click="() => showAccountModal = true"
+        >
+          <FontAwesomeIcon icon="user-gear" />
+          <span class="button-text">settings</span>
+        </button>
 
-      <button
-        v-if="canEdit"
-        class="edit-button"
-        :disabled="unsavedChanges"
-        @click="() => currentlyEditing = !currentlyEditing"
-      >
-        <span v-if="currentlyEditing">
-          <span class="button-text">cancel</span>
-          <FontAwesomeIcon icon="circle-xmark" />
-        </span>
-        <span v-else>
-          <span class="button-text">edit profile</span>
-          <FontAwesomeIcon icon="pen-to-square" />
-        </span>
-      </button>
-    </div>
+        <button
+          v-if="canEdit"
+          class="edit-button"
+          :disabled="unsavedChanges"
+          @click="() => currentlyEditing = !currentlyEditing"
+        >
+          <span v-if="currentlyEditing">
+            <span class="button-text">cancel</span>
+            <FontAwesomeIcon icon="circle-xmark" />
+          </span>
+          <span v-else>
+            <span class="button-text">edit profile</span>
+            <FontAwesomeIcon icon="pen-to-square" />
+          </span>
+        </button>
+      </div>
+    </template>
 
     <div class="userpage-header">
       <div class="userpage-identity">
@@ -325,25 +326,25 @@ watch(() => auth.player, resetInfoEdits)
         />
       </div>
     </div>
-  </section>
+  </Section>
 
-  <section v-if="playerInfo" class="container">
+  <Section v-if="playerInfo" class="container">
     <div v-for="[stat, name] in Object.entries(SHOW_STATS)" class="stats">
       <span class="stats__value">{{ playerInfo.stats[currentMode][stat as keyof typeof SHOW_STATS].toLocaleString() }}</span>
       <span class="stats__name">{{ name }}</span>
     </div>
-  </section>
+  </Section>
 
-  <section v-if="playerInfo">
+  <Section v-if="playerInfo">
     <PlayerScoreList :player="playerInfo" :mode="currentMode" sort="pp" />
-  </section>
+  </Section>
 
-  <section v-if="playerInfo">
+  <Section v-if="playerInfo">
     <PlayerScoreList :player="playerInfo" :mode="currentMode" sort="recent" />
-  </section>
+  </Section>
 
   <div v-if="currentlyEditing" class="edit-controls" :class="{'edit-controls--hidden': !unsavedChanges}">
-    <section :class="savePromptStyle">
+    <Section :class="savePromptStyle">
       <p v-if="savePromptStyle.loading">uploading changes...</p>
       <p v-else-if="savePromptStyle.warning">your profile has unsaved changes!</p>
       <p v-else>failed to save changes!</p>
@@ -351,7 +352,7 @@ watch(() => auth.player, resetInfoEdits)
         <button @click="uploadEdits"><FontAwesomeIcon icon="floppy-disk" /> save!</button>
         <button @click="resetInfoEdits"><FontAwesomeIcon icon="rotate-left" /> restore!</button>
       </div>
-    </section>
+    </Section>
   </div>
 
   <div
@@ -364,23 +365,23 @@ watch(() => auth.player, resetInfoEdits)
 </template>
 
 <style lang="scss" scoped>
-.section__banner {
+.banner-buttons {
+  display: flex;
+  flex-flow: row;
+  justify-content: space-between;
+
   button {
     min-width: 10rem;
-    position: absolute;
     background-color: var(--block-bg-colour);
     transition: opacity 0.5s;
+    z-index: 0;
   }
 
   .settings-button {
-    top: 1rem;
-    left: 1rem;
     padding-right: 1.5rem;
   }
 
   .edit-button {
-    top: 1rem;
-    right: 1rem;
     padding-left: 1.5rem;
   }
 
