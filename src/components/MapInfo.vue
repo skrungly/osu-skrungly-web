@@ -2,8 +2,8 @@
 import { computed, toRef } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { timeAgo } from "@/utils"
-import { Beatmap, Score } from "@/api"
 import PlayerAvatar from "./PlayerAvatar.vue";
+import { Beatmap, Score, getModString } from "@/api"
 
 const props = defineProps<{
   map: Beatmap,
@@ -20,41 +20,6 @@ const SKRUNGLY_API_URL = import.meta.env.VITE_SKRUNGLY_API_URL
 const MAP_COVER_STYLE = computed(() => ({
   "background-image": `url('https://assets.ppy.sh/beatmaps/${map.value.set_id}/covers/cover@2x.jpg')`
 }))
-
-const MOD_FLAGS = {
-  // NOMOD: 0,
-  "NF": 1 << 0,
-  "EZ": 1 << 1,
-  "TS": 1 << 2,
-  "HD": 1 << 3,
-  "HR": 1 << 4,
-  "SD": 1 << 5,
-  "DT": 1 << 6,
-  // RELAX: 1 << 7,
-  "HT": 1 << 8,
-  "NC": 1 << 9,
-  "FL": 1 << 10,
-  // AUTO: 1 << 11,
-  "SO": 1 << 12,
-  "AP": 1 << 13,
-  "PF": 1 << 14,
-  "4K": 1 << 15,
-  "5K": 1 << 16,
-  "6K": 1 << 17,
-  "7K": 1 << 18,
-  "8K": 1 << 19,
-  "FI": 1 << 20,
-  // RANDOM: 1 << 21,
-  // CINEMA: 1 << 22,
-  // TARGET: 1 << 23,
-  "9K": 1 << 24,
-  // KEYCOOP: 1 << 25,
-  "1K": 1 << 26,
-  "3K": 1 << 27,
-  "2K": 1 << 28,
-  "V2": 1 << 29,
-  "MR": 1 << 30
-}
 
 const DIFFICULTY_HUES = [
   [0.1, 215],
@@ -99,22 +64,6 @@ function mapDifficultyStyle(diffValue: number) {
   return {
     "background-image": `linear-gradient(30deg, ${firstColour} 0%, ${secondColour} 100%)`
   }
-}
-
-function getModString(mods_value: number) {
-  const mods = []
-
-  for (const [mod, flag] of Object.entries(MOD_FLAGS)) {
-    if (mods_value & flag) {
-      mods.push(mod)
-    }
-  }
-
-  if (mods.length == 0) {
-    return ""
-  }
-
-  return "+" + mods.join("")
 }
 </script>
 
