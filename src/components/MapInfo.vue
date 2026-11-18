@@ -170,7 +170,8 @@ function mapDifficultyStyle(diffValue: number) {
 
 .player-avatar {
   height: 100%;
-  max-width: 4rem;
+  width: 4rem;
+  min-width: 4rem;
 }
 
 .map__thumbnail {
