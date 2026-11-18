@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { onMounted, ref } from "vue"
 
 import * as api from "@/api"
-import MapInfo from "@/components/MapInfo.vue"
+import MapSummaryCard from "@/components/MapSummaryCard.vue"
 import Section from '@/components/Section.vue'
 
 const GLOBAL_STATS_NAMES: { [K in keyof Partial<api.GlobalStats>]: string } = {
@@ -72,7 +72,7 @@ onMounted(async () => {
     <Section v-if="recentScores">
       <h2><FontAwesomeIcon icon="clock-rotate-left" />recent pb scores</h2>
       <div class="info-list">
-        <MapInfo
+        <MapSummaryCard
           v-for="score in recentScores"
           :map="score.beatmap"
           :score="score"
@@ -85,7 +85,7 @@ onMounted(async () => {
     <Section v-if="popularMaps">
       <h2><FontAwesomeIcon icon="music" />most popular maps</h2>
       <div class="info-list">
-        <MapInfo
+        <MapSummaryCard
           v-for="map in popularMaps"
           :map="map"
           :score="null"
