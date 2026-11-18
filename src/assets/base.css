@@ -68,6 +68,11 @@ input:focus, textarea:focus {
   border: 1px solid #ffffff40;
 }
 
+select {
+  border-radius: var(--border-radius);
+  border: var(--section-border)
+}
+
 button {
   padding: var(--button-padding);
   background: none;

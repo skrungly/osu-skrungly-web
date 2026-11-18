@@ -23,10 +23,15 @@ const router = createRouter({
           component: () => import("../views/PlayerView.vue"),
         },
         {
+          path: "mapsets/:id",
+          name: "mapset",
+          component: () => import("../views/MapsetView.vue"),
+        },
+        {
           // osu client sends players to /u/:id
           path: "u/:id",
           redirect: { name: "player" }
-        }
+        },
       ]
     },
     {

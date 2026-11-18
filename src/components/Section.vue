@@ -32,6 +32,7 @@ section {
   padding: calc(var(--section-padding) - var(--section-border-width));
   border-radius: var(--border-radius);
   border: var(--section-border);
+  overflow: scroll;
 
   background-color: var(--block-bg-colour);
   box-shadow: var(--shadow-medium);
@@ -39,7 +40,7 @@ section {
 
 .banner {
   position: relative;
-  margin: calc(-1 * var(--section-padding));
+  margin: calc(-1 * var(--section-padding) - 1px);
   margin-bottom: 0;
 
   width: calc(100% + 2 * var(--section-padding));

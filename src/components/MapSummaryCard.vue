@@ -88,7 +88,7 @@ function mapDifficultyStyle(diffValue: number) {
 
     <div class="map__info">
       <div class="map__info-line">
-        <a class="map__title map__info--truncate" :href="`https://osu.ppy.sh/beatmapsets/${map.set_id}`">{{ map.title }}</a>
+        <RouterLink class="map__title map__info--truncate" :to="`/mapsets/${map.set_id}`">{{ map.title }}</RouterLink>
         <span class="map__info--secondary map__info--truncate">by {{ map.artist }}</span>
       </div>
 
