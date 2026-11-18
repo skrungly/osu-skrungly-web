@@ -254,7 +254,7 @@ watch(() => auth.player, resetInfoEdits)
   </Section>
 
   <Section v-if="playerInfo" :banner-src="banner.path ?? undefined">
-    <template #banner class="section__banner">
+    <template #banner>
       <div v-if="currentlyEditing" class="banner-input" :class="{'banner-input--hidden': banner.file}">
         <div class="banner-input__prompt">
           <span>
@@ -368,7 +368,9 @@ watch(() => auth.player, resetInfoEdits)
 .banner-buttons {
   display: flex;
   flex-flow: row;
+  align-items: start;
   justify-content: space-between;
+  height: 100%;
 
   button {
     min-width: 10rem;
@@ -563,7 +565,9 @@ watch(() => auth.player, resetInfoEdits)
 }
 
 @media screen and (max-width: 35em) {
-  .section__banner {
+  .banner-buttons {
+    align-items: center;
+
     button {
       min-width: 0rem;
       top: 0.75rem;
