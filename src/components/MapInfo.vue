@@ -2,8 +2,9 @@
 import { computed, toRef } from "vue"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { timeAgo } from "@/utils"
-import PlayerAvatar from "./PlayerAvatar.vue";
 import { Beatmap, Score, getModString } from "@/api"
+import PlayerAvatar from "./PlayerAvatar.vue"
+import ScoreRankingOverlay from "./ScoreRankingOverlay.vue"
 
 const props = defineProps<{
   map: Beatmap,
@@ -74,7 +75,7 @@ function mapDifficultyStyle(diffValue: number) {
     <div v-else class="map__thumbnail">
       <img :src="`https://b.ppy.sh/thumb/${map.set_id}l.jpg`" />
 
-      <div v-if="rank" class="score__rank">#{{ rank }}</div>
+      <ScoreRankingOverlay v-if="rank" :ranking="rank" class="score__rank">#{{ rank }}</ScoreRankingOverlay>
 
       <div v-if="score" class="map__thumbnail-text score__grade" :data-grade="score.grade">
         <span>{{ score.acc.toFixed(2) }}%</span>
@@ -191,19 +192,7 @@ function mapDifficultyStyle(diffValue: number) {
     top: 0;
     width: 100%;
     height: 75%;
-
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    background-color: #00000080;
     border-radius: var(--border-radius) var(--border-radius) 0 0;
-
-    font-size: 1.25rem;
-    font-weight: bold;
-    text-shadow: var(--shadow-text);
-
-    opacity: 0;
   }
 
   .map__thumbnail-text {
@@ -249,7 +238,6 @@ function mapDifficultyStyle(diffValue: number) {
 
 .map:hover .score__rank {
   opacity: 100%;
-  transition: opacity 0.25s;
 }
 
 .map__info {
