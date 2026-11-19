@@ -82,7 +82,7 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
     <ScoreList
       :map="beatmap"
       :mode="beatmap.mode"
-      :sort="beatmap.status === (api.BeatmapStatus.Ranked | api.BeatmapStatus.Approved) ? 'pp' : 'score'"
+      :sort="globalScores && [api.BeatmapStatus.Ranked, api.BeatmapStatus.Approved].includes(beatmap.status) ? 'pp' : 'score'"
       :status="globalScores ? api.ScoreStatusQuery.Best : api.ScoreStatusQuery.Passed"
       :player="!globalScores && auth.player ? auth.player : undefined"
       :page-limit="10"
