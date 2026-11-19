@@ -13,9 +13,9 @@ const beatmap = ref<api.Beatmap | null>(null)
 const errorMsg = ref<string | null>(null)
 const loading = ref(false)
 
-const beatmapBannerSrc = computed(() => (
-  `https://assets.ppy.sh/beatmaps/${route.params.id}/covers/cover@2x.jpg`
-))
+const headerStyle = computed(() => ({
+  "background-image": `url("https://assets.ppy.sh/beatmaps/${route.params.id}/covers/cover@2x.jpg")`,
+}))
 
 async function fetchMapset() {
   mapset.value = []
@@ -41,21 +41,16 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
 </script>
 
 <template>
-  <Section v-if="mapset.length && beatmap">
-    <div class="map-header">
-      <img class="map-header__background" :src="beatmapBannerSrc"/>
-      <div class="map-header__background map-header__overlay"></div>
+  <Section v-if="mapset.length && beatmap" :style="headerStyle" class="map-header">
+    <div class="map-header__info">
+      <span class="map-header__title">{{ beatmap.artist }} - {{ beatmap.title }}</span>
+      <span class="map-header__creator">mapped by {{ beatmap.creator }}</span>
+    </div>
 
-      <div class="map-header__info">
-        <span class="map-header__title">{{ beatmap.artist }} - {{ beatmap.title }}</span>
-        <span class="map-header__creator">mapped by {{ beatmap.creator }}</span>
-      </div>
-
-      <div class="map-header__options">
-        <select class="map-header__select" v-model="beatmap">
-          <option v-for="map in mapset" :value="map">{{ map.version }}</option>
-        </select>
-      </div>
+    <div class="map-header__options">
+      <select class="map-header__select" v-model="beatmap">
+        <option v-for="map in mapset" :value="map">{{ map.version }}</option>
+      </select>
     </div>
   </Section>
 
@@ -75,22 +70,11 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
   display: flex;
   flex-flow: column;
   height: 100%;
-}
 
-.map-header__background {
-  position: absolute;
-  margin: calc(-1 * var(--section-padding) - 1px);
-
-  width: calc(100% + 2 * var(--section-padding));
-  height: calc(100% + 2 * var(--section-padding));
-  object-fit: cover;
-
-  border-radius: var(--border-radius);
-}
-
-.map-header__overlay {
-  background-color: #000;
-  opacity: 60%;
+  background-position: center;
+  background-size: cover;
+  background-color: hsl(0 0% 35%);
+  background-blend-mode: overlay;
 }
 
 .map-header__info {
