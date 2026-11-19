@@ -177,7 +177,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
     }
 
     .player-info__stat, button {
-      min-width: 4rem;
+      max-width: 4rem;
     }
 
     .player-info__avatar {
