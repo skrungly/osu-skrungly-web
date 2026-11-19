@@ -26,15 +26,14 @@ const finalPageReached = ref(false)
 const loading = ref(false)
 
 async function resetScores() {
-  scores.value = []
   page.value = 0
   loading.value = false
   finalPageReached.value = false
 
-  await fetchScores()
+  await fetchScores(true)
 }
 
-async function fetchScores() {
+async function fetchScores(reset: boolean = false) {
   loading.value = true
 
   const params: api.ScoreQuery = {
@@ -67,7 +66,10 @@ async function fetchScores() {
   }
 
   errorMessage.value = null
+
+  if (reset) scores.value = []
   scores.value.push(...scoreResponse)
+
   loading.value = false
 }
 
