@@ -87,7 +87,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
           </div>
 
           <span>
-            <PlayerActivityIndicator class="player-info__secondary":player="player"/>
+            <PlayerActivityIndicator class="player-info__secondary" :player="player"/>
           </span>
         </div>
         <div class="player-info__stat">{{ player.stats[chosenMode].pp.toLocaleString() }}pp</div>
@@ -107,6 +107,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 .player-list {
   display: flex;
   flex-flow: column;
+  overflow: scroll;
 }
 
 .player-info {
@@ -135,7 +136,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
     display: flex;
     flex-flow: column;
     flex-grow: 1;
-    min-width: 0rem;
+    min-width: 10rem;
     text-align: left;
     white-space: nowrap;
     gap: 0.25rem;
@@ -145,7 +146,9 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
     display: flex;
     flex-flow: row;
     gap: 0.35rem;
+  }
 
+  .player-info__name a {
     overflow: hidden;
     text-overflow: ellipsis;
   }
@@ -157,7 +160,8 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   }
 
   .player-info__avatar {
-    max-width: 4rem;
+    width: 4rem;
+    min-width: 4rem;
   }
 }
 
@@ -170,7 +174,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   .player-info {
     padding: 0.25rem;
 
-    .player-info__stat:last-of-type, button:last-of-type, .player-info__secondary {
+    .player-info__secondary {
       display: none;
     }
 
@@ -179,7 +183,8 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
     }
 
     .player-info__avatar {
-      max-width: 2rem;
+      width: 2rem;
+      min-width: 2rem;
     }
   }
 }
