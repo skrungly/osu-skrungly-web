@@ -4,16 +4,17 @@ import { ref, watch } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 import * as api from '../api'
-import RadioButton from '@/components/RadioButton.vue'
 import PlayerActivityIndicator from '@/components/PlayerActivityIndicator.vue'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import Section from '@/components/Section.vue'
+import GameModeRadioButtons from '@/components/GameModeRadioButtons.vue'
 
-const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
-const SORT_MODES = ["pp", "plays"]
+// chosenMode updates with user input. currentMode is what
+// is currently displayed, i.e. until new mode data is fetched
+const chosenMode = ref(api.GameMode.Osu)
+const currentMode = ref(chosenMode.value)
 
-const chosenMode = ref(0)
-const chosenSort = ref(0)
+const chosenSort = ref("pp")
 
 const players = ref<api.Player[] | null>(null)
 const loading = ref(false)
@@ -24,7 +25,7 @@ async function fetchPlayers() {
 
   const params = {
     "mode": chosenMode.value.toString(),
-    "sort": SORT_MODES[chosenSort.value],
+    "sort": chosenSort.value,
     "limit": 100,
   }
 
@@ -37,6 +38,7 @@ async function fetchPlayers() {
 
   var playerList = await response.json()
 
+  currentMode.value = chosenMode.value
   loading.value = false
   errorMessage.value = null
   if (playerList) players.value = playerList
@@ -49,30 +51,18 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   <Section>
     <div class="player-page__title">
       <h2><FontAwesomeIcon icon="users" />players!</h2>
-      <div>
-        <RadioButton
-          v-for="(mode, index) of GAME_MODES"
-          :state="chosenMode"
-          :option="index"
-          :content="mode"
-          @click="() => chosenMode = index"
-        />
-      </div>
+      <GameModeRadioButtons v-model="chosenMode"/>
     </div>
 
     <div class="player-list" :class="{'loading': loading}">
       <div class="player-info">
-        <!-- this is just the table header of sorts -->
         <div class="player-info__rank"></div>
         <div class="player-info__avatar"></div>
         <div class="player-info__text"></div>
-        <RadioButton
-          v-for="(sort, index) of SORT_MODES"
-          :state="chosenSort"
-          :option="index"
-          :content="sort"
-          @click="() => chosenSort = index"
-        />
+
+        <!-- not the prettiest but these buttons need revamping anyways -->
+        <button @click="chosenSort = 'pp'" :class="{ 'highlight-text': chosenSort == 'pp' }">pp</button>
+        <button @click="chosenSort = 'plays'" :class="{ 'highlight-text': chosenSort == 'plays' }">plays</button>
       </div>
 
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
@@ -90,8 +80,8 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
             <PlayerActivityIndicator class="player-info__secondary" :player="player"/>
           </span>
         </div>
-        <div class="player-info__stat">{{ player.stats[chosenMode].pp.toLocaleString() }}pp</div>
-        <div class="player-info__stat">{{ player.stats[chosenMode].plays.toLocaleString() }}</div>
+        <div class="player-info__stat">{{ player.stats[currentMode].pp.toLocaleString() }}pp</div>
+        <div class="player-info__stat">{{ player.stats[currentMode].plays.toLocaleString() }}</div>
       </div>
     </div>
   </Section>
@@ -125,6 +115,14 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
   .player-info__stat, button {
     min-width: 5rem;
     text-align: center;
+  }
+
+  button {
+    color: var(--text-colour-tertiary);
+  }
+
+  button:hover {
+    color: var(--text-colour-secondary);
   }
 
   .player-info__rank {

@@ -7,11 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import * as api from "@/api";
 import { auth } from "@/store";
 import AccountModal from "@/components/AccountModal.vue"
-import RadioButton from "@/components/RadioButton.vue"
 import PlayerScoreList from "@/components/PlayerScoreList.vue"
 import { inputStateFactory } from "@/utils";
 import PlayerActivityIndicator from "@/components/PlayerActivityIndicator.vue";
 import Section from "@/components/Section.vue";
+import GameModeRadioButtons from "@/components/GameModeRadioButtons.vue"
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 const GAME_MODES = ["osu!", "taiko", "catch", "mania", "relax"]
@@ -317,13 +317,7 @@ watch(() => auth.player, resetInfoEdits)
       <span class="error-text" :class="{'error-text--hidden': !inputUserpage.style.error}">{{ inputUserpage.errorMessage }}</span>
 
       <div class="mode-buttons">
-        <RadioButton
-          v-for="mode in playerModes"
-          :state="currentMode"
-          :option="mode"
-          :content="GAME_MODES[mode]"
-          @click="() => currentMode = mode"
-        />
+        <GameModeRadioButtons v-model="currentMode" :modes="playerModes"/>
       </div>
     </div>
   </Section>
