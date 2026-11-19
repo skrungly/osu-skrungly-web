@@ -174,7 +174,7 @@ main {
 
   margin: var(--section-margin) auto;
   width: var(--content-width);
-  max-width: calc(100vw - 2 * var(--section-margin));
+  max-width: var(--main-section-width);
 }
 
 footer {

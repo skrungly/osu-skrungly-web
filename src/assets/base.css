@@ -1,7 +1,10 @@
 :root {
   --nav-width: 80rem;
   --content-width: 70rem;
+
   --border-radius: 0.5rem;
+  --main-section-border-radius: var(--border-radius);
+  --main-section-width: calc(100vw - 2 * var(--section-margin));
 
   --section-margin: 1rem;
   --section-padding: 1rem;
@@ -28,6 +31,13 @@
   --shadow-text:
     0px 0px 2px var(--shadow-colour),
     0px 1px 4px var(--shadow-colour);
+}
+
+@media screen and (max-width: 35rem) {
+  :root {
+    --main-section-border-radius: 0rem;
+    --main-section-width: 100vw;
+  }
 }
 
 @font-face {

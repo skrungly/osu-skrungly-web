@@ -26,7 +26,7 @@ const playedAt = computed(() => (
       <div>
         <RouterLink :to="`/players/${score.player.name}`" class="score-info__player">{{ score.player.name }}</RouterLink>
         &nbsp;
-        <span class="score-info--secondary">{{ getModString(score.mods) }}</span>
+        <span class="score-info__stats">{{ getModString(score.mods) }}</span>
       </div>
 
       <div class="score-info__stats">

@@ -405,7 +405,7 @@ watch(() => auth.player, resetInfoEdits)
     top: 0;
     left: 0;
     padding: 0;
-    width: 100%;
+    width: calc(100% - 2 * var(--section-border-width));
     height: 100%;
     opacity: 0;
     cursor: pointer;
