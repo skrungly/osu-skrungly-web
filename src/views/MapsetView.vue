@@ -55,7 +55,7 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
 
     <div class="map-header__options">
       <select class="map-header__select" v-model="beatmap">
-        <option v-for="map in mapset" :value="map">{{ map.version }}</option>
+        <option v-for="map in mapset.sort((a, b) => b.diff - a.diff)" :value="map">{{ map.version }} ({{ map.diff.toFixed(2) }}&starf;)</option>
       </select>
 
       <div class="map-stats map-stats--desktop">
@@ -85,7 +85,7 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
       :sort="globalScores && [api.BeatmapStatus.Ranked, api.BeatmapStatus.Approved].includes(beatmap.status) ? 'pp' : 'score'"
       :status="globalScores ? api.ScoreStatusQuery.Best : api.ScoreStatusQuery.Passed"
       :player="!globalScores && auth.player ? auth.player : undefined"
-      :page-limit="10"
+      :page-limit="5"
     />
   </Section>
 </template>
@@ -101,8 +101,8 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
   background-size: cover;
 
   text-shadow:
-    0px 0px 2px hsl(0, 0, 15%),
-    0px 1px 4px hsl(0, 0, 15%);
+    0px 0px 2px hsl(0, 0%, 15%),
+    0px 1px 4px hsl(0, 0%, 15%);
 }
 
 .map-header__info {
@@ -134,7 +134,7 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
 }
 
 .map-header__select {
-  width: 19.5rem;
+  width: 20rem;
 }
 
 .map-stats {

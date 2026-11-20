@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import * as api from "@/api"
 import { ref, toRef, watch } from "vue"
-import MapSummaryCard from "./MapSummaryCard.vue"
 import ScoreSummaryCard from "./ScoreSummaryCard.vue"
+import PaginationButtons from "./PaginationButtons.vue"
+
+const RANKED_SORTS: api.ScoreSortOption[] = ["pp", "score", "combo"]
 
 const props = defineProps<{
   player?: api.Player
@@ -21,19 +23,24 @@ const sort = toRef(props, "sort")
 const scores = ref<api.Score[]>([])
 
 const errorMessage = ref<string | null>(null)
-const page = ref(0)
-const finalPageReached = ref(false)
 const loading = ref(false)
 
-async function resetScores() {
-  page.value = 0
-  loading.value = false
-  finalPageReached.value = false
+const chosenPage = ref<number>(1)
+const fetchedPage = ref<number | null>(null)
+const finalPage = ref<number | null>(null)
 
-  await fetchScores(true)
+function scoreRank(index: number): number | null {
+  if (RANKED_SORTS.includes(sort.value) && fetchedPage.value) {
+    return (fetchedPage.value - 1) * props.pageLimit + index
+  } else {
+    return null
+  }
 }
 
 async function fetchScores(reset: boolean = false) {
+  let page = reset ? 1 : chosenPage.value
+  fetchedPage.value = page
+
   loading.value = true
 
   const params: api.ScoreQuery = {
@@ -41,7 +48,7 @@ async function fetchScores(reset: boolean = false) {
     beatmap: map.value?.id,
     mode: mode.value,
     sort: sort.value,
-    page: page.value,
+    page: page - 1,
     limit: props.pageLimit,
     status: props.status ?? (
       sort.value == "pp"
@@ -52,58 +59,72 @@ async function fetchScores(reset: boolean = false) {
 
   const response = await api.get("/scores", params)
 
+  if (fetchedPage.value !== page) {
+    return
+  }
+
   if (!response.ok) {
     errorMessage.value = `failed to fetch scores [${response.status}]`
     return
   }
 
-  const scoreResponse: api.Score[] = await response.json()
+  let fetchedScores = await response.json() as api.Score[]
 
-  if (scoreResponse.length < props.pageLimit) {
-    finalPageReached.value = true
-  } else {
-    page.value += 1
+  if (reset) {
+    finalPage.value = null
+  }
+
+  if (fetchedScores.length == 0) {
+    finalPage.value = Math.max(1, page - 1)
+    page = finalPage.value
+
+  } else if (fetchedScores.length < props.pageLimit) {
+    finalPage.value = page
+  }
+
+  chosenPage.value = page
+
+  if (fetchedScores.length || reset) {
+    scores.value = fetchedScores
   }
 
   errorMessage.value = null
-
-  if (reset) scores.value = []
-  scores.value.push(...scoreResponse)
-
   loading.value = false
 }
 
-watch([player, map, mode], () => resetScores(), { immediate: true })
+watch(chosenPage, () => fetchScores(false))
+watch([player, map, mode], () => fetchScores(true), { immediate: true })
 </script>
 
 <template>
-  <div v-if="scores.length" class="score-list" :class="{ 'loading': loading }">
-    <MapSummaryCard
-      v-if="!map"
-      v-for="(score, index) in scores"
-      :map="score.beatmap"
-      :score="score"
-      :rank="props.sort == 'pp' ? index + 1 : null"
-      :show-player="false"
-    />
+  <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
 
-    <ScoreSummaryCard
-      v-else
-      v-for="(score, index) in scores"
-      :score="score"
-      :rank="props.sort == 'pp' ? index + 1 : null"
-    />
+  <div class="score-page">
+    <!-- TODO: use skeleton layout to set height, rather than styling it like this -->
+    <div class="score-list" :class="{ 'loading': loading }">
+      <ScoreSummaryCard
+        v-for="index in pageLimit"
+        :score="scores[index - 1]"
+        :rank="scoreRank(index) ?? undefined"
+      />
+    </div>
+
+    <PaginationButtons v-model="chosenPage" :final-page="finalPage"/>
   </div>
-
-  <span v-else-if="errorMessage" class="error-text">{{ errorMessage }}</span>
 </template>
 
 <style lang="scss" scoped>
+.score-page {
+  display: flex;
+  flex-flow: column;
+  gap: 0.5rem;
+  overflow: auto;
+  min-width: 100%;
+}
+
 .score-list {
   display: inline-flex;
   flex-flow: column;
-  position: relative;
-  overflow: auto;
   min-width: 100%;
 }
 
