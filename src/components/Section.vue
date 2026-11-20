@@ -31,7 +31,7 @@ const bannerSrc = toRef(props, "bannerSrc")
 <style lang="scss" scoped>
 .section {
   padding: calc(var(--section-padding) - var(--section-border-width));
-  overflow: scroll;
+  overflow: auto;
   margin: 0 var(--section-margin);
 }
 

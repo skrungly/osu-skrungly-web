@@ -20,7 +20,7 @@ const beatmap = toRef(props, "beatmap")
       <span class="stat__name">plays</span>
     </div>
     <div class="stat">
-      <span v-if="beatmap.passes" class="stat__value">{{ (100 * beatmap.passes / beatmap.plays).toFixed(0) }}%</span>
+      <span v-if="beatmap.plays" class="stat__value">{{ (100 * beatmap.passes / beatmap.plays).toFixed(0) }}%</span>
       <span v-else class="stat__empty">--</span>
       <span class="stat__name">pass rate</span>
     </div>

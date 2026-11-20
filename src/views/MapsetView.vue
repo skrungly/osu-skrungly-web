@@ -20,7 +20,7 @@ const errorMsg = ref<string | null>(null)
 const loading = ref(false)
 
 const headerStyle = computed(() => ({
-  "background-image": `linear-gradient(to bottom, #0004, #000a 70%, #000d), url("https://assets.ppy.sh/beatmaps/${route.params.id}/covers/cover@2x.jpg")`,
+  "background-image": `linear-gradient(175deg, #0004, #000a 70%, #000d), url("https://assets.ppy.sh/beatmaps/${route.params.id}/covers/cover@2x.jpg")`,
 }))
 
 async function fetchMapset() {

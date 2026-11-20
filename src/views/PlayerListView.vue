@@ -97,7 +97,7 @@ watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 .player-list {
   display: flex;
   flex-flow: column;
-  overflow: scroll;
+  overflow: auto;
 }
 
 .player-info {

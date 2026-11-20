@@ -39,12 +39,12 @@ const playedAt = computed(() => (
         <span class="score-info--secondary" :class="{ 'highlight-text': score.perfect }">
           {{ score.max_combo.toLocaleString() }}x
         </span>
-        &middot;
-        <span class="score-info--secondary">{{ score.pp.toFixed(0).toLocaleString() }}pp</span>
       </div>
 
       <span class="score-info--tertiary"> played {{ playedAt }}</span>
     </div>
+
+    <span class="score-info__pp">{{ score.pp.toFixed(0).toLocaleString() }}pp</span>
   </div>
 </template>
 
@@ -85,6 +85,7 @@ const playedAt = computed(() => (
   display: flex;
   flex-flow: column;
   font-size: 0.9rem;
+  margin-right: auto;
 }
 
 .score-info__stats {
@@ -100,8 +101,8 @@ const playedAt = computed(() => (
 .score-info__grade[data-grade="C"] { color: #d217e5; }
 .score-info__grade[data-grade="D"] { color: #e20012; }
 
-.score-info__player {
-  font-size: 1.25rem;
+.score-info__player, .score-info__pp {
+  font-size: 1.1rem;
 }
 
 .score-info--secondary {
@@ -122,12 +123,12 @@ const playedAt = computed(() => (
 
 @media screen and (max-width: 35em) {
   .score {
-    height: 2rem;
+    height: 2.5rem;
     gap: 0.75rem;
     padding: 0.25rem;
   }
 
-  .score-info__player {
+  .score-info__player, .score-info__pp {
     font-size: 1rem;
   }
 
