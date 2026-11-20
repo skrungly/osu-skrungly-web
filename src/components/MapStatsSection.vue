@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { Beatmap, beatmapDuration } from "@/api"
 import { toRef } from "vue"
-import Section from "./Section.vue"
 
 const props = defineProps<{
   beatmap: Beatmap
@@ -11,7 +10,7 @@ const beatmap = toRef(props, "beatmap")
 </script>
 
 <template>
-  <Section class="stats-section">
+  <div class="stats-section">
     <div class="stat">
       <span class="stat__value">{{ beatmap.diff.toFixed(2) }}&starf;</span>
       <span class="stat__name">star rating</span>
@@ -29,7 +28,7 @@ const beatmap = toRef(props, "beatmap")
       <span class="stat__value">{{ beatmapDuration(beatmap.total_length) }}</span>
       <span class="stat__name">duration</span>
     </div>
-  </Section>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -39,6 +38,7 @@ const beatmap = toRef(props, "beatmap")
   justify-content: space-around;
   align-items: center;
   gap: 0.5rem;
+  margin: 0;
 }
 
 .stat {

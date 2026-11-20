@@ -4,13 +4,14 @@ import { toRef } from 'vue'
 const props = defineProps<{
   bannerSrc?: string
   fallbackSrc?: string
+  allowFullWidth?: boolean
 }>()
 
 const bannerSrc = toRef(props, "bannerSrc")
 </script>
 
 <template>
-  <section>
+  <section class="card section" :class="{ 'section--full-width': allowFullWidth }">
     <div v-if="bannerSrc || fallbackSrc" class="banner">
       <img v-if="fallbackSrc" :src="fallbackSrc" class="banner__image"/>
 
@@ -28,14 +29,10 @@ const bannerSrc = toRef(props, "bannerSrc")
 </template>
 
 <style lang="scss" scoped>
-section {
+.section {
   padding: calc(var(--section-padding) - var(--section-border-width));
-  border-radius: var(--main-section-border-radius);
-  border: var(--section-border);
   overflow: scroll;
-
-  background-color: var(--block-bg-colour);
-  box-shadow: var(--shadow-medium);
+  margin: 0 var(--section-margin);
 }
 
 .banner {
@@ -76,5 +73,12 @@ section {
 .banner-enter-from,
 .banner-leave-to {
   opacity: 0;
+}
+
+@media screen and (max-width: 35em) {
+  .section--full-width {
+    margin: 0;
+    border-radius: 0;
+  }
 }
 </style>

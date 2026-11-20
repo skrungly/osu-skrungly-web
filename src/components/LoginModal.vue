@@ -95,7 +95,7 @@ watch(() => username.value, checkUsername)
 </script>
 
 <template>
-  <Section :banner-src="chosenPlayerBannerSrc" :fallback-src="`${AVATAR_URL}/banners/default.jpg`">
+  <Section class="login-modal" :banner-src="chosenPlayerBannerSrc" :fallback-src="`${AVATAR_URL}/banners/default.jpg`">
     <template #banner class="section__banner">
       <div class="avatar-preview" :class="{'avatar-preview--hidden': hideAvatar}">
         <img
@@ -121,7 +121,7 @@ watch(() => username.value, checkUsername)
 </template>
 
 <style lang="scss" scoped>
-section {
+.login-modal {
   width: 18rem;
 }
 

@@ -74,7 +74,9 @@ watch(() => auth.player, () => showLoginModal.value = false)
 .page {
   display: flex;
   flex-direction: column;
+  align-items: center;
   min-height: 100vh;
+  gap: var(--section-margin);
 }
 
 header {
@@ -93,6 +95,8 @@ header {
   h1 {
     font-size: 2rem;
   }
+
+  width: 100%;
 }
 
 nav {
@@ -152,6 +156,7 @@ nav {
 @media screen and (max-width: 35em) {
   header {
     padding: var(--section-padding);
+    width: calc(100vw - 2 * var(--section-padding));
   }
 
   nav {
@@ -172,9 +177,8 @@ main {
   flex-grow: 1;
   align-items: stretch;
 
-  margin: var(--section-margin) auto;
   width: var(--content-width);
-  max-width: var(--main-section-width);
+  max-width: 100vw;
 }
 
 footer {
@@ -187,6 +191,7 @@ footer {
   border-top: var(--section-border);
 
   min-height: var(--header-height);
+  min-width: 100%;
   background-color: var(--block-bg-colour);
 }
 

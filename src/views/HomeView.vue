@@ -69,7 +69,7 @@ onMounted(async () => {
   </Section>
 
   <div class="page-split">
-    <Section v-if="recentScores">
+    <section class="card" v-if="recentScores">
       <h2><FontAwesomeIcon icon="clock-rotate-left" />recent pb scores</h2>
       <div class="info-list">
         <MapSummaryCard
@@ -80,9 +80,9 @@ onMounted(async () => {
           :rank="null"
         />
       </div>
-    </Section>
+    </section>
 
-    <Section v-if="popularMaps">
+    <section class="card" v-if="popularMaps">
       <h2><FontAwesomeIcon icon="music" />most popular maps</h2>
       <div class="info-list">
         <MapSummaryCard
@@ -93,7 +93,7 @@ onMounted(async () => {
           :rank="null"
         />
       </div>
-    </Section>
+    </section>
   </div>
 </template>
 
@@ -102,9 +102,12 @@ onMounted(async () => {
   display: flex;
   flex-flow: row;
   gap: var(--section-margin);
+  margin: 0 var(--section-margin);
 
   section {
-    width: calc(50% - 2.5 * var(--section-margin));
+    width: 0;
+    flex-grow: 1;
+    padding: var(--section-padding);
   }
 }
 

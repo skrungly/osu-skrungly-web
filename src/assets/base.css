@@ -3,8 +3,6 @@
   --content-width: 70rem;
 
   --border-radius: 0.5rem;
-  --main-section-border-radius: var(--border-radius);
-  --main-section-width: calc(100vw - 2 * var(--section-margin));
 
   --section-margin: 1rem;
   --section-padding: 1rem;
@@ -279,4 +277,12 @@ a {
   transition:
     font-size 0.1s 0.1s,
     opacity 0.1s;
+}
+
+.card {
+  border-radius: var(--border-radius);
+  border: var(--section-border);
+
+  background-color: var(--block-bg-colour);
+  box-shadow: var(--shadow-medium);
 }

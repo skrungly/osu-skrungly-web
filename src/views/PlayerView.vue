@@ -253,7 +253,7 @@ watch(() => auth.player, resetInfoEdits)
     <span class="error-text">{{ pageError }}</span>
   </Section>
 
-  <Section v-if="playerInfo" :banner-src="banner.path ?? undefined">
+  <Section v-if="playerInfo" :banner-src="banner.path ?? undefined" allow-full-width>
     <template #banner>
       <div v-if="currentlyEditing" class="banner-input" :class="{'banner-input--hidden': banner.file}">
         <div class="banner-input__prompt">
@@ -329,11 +329,11 @@ watch(() => auth.player, resetInfoEdits)
     </div>
   </Section>
 
-  <Section v-if="playerInfo">
+  <Section v-if="playerInfo" allow-full-width>
     <PlayerScoreList :player="playerInfo" :mode="currentMode" sort="pp" />
   </Section>
 
-  <Section v-if="playerInfo">
+  <Section v-if="playerInfo" allow-full-width>
     <PlayerScoreList :player="playerInfo" :mode="currentMode" sort="recent" />
   </Section>
 

@@ -47,7 +47,7 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
 </script>
 
 <template>
-  <Section v-if="mapset.length && beatmap" :style="headerStyle" class="map-header">
+  <Section v-if="mapset.length && beatmap" :style="headerStyle" class="map-header" allow-full-width>
     <div class="map-header__info">
       <span class="map-header__title">{{ beatmap.artist }} - {{ beatmap.title }}</span>
       <span class="map-header__creator">mapped by {{ beatmap.creator }}</span>
@@ -64,11 +64,11 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
     </div>
   </Section>
 
-  <div class="map-stats map-stats--mobile">
+  <Section class="map-stats map-stats--mobile">
     <MapStatsSection v-if="beatmap" :beatmap="beatmap"/>
-  </div>
+  </Section>
 
-  <Section v-if="beatmap" class="score-section">
+  <Section v-if="beatmap" class="score-section" allow-full-width>
     <div class="score-section__header">
       <h2><FontAwesomeIcon icon="trophy"/>top plays</h2>
       <RadioButtons
