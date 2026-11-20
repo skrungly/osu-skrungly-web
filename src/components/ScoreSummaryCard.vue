@@ -6,17 +6,17 @@ import { computed } from "vue";
 import ScoreRankingOverlay from "./ScoreRankingOverlay.vue"
 
 const props = defineProps<{
-  score: Score
-  rank: number | null
+  score?: Score
+  rank?: number
 }>()
 
 const playedAt = computed(() => (
-  timeAgo.format(new Date(Date.parse(props.score.play_time)))
+  props.score ? timeAgo.format(new Date(Date.parse(props.score.play_time))) : undefined
 ))
 </script>
 
 <template>
-  <div class="score">
+  <div v-if="score" class="score">
     <div class="score__avatar">
       <PlayerAvatar :player="score.player"/>
       <ScoreRankingOverlay v-if="rank" :ranking="rank" class="score__rank">#{{ rank }}</ScoreRankingOverlay>
@@ -46,6 +46,8 @@ const playedAt = computed(() => (
 
     <span class="score-info__pp">{{ score.pp.toFixed(0).toLocaleString() }}pp</span>
   </div>
+
+  <div v-else class="score score--empty"></div>
 </template>
 
 <style lang="scss" scoped>
@@ -119,6 +121,10 @@ const playedAt = computed(() => (
 
 .score:hover {
   background-color: #ffffff04;
+}
+
+.score--empty:hover {
+  background-color: revert;
 }
 
 @media screen and (max-width: 35em) {

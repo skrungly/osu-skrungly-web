@@ -3,12 +3,12 @@ import * as api from "@/api"
 
 const AVATAR_URL = import.meta.env.VITE_AVATAR_URL
 
-const props = defineProps<{ player: api.Player }>()
+const props = defineProps<{ player?: api.Player }>()
 </script>
 
 <template>
   <div class="avatar">
-    <RouterLink :to="`/players/${player.name}`">
+    <RouterLink v-if="player" :to="`/players/${player.name}`">
       <img :title="player.name" :src="`${AVATAR_URL}/${player.id}`"/>
     </RouterLink>
   </div>
