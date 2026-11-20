@@ -20,7 +20,7 @@ const errorMsg = ref<string | null>(null)
 const loading = ref(false)
 
 const headerStyle = computed(() => ({
-  "background-image": `url("https://assets.ppy.sh/beatmaps/${route.params.id}/covers/cover@2x.jpg")`,
+  "background-image": `linear-gradient(to bottom, #0004, #000a 70%, #000d), url("https://assets.ppy.sh/beatmaps/${route.params.id}/covers/cover@2x.jpg")`,
 }))
 
 async function fetchMapset() {
@@ -99,18 +99,20 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
 
   background-position: center;
   background-size: cover;
-  background-color: hsl(0 0% 30%);
-  background-blend-mode: overlay;
+
+  text-shadow:
+    0px 0px 2px hsl(0, 0, 15%),
+    0px 1px 4px hsl(0, 0, 15%);
 }
 
 .map-header__info {
   display: flex;
   flex-flow: column;
   height: 8rem;
+  padding: 0 1rem;
 
   text-wrap: nowrap;
   overflow: hidden;
-  text-shadow: var(--shadow-text);
 }
 
 .map-header__title {
@@ -128,7 +130,7 @@ watch(() => route.params.id, fetchMapset, { immediate: true })
 .map-header__options {
   display: flex;
   justify-content: space-between;
-  align-items: end;
+  align-items: center;
 }
 
 .map-header__select {
