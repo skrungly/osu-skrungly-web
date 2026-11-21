@@ -144,7 +144,7 @@ async function uploadEdits() {
   }
 
   if (unsavedChanges.value) {
-    var infoResponse = await api.put(`/players/${auth.player.id}`, edits)
+    var infoResponse = await api.patch(`/players/${auth.player.id}`, edits)
 
     if (infoResponse.status == 401) {
       auth.expired = true

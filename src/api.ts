@@ -1,4 +1,4 @@
-export type JsonRequestMethod = "POST" | "PUT" | "DELETE"
+export type JsonRequestMethod = "POST" | "PUT" | "PATCH" | "DELETE"
 export type HttpRequestMethod = "GET" | JsonRequestMethod
 
 type TokenType = "access" | "refresh"
@@ -328,6 +328,10 @@ export async function post(endpoint: string, data: any, csrf: TokenType = "acces
 
 export async function put(endpoint: string, data: any, csrf: TokenType = "access") {
   return await request("PUT", endpoint, data, csrf)
+}
+
+export async function patch(endpoint: string, data: any, csrf: TokenType = "access") {
+  return await request("PATCH", endpoint, data, csrf)
 }
 
 // `delete` is a reserved keyword so let's export it separately later
