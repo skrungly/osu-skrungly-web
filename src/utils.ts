@@ -49,3 +49,10 @@ export function inputStateFactory<T>(initial: T | null = null): Reactive<InputSt
 
   return reactive(state)
 }
+
+export function beatmapDuration(total_length_s: number) {
+  let minutes = Math.floor(total_length_s / 60).toString()
+  let seconds = (total_length_s % 60).toString().padStart(2, '0')
+
+  return `${minutes}:${seconds}`
+}

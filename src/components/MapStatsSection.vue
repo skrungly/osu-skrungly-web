@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Beatmap, beatmapDuration } from "@/api"
+import { Beatmap } from "@/api"
+import { beatmapDuration } from "@/utils"
 import { toRef } from "vue"
 
 const props = defineProps<{
