@@ -7,9 +7,10 @@ import MapStatsSection from "@/components/MapStatsSection.vue"
 import { auth } from "@/store"
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome"
 import { computed, ref, watch } from "vue"
-import { useRoute } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 const route = useRoute()
+const router = useRouter()
 
 const mapset = ref<api.Beatmap[]>([])
 const beatmap = ref<api.Beatmap | null>(null)
@@ -22,6 +23,31 @@ const loading = ref(false)
 const headerStyle = computed(() => ({
   "background-image": `linear-gradient(175deg, #0004, #000a 70%, #000d), url("https://assets.ppy.sh/beatmaps/${route.params.id}/covers/cover@2x.jpg")`,
 }))
+
+async function setRouteFromDifficulty() {
+  router.replace({ hash: `#${beatmap.value?.id}` })
+}
+
+async function setDifficultyFromRoute() {
+  let beatmapId = parseInt(route.hash.replace("#", ""))
+
+  if (!beatmapId) {
+    beatmap.value = mapset.value[0]
+    return
+  }
+
+  if (beatmap.value?.id != beatmapId) {
+    let selected = mapset.value.find(m => m.id == beatmapId)
+
+    if (!selected) {
+      beatmap.value = mapset.value[0]
+      setRouteFromDifficulty()
+      return
+    }
+
+    beatmap.value = selected
+  }
+}
 
 async function fetchMapset() {
   mapset.value = []
@@ -37,12 +63,14 @@ async function fetchMapset() {
   }
 
   mapset.value = await response.json()
-  beatmap.value = mapset.value[0] ?? null
+  setDifficultyFromRoute()
 
   loading.value = false
   errorMsg.value = null
 }
 
+watch(beatmap, setRouteFromDifficulty)
+watch(() => route.hash, setDifficultyFromRoute)
 watch(() => route.params.id, fetchMapset, { immediate: true })
 </script>
 

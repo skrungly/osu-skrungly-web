@@ -88,7 +88,7 @@ function mapDifficultyStyle(diffValue: number) {
 
     <div class="map__info">
       <div class="map__info-line map__extra-info">
-        <RouterLink class="map__title map__info--truncate" :to="`/mapsets/${map.set_id}`">{{ map.title }}</RouterLink>
+        <RouterLink class="map__title map__info--truncate" :to="`/mapsets/${map.set_id}#${map.id}`">{{ map.title }}</RouterLink>
         <span class="map__info--secondary map__info--truncate">by {{ map.artist }}</span>
       </div>
 
