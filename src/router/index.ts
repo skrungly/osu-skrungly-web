@@ -28,10 +28,19 @@ const router = createRouter({
           component: () => import("../views/MapsetView.vue"),
         },
         {
-          // osu client sends players to /u/:id
-          path: "u/:id",
-          redirect: { name: "player" }
+          path: "maps/:id",
+          name: "maps",
+          component: () => import("../views/MapView.vue"),
         },
+        // handle userpage and beatmap redirects from osu client:
+        {
+          path: "u/:id",
+          redirect: { name: "player" },
+        },
+        {
+          path: "beatmaps/:id",
+          redirect: { name: "maps" },
+        }
       ]
     },
     {
