@@ -8,6 +8,11 @@ import PlayerActivityIndicator from '@/components/PlayerActivityIndicator.vue'
 import PlayerAvatar from '@/components/PlayerAvatar.vue'
 import Section from '@/components/Section.vue'
 import GameModeRadioButtons from '@/components/GameModeRadioButtons.vue'
+import { useRoute, useRouter } from 'vue-router'
+import { auth } from '@/store'
+
+const route = useRoute()
+const router = useRouter()
 
 // chosenMode updates with user input. currentMode is what
 // is currently displayed, i.e. until new mode data is fetched
@@ -44,6 +49,29 @@ async function fetchPlayers() {
   if (playerList) players.value = playerList
 }
 
+function setRouteFromMode() {
+  router.replace({ hash: `#${api.GAMEMODE_QUERY_NAMES[chosenMode.value][1]}`})
+}
+
+function setModeFromRoute() {
+  let modeString = route.hash.replace("#", "")
+  console.log(modeString)
+
+  if (!modeString) {
+    return
+  }
+
+  const [mode, _] = (
+    api.GAMEMODE_QUERY_NAMES
+      .find(([_, str]) => str === modeString)
+      ?? api.GAMEMODE_QUERY_NAMES[0]
+  )
+
+  chosenMode.value = mode
+}
+
+watch(chosenMode, setRouteFromMode)
+watch(() => route.hash, setModeFromRoute, { immediate: true })
 watch([chosenMode, chosenSort], fetchPlayers, { immediate: true })
 </script>
 

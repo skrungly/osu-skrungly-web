@@ -30,8 +30,8 @@ function select(name: string) {
       class="radio-group__button"
       :class="{ 'radio-group__button--disabled': disabled?.includes(name) }"
     >
-      <input :id="name" type="radio"/>
-      <label :for="name" :class="{ 'highlight-text': model == value }">
+      <input type="radio"/>
+      <label :class="{ 'highlight-text': model == value }">
         {{ name }}
       </label>
     </div>

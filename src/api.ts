@@ -25,6 +25,18 @@ export enum GameMode {
   OsuAutopilot = 8,
 }
 
+// api endpoints allow these names for mode parameters
+export const GAMEMODE_QUERY_NAMES: [GameMode, string][] = [
+  [GameMode.Osu, "osu"],
+  [GameMode.Taiko, "taiko"],
+  [GameMode.Catch, "catch"],
+  [GameMode.Mania, "mania"],
+  [GameMode.OsuRelax, "osu!rx"],
+  [GameMode.TaikoRelax, "taiko!rx"],
+  [GameMode.CatchRelax, "catch!rx"],
+  [GameMode.OsuAutopilot, "osu!ap"],
+]
+
 export interface PlayerStats {
   id: number
   mode: GameMode
